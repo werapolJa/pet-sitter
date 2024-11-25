@@ -1,13 +1,29 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import connectionPool from "@/utils/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type Data = {
-  name: string;
+type User = {
+  user_id: number;
+  full_name: string;
+  phone: string;
+  id_number?: string;
+  image?: string;
+  birthdate?: string;
+  status: string;
+  create_at: string;
+  update_at: string;
 };
 
-export default function handler(
+type Data = {
+  data?: User | string;
+};
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  res.status(200).json({ name: "John Doe" });
+  if (req.method === 'GET') {
+      const result = await connectionPool.query('select * from users');
+      res.status(200).json({ data: result.rows });
+  }
 }
