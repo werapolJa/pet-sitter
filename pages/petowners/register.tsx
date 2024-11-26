@@ -53,6 +53,9 @@ export default function Register() {
       console.log(response.status); 
       if (response.status === 201) {
         router.push('/petowners/login');
+        setEmail("")
+        setPassword("")
+        setPhone("")
       }
     } catch (error) {
       console.log(error);
@@ -64,21 +67,21 @@ export default function Register() {
       <div className="w-full h-full relative">
         <Image
           src={registerSVG01}
-          alt="logo"
+          alt="ิbackground icon"
           className="absolute right-0 top-0 hidden md:block"
-          priority
+          loading="lazy"
         />
         <Image
           src={registerSVG03}
-          alt="logo"
+          alt="ิbackground icon"
           className="absolute right-0 top-0 block md:hidden"
           loading="lazy"
         />
         <Image
           src={registerSVG02}
-          alt="logo"
+          alt="ิbackground icon"
           className="absolute left-0 bottom-0 hidden md:block"
-          priority
+          loading="lazy"
         />
       </div>
 
