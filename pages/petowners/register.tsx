@@ -2,10 +2,13 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Input from "@/components/pet-owner/Input";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 import registerSVG01 from "@/public/images/registerpetowner01.svg";
 import registerSVG02 from "@/public/images/registerpetowner02.svg";
 import registerSVG03 from "@/public/images/registerpetowner03.svg";
+
 
 export default function Register() {
   const [email, setEmail] = useState<string>("");
@@ -15,6 +18,8 @@ export default function Register() {
   const [emailError, setEmailError] = useState<boolean>(false);
   const [phoneError, setPhoneError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
+
+  const router = useRouter()
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -28,7 +33,7 @@ export default function Register() {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     setEmailError(false);
@@ -39,8 +44,18 @@ export default function Register() {
     if (!phone) setPhoneError(true);
     if (!password) setPasswordError(true);
 
-    if (email && phone && password) {
-      alert(`Email: ${email}`);
+    try {
+      const response = await axios.post("/api/petowners/auth/register", {
+        email,
+        phone,
+        password,
+      });
+      console.log(response.status); 
+      if (response.status === 201) {
+        router.push('/petowners/login');
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -57,7 +72,7 @@ export default function Register() {
           src={registerSVG03}
           alt="logo"
           className="absolute right-0 top-0 block md:hidden"
-          priority
+          loading="lazy"
         />
         <Image
           src={registerSVG02}
