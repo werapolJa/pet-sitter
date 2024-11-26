@@ -15,7 +15,7 @@ type User = {
 };
 
 type Data = {
-  data?: User | string;
+  data?: User[];
 };
 
 export default async function handler(
