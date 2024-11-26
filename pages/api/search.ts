@@ -30,17 +30,20 @@ export default async function handler(
   }
 
   try {
-    const { pet_type, experience, rating } = req.query;
+    const { pet_type, experience, rating, trade_name } = req.query;
 
     let query = `select * from pet_sitters where 1=1`;
     const queryParams: string[] = [];
 
     if (pet_type) {
-      query += ` and (pet_type1::text ilike $${queryParams.length + 1} 
-                    or pet_type2::text ilike $${queryParams.length + 1}
-                    or pet_type3::text ilike $${queryParams.length + 1}
-                    or pet_type4::text ilike $${queryParams.length + 1})`;
-      queryParams.push(pet_type as string);
+      const petTypes = Array.isArray(pet_type) ? pet_type : [pet_type];
+      petTypes.forEach((type, index) => {
+        query += ` and (pet_type1::text ilike $${queryParams.length + 1} 
+                        or pet_type2::text ilike $${queryParams.length + 1}
+                        or pet_type3::text ilike $${queryParams.length + 1}
+                        or pet_type4::text ilike $${queryParams.length + 1})`;
+        queryParams.push(type);
+      });
     }
 
     if (experience) {
@@ -51,6 +54,11 @@ export default async function handler(
     if (rating) {
       query += ` and rating::text = $${queryParams.length + 1}`;
       queryParams.push(rating as string);
+    }
+
+    if (trade_name) {
+      query += ` and trade_name::text ilike $${queryParams.length + 1}`;
+      queryParams.push(trade_name as string);
     }
 
     if (queryParams.length === 0) {
