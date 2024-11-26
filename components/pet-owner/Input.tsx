@@ -26,7 +26,7 @@ export default function Input({ label, type, value, onChange, placeholder, error
       ) : (
         <div className="input input-bordered input-error flex items-center gap-2">
           <input
-            type="text"
+            type={type}
             className="grow"
             placeholder="Please fill out this field"
             value={value} 
