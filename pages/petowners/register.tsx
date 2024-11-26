@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Input from "@/components/pet-owner/Input";
 
 import registerSVG01 from "@/public/images/registerpetowner01.svg";
 import registerSVG02 from "@/public/images/registerpetowner02.svg";
@@ -10,6 +11,10 @@ export default function Register() {
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const [emailError, setEmailError] = useState<boolean>(false);
+  const [phoneError, setPhoneError] = useState<boolean>(false);
+  const [passwordError, setPasswordError] = useState<boolean>(false);
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -24,8 +29,19 @@ export default function Register() {
   };
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault(); 
-    alert(`${email}`); 
+    e.preventDefault();
+
+    setEmailError(false);
+    setPhoneError(false);
+    setPasswordError(false);
+
+    if (!email) setEmailError(true);
+    if (!phone) setPhoneError(true);
+    if (!password) setPasswordError(true);
+
+    if (email && phone && password) {
+      alert(`Email: ${email}`);
+    }
   };
 
   return (
@@ -52,48 +68,41 @@ export default function Register() {
       </div>
 
       <div className="absolute top-0 left-0 z-10 w-full h-full flex justify-center items-center px-4 md:px-0">
-        <form className="w-[440px] flex flex-col gap-14 text-center" onSubmit={handleSubmit}>
+        <form
+          className="w-[440px] flex flex-col gap-14 text-center"
+          onSubmit={handleSubmit}
+        >
           <div>
             <h1 className="text-4xl md:text-5xl font-bold">Join Us!</h1>
-            <h3 className="text-gray-400">Find your perfect pet sitter with us</h3>
+            <h3 className="text-gray-400">
+              Find your perfect pet sitter with us
+            </h3>
           </div>
           <div className="w-full flex flex-col gap-6">
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text text-base font-medium">Email</span>
-              </div>
-              <input
-                type="email"
-                placeholder="email@company.com"
-                className="input input-bordered focus:border-orange-500 focus:outline-orange-500"
-                value={email}
-                onChange={handleEmailChange}
-              />
-            </label>
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text text-base font-medium">Phone</span>
-              </div>
-              <input
-                type="text"
-                placeholder="Your phone number"
-                className="input input-bordered focus:border-orange-500 focus:outline-orange-500"
-                value={phone}
-                onChange={handlePhoneChange}
-              />
-            </label>
-            <label className="form-control">
-              <div className="label">
-                <span className="label-text text-base font-medium">Password</span>
-              </div>
-              <input
-                type="password"
-                placeholder="Create your password"
-                className="input input-bordered focus:border-orange-500 focus:outline-orange-500"
-                value={password}
-                onChange={handlePasswordChange}
-              />
-            </label>
+            <Input
+              label="Email"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="email@company.com"
+              error={emailError}
+            />
+            <Input
+              label="Phone"
+              type="text"
+              value={phone}
+              onChange={handlePhoneChange}
+              placeholder="Your phone number"
+              error={phoneError}
+            />
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder="Create your password"
+              error={passwordError}
+            />
             <button
               type="submit"
               className="btn bg-orange-500 active:bg-orange-500 hover:bg-orange-500 text-white text-[16px] font-bold rounded-full"
@@ -102,7 +111,10 @@ export default function Register() {
             </button>
             <p className="font-medium text-[18px]">
               Already have an account?{" "}
-              <Link href="/petowners/login" className="font-bold text-[16px] text-orange-500">
+              <Link
+                href="/petowners/login"
+                className="font-bold text-[16px] text-orange-500"
+              >
                 Login
               </Link>
             </p>
