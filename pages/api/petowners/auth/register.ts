@@ -55,5 +55,7 @@ export default async function handler(
       console.error(error);
       res.status(500).json({ error: "An error occurred during registration" });
     }
+  }else if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 }
