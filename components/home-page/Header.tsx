@@ -1,7 +1,7 @@
-import logoBack from "@/public/images/logoBlack.svg";
-import iconBell from "@/public/images/iconBell.svg";
-import iconMessage from "@/public/images/iconMessage.svg";
-import iconHamburger from "@/public/images/iconHamburger.svg";
+import logoback from "@/public/images/logoblack.svg";
+import iconbell from "@/public/images/iconBell.svg";
+import iconmessage from "@/public/images/iconmessage.svg";
+import iconhamburger from "@/public/images/iconhamburger.svg";
 import Image from "next/image";
 
 export default function Header() {
@@ -9,19 +9,19 @@ export default function Header() {
     <nav className="flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12">
       {/* Logo */}
       <button className="w-20 md:w-32">
-        <Image src={logoBack} alt="Logo" />
+        <Image src={logoback} alt="Logo" />
       </button>
 
       {/* Icons for Mobile */}
       <div className="flex justify-between w-32 md:hidden">
         <button>
-          <Image src={iconBell} alt="iconBell" />
+          <Image src={iconbell} alt="iconBell" />
         </button>
         <button>
-          <Image src={iconMessage} alt="iconMessage" />
+          <Image src={iconmessage} alt="iconMessage" />
         </button>
         <button>
-          <Image src={iconHamburger} alt="iconHamburger" />
+          <Image src={iconhamburger} alt="iconHamburger" />
         </button>
       </div>
 
