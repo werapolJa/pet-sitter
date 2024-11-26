@@ -16,7 +16,7 @@ export default async function handler(
     }
 
     try {
-      const phoneCheckQuery = `SELECT * FROM users WHERE phone = $1`;
+      const phoneCheckQuery = `select * from users where phone = $1`;
       const { rows: existingUser } = await connectionPool.query(
         phoneCheckQuery,
         [phone]
@@ -42,7 +42,7 @@ export default async function handler(
 
       const supabaseUserId = data.user?.id;
 
-      const query = `INSERT INTO users (user_id, phone) VALUES ($1, $2) RETURNING *`;
+      const query = `insert into users (user_id, phone) values ($1, $2) returning *`;
       const values = [supabaseUserId, phone];
 
       const { rows } = await connectionPool.query(query, values);
