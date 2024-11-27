@@ -59,10 +59,10 @@ export default async function handler(
       query += ` and pet_sitters.experience::text ilike $${
         queryParams.length + 1
       }`;
-      queryParams.push(experience as string);
+      queryParams.push(`%${experience}%`);
     }
 
-    if (rating) {
+    if (rating) { 
       query += ` and pet_sitters.rating::text = $${queryParams.length + 1}`;
       queryParams.push(rating as string);
     }
@@ -71,7 +71,7 @@ export default async function handler(
       query += ` and pet_sitters.trade_name::text ilike $${
         queryParams.length + 1
       }`;
-      queryParams.push(trade_name as string);
+      queryParams.push(`%${trade_name}%`);
     }
 
     if (queryParams.length === 0) {
