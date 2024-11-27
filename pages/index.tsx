@@ -1,11 +1,343 @@
 import Footer from "@/components/home-page/Footer";
 import Header from "@/components/home-page/Header";
+import herocat from "@/public/images/herocat.svg";
+import herodog from "@/public/images/herodog.svg";
+import bluesyar from "@/public/images/bluesyar.svg";
+import pinkstar from "@/public/images/pinkstar.svg";
+import greenstar from "@/public/images/greenstar.svg";
+import goldenstar from "@/public/images/goldenstar.svg";
+import catstar from "@/public/images/catstar.svg";
+import connect from "@/public/images/contect/connect.svg";
+import better from "@/public/images/contect/better.svg";
+import calling from "@/public/images/contect/calling.svg";
+import starsandcircles from "@/public/images/starsandcircles.svg";
+import semicircle from "@/public/images/semicircle.svg";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div>
-        <Header />
-        <Footer/>
+      <Header />
+      <section className="flex-col md:flex justify-center items-center text-center bg-gray-100">
+        <div className="hidden md:block">
+          <Image src={herocat} alt="herocat" />
+        </div>
+        <h1 className="text-4xl font-bold text-gray-800 md:text-5xl">
+          Pet Sitter, <br /> Perfect <br /> For Your Pet.
+        </h1>
+        <p className="py-6">Find your perfect pet sitter with us.</p>
+        <div className="flex relative">
+          {/* md */}
+          <div className="md:hidden">
+            <Image src={herocat} alt="herocat" />
+          </div>
+          <div>
+            <Image src={herodog} alt="herodog" />
+          </div>
+        </div>
+      </section>
+      {/* --------------------------------------------------------------------------------------------------------------------------------- */}
+      <div className="w-full md:w-64 md:border-r text-[#3A3B46]">
+        <div className=" m:pr-1 ">
+          <input
+            type="text"
+            placeholder="Search"
+            className="hidden md:inline w-full pl-3 pr-10 py-2 border rounded-lg"
+          />
+          {/* Pet Type */}
+          <div className="bg-white ">
+          <div className="space-y-4 bg-[#F6F6F9] py-6 px-9 flex flex-col rounded-2xl">
+            <h3 className="font-bold text-base">Pet Type:</h3>
+            <div className="flex gap-4 justify-center">
+              {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
+                <label key={pet} className="flex items-center gap-2">
+                  <input type="checkbox" className="checkbox font-semibold bg-white" />
+                  <span>{pet}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          </div>
+
+          {/* Rating */}
+          <div className="bg-white">
+            <h3 className="font-bold text-base px-10 py-3 ">Rating:</h3>
+            <div className="flex flex-wrap gap-2 px-10 ">
+              <div className="border-2 border-blue-5 inline px-2  rounded-lg cursor-pointer hover:text-white hover:bg-green-500  group">
+                <div className="rating  ">
+                  <h1 className="text-xl mr-1">5</h1>
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+                <div className="rating">
+                  <h1 className="text-xl mr-1">4</h1>
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                    defaultChecked
+                  />
+                </div>
+              </div>
+
+              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+                <div className="rating">
+                  <h1 className="text-xl mr-1">3</h1>
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                    defaultChecked
+                  />
+                </div>
+              </div>
+
+              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+                <div className="rating">
+                  <h1 className="text-xl mr-1">2</h1>
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+                <div className="rating">
+                  <h1 className="text-xl mr-1">1</h1>
+                  <input
+                    type="radio"
+                    name="rating-1"
+                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                    disabled
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Experience */}
+            <div className="space-y-2 px-10 pt-3 ">
+              <h3 className="font-bold pb-3">Experience:</h3>
+              <select className="select select-bordered w-full hover:border-1 bg-white ">
+                <option>0-2 Years</option>
+                <option>2-5 Years</option>
+                <option>5+ Years</option>
+              </select>
+            </div>
+
+            {/* Buttons Search*/}
+            <div className="inline-block w-full  gap-2 px-10 py-6 md:hidden ">
+              <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white ">
+                Search
+              </button>
+            </div>
+            <div className="hidden md:flex gap-2 px-10 py-6 ">
+              <button className="btn btn-ghost flex-1">Clear</button>
+              <button className="btn btn-primary flex-1">Search</button>
+            </div>
+          </div>
+        </div>
+        {/* --------------------------------------------------------------------------------------------------------------------------------- */}
+        <div className="flex-col px-4 bg-white">
+          <div className="flex justify-center py-6 text-center">
+            <h1 className="text-lg font-semibold text-black">
+              "Your Pets, Our Priority: <br /> Perfect Care, Anytime, <br />{" "}
+              Anywhere."
+            </h1>
+          </div>
+          {/* box  Boarding*/}
+          <div className="flex">
+            <div className="px-3">
+              <Image src={bluesyar} alt="bluesyar" className="w-6 h-6 mr-5" />
+            </div>
+            <div className="flex-col">
+              <h1 className="text-lg font-semibold text-black">Boarding</h1>
+              <p className="text-gray-500 py-3 pb-5">
+                Your pets stay overnight in your sitter’s home. They’ll be
+                treated like part of the family in a comfortable environment.
+              </p>
+            </div>
+          </div>
+          {/* box House Sitting */}
+          <div className="flex">
+            <div className="px-3">
+              <Image src={pinkstar} alt="pinkstar" className="w-6 h-6 mr-5" />
+            </div>
+            <div className="flex-col">
+              <h1 className="text-lg font-semibold text-black">
+                House Sitting
+              </h1>
+              <p className="text-gray-500 py-3 pb-5">
+                Your sitter takes care of your pets and your home. Your pets
+                will get all the attention they need without leaving home.
+              </p>
+            </div>
+          </div>
+          {/* box Dog Walking */}
+          <div className="flex">
+            <div className="px-3">
+              <Image src={greenstar} alt="greenstar" className="w-6 h-6 mr-5" />
+            </div>
+            <div className="flex-col">
+              <h1 className="text-lg font-semibold text-black">Dog Walking</h1>
+              <p className="text-gray-500 py-3 pb-5">
+                Your dog gets a walk around your neighborhood. Perfect for busy
+                days and dogs with extra energy to burn.
+              </p>
+            </div>
+          </div>
+          {/* box Drop-In Visits */}
+          <div className="flex">
+            <div className="px-3">
+              <Image
+                src={goldenstar}
+                alt="goldenstar"
+                className="w-6 h-6 mr-5"
+              />
+            </div>
+            <div className="flex-col">
+              <h1 className="text-lg font-semibold text-black">
+                Drop-In Visits
+              </h1>
+              <p className="text-gray-500 py-3 pb-5">
+                Your sitter drops by your home to play with your pets, offer
+                food, and give potty breaks or clean the litter box.
+              </p>
+            </div>
+          </div>
+          <div>
+            <Image src={catstar} alt="catstar" className="" />
+          </div>
+        </div>
+      </div>
+      {/* ------------------------------------------------------------------------------------------------------------------------------------------ */}
+      <div className="flex-col justify-center items-center px-4 bg-white h-full">
+        {/* connect */}
+        <div className="text-center">
+          <Image src={connect} alt="connect" className="mx-auto" />
+          <div>
+            <h1 className="text-xl font-bold mt-4 text-black">
+              <span className="text-green-500">Connect</span> With Sitters
+            </h1>
+            <p className="text-gray-500 mt-2">
+              Find a verified and reviewed sitter who’ll keep your pets company
+              and give time.
+            </p>
+          </div>
+        </div>
+        {/* better */}
+        <div className="text-center">
+          <Image src={better} alt="better" className="mx-auto" />
+          <div>
+            <h1 className="text-xl font-bold mt-4 text-black">
+              <span className="text-blue-500">Better</span> For Your Pets
+            </h1>
+            <p className="text-gray-500 mt-2">
+              Pets stay happy at home with a sitter who gives them loving care
+              and companionship.
+            </p>
+          </div>
+        </div>
+        {/* Calling */}
+        <div className="text-center">
+          <Image src={calling} alt="calling" className="mx-auto" />
+          <div>
+            <h1 className="text-xl font-bold mt-4 text-black">
+              <span className="text-orange-500">Calling</span> All Pets
+            </h1>
+            <p className="text-gray-500 mt-2">
+              Stay for free with adorable animals in unique homes around the
+              world.
+            </p>
+          </div>
+        </div>
+      </div>
+      {/* ---------------------------------------------------------------------------------------------------------------------------------- */}
+      <div className="bg-[#FFF5EC] relative">
+        <Image
+          src={starsandcircles}
+          alt="starsandcircles"
+          className="mx-auto "
+        />
+        <div>
+          <h1>Perfect Pet Sitter For Your Pet</h1>
+          <button>Become A Pet Sitter</button>
+          <button>Find A Pet Sitter</button>
+        </div>
+        <Image src={semicircle} alt="semicircle" className="mx-auto " />
+      </div>
+      <Footer />
     </div>
   );
 }
