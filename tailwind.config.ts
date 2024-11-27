@@ -10,11 +10,9 @@ export default {
     extend: {
       colors: {
         foreground: "var(--foreground)",
-     
+        "custom-gray": "#FAFAFB",
       },
     },
   },
-  plugins: [
-    require('daisyui'),
-  ],
+  plugins: [require("daisyui")],
 } satisfies Config;
