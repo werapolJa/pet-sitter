@@ -60,7 +60,7 @@ export default function SearchPage() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-6 bg-">
+          <div className="flex flex-col md:flex-row gap-6 ">
             <div className="">
               <div className="w-full md:w-96 md:shadow-md md:rounded-xl">
                 <div className="space-y-6 m:pr-1 ">
