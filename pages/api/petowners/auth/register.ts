@@ -2,12 +2,18 @@ import { NextApiRequest, NextApiResponse } from "next";
 import connectionPool from "@/utils/db";
 import supabase from "@/utils/supabase";
 
+type RegistrationRequestBody = {
+  email: string;
+  password: string;
+  phone: string;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method === "POST") {
-    const { email, password, phone } = req.body;
+    const { email, password, phone }: RegistrationRequestBody = req.body;
 
     if (!email || !password || !phone) {
       return res
@@ -16,7 +22,7 @@ export default async function handler(
     }
 
     try {
-      const phoneCheckQuery = `select * from users where phone = $1`;
+      const phoneCheckQuery = `SELECT * FROM users WHERE phone = $1`;
       const { rows: existingUser } = await connectionPool.query(
         phoneCheckQuery,
         [phone]
@@ -42,7 +48,7 @@ export default async function handler(
 
       const supabaseUserId = data.user?.id;
 
-      const query = `insert into users (user_id, phone) values ($1, $2) returning *`;
+      const query = `INSERT INTO users (user_id, phone) VALUES ($1, $2) RETURNING *`;
       const values = [supabaseUserId, phone];
 
       const { rows } = await connectionPool.query(query, values);
@@ -55,7 +61,7 @@ export default async function handler(
       console.error(error);
       res.status(500).json({ error: "An error occurred during registration" });
     }
-  }else if (req.method !== "POST") {
+  } else if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 }

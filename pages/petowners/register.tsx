@@ -23,14 +23,17 @@ export default function Register() {
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    setEmailError(false)
   };
 
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPhone(e.target.value);
+    setPhoneError(false)
   };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+    setPasswordError(false)
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -40,7 +43,9 @@ export default function Register() {
     setPhoneError(false);
     setPasswordError(false);
 
-    if (!email) setEmailError(true);
+    if (!email || !email.includes('@')) {
+      setEmailError(true);
+    }
     if (!phone) setPhoneError(true);
     if (!password) setPasswordError(true);
 
@@ -99,7 +104,7 @@ export default function Register() {
           <div className="w-full flex flex-col gap-6">
             <Input
               label="Email"
-              type="email"
+              type="text"
               value={email}
               onChange={handleEmailChange}
               placeholder="email@company.com"
