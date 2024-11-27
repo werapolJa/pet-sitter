@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Sidebar from "@/components/pet-owner/Sidebar";
-import BirthDatePicker from "@/components/pet-owner/BirthDatePicker";
 
 const ProfileImage = ({
   profileImage,
