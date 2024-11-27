@@ -19,6 +19,7 @@ type PetSitter = {
   pet_type2: string | null;
   pet_type3: string | null;
   pet_type4: string | null;
+  image_1: string | null;
 };
 
 export default async function handler(
@@ -32,32 +33,44 @@ export default async function handler(
   try {
     const { pet_type, experience, rating, trade_name } = req.query;
 
-    let query = `select * from pet_sitters where 1=1`;
+    let query = `
+      select pet_sitters.*, images.image_1
+      from pet_sitters
+      left join images on pet_sitters.petsitter_id = images.petsitter_id
+      where 1=1
+    `;
     const queryParams: string[] = [];
 
     if (pet_type) {
       const petTypes = Array.isArray(pet_type) ? pet_type : [pet_type];
-      petTypes.forEach((type, index) => {
-        query += ` and (pet_type1::text ilike $${queryParams.length + 1} 
-                        or pet_type2::text ilike $${queryParams.length + 1}
-                        or pet_type3::text ilike $${queryParams.length + 1}
-                        or pet_type4::text ilike $${queryParams.length + 1})`;
+      petTypes.forEach((type) => {
+        query += ` and (pet_sitters.pet_type1::text ilike $${
+          queryParams.length + 1
+        } or pet_sitters.pet_type2::text ilike $${
+          queryParams.length + 1
+        } or pet_sitters.pet_type3::text ilike $${queryParams.length + 1}
+          or pet_sitters.pet_type4::text ilike $${queryParams.length + 1}
+          )`;
         queryParams.push(type);
       });
     }
 
     if (experience) {
-      query += ` and experience::text ilike $${queryParams.length + 1}`;
+      query += ` and pet_sitters.experience::text ilike $${
+        queryParams.length + 1
+      }`;
       queryParams.push(experience as string);
     }
 
     if (rating) {
-      query += ` and rating::text = $${queryParams.length + 1}`;
+      query += ` and pet_sitters.rating::text = $${queryParams.length + 1}`;
       queryParams.push(rating as string);
     }
 
     if (trade_name) {
-      query += ` and trade_name::text ilike $${queryParams.length + 1}`;
+      query += ` and pet_sitters.trade_name::text ilike $${
+        queryParams.length + 1
+      }`;
       queryParams.push(trade_name as string);
     }
 
