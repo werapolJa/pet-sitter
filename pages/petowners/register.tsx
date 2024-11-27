@@ -5,9 +5,9 @@ import Input from "@/components/pet-owner/Input";
 import axios from "axios";
 import { useRouter } from "next/router";
 
-import registerSVG01 from "@/public/images/registerpetowner01.svg";
-import registerSVG02 from "@/public/images/registerpetowner02.svg";
-import registerSVG03 from "@/public/images/registerpetowner03.svg";
+import registerSVG01 from "@/public/assets/registerpetowner01.svg";
+import registerSVG02 from "@/public/assets/registerpetowner02.svg";
+import registerSVG03 from "@/public/assets/registerpetowner03.svg";
 
 
 export default function Register() {
