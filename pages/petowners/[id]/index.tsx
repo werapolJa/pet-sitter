@@ -43,6 +43,7 @@ const FormInputSection = () => (
           type="text"
           className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
           placeholder="Your Name"
+          required
         />
       </div>
 
@@ -53,6 +54,7 @@ const FormInputSection = () => (
             type="email"
             className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
             placeholder="Email"
+            required
           />
         </div>
         <div className="md:mb-10 w-full md:w-1/2">
@@ -61,6 +63,7 @@ const FormInputSection = () => (
             type="tel"
             className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
             placeholder="Phone"
+            required
           />
         </div>
       </div>
