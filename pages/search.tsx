@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Listbar, MapIcon } from "@/public/assets/listbar";
-import Link from "next/link";
+
 import mark from "@/public/assets/mark.svg";
 
 interface Sitter {
@@ -250,8 +250,8 @@ export default function Search() {
           {/* Card */}
           <div className="flex-1 px-10 py-6">
             <div className="grid grid-cols-1 gap-10 ">
-              {SITTERS.map((sitter) => (
-                <div className="card bg-base-100 shadow-md">
+              {SITTERS.map((sitter,index) => (
+                <div className="card bg-base-100 shadow-md" key={index}>
                   <div className="relative h-40 sm:h-48  w-[90%] mx-auto ">
                     <Image
                       src="https://images.unsplash.com/photo-1732282537685-bec9036bf4e0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
