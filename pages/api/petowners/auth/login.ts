@@ -30,7 +30,6 @@ export default async function handler(
         return res.status(400).json({ error: error.message });
       }
 
-      console.log(data);
 
       return res.status(200).json({
         message: "Signed in successfully",
