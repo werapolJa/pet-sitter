@@ -16,16 +16,18 @@ export default function Login() {
   const [emailError, setEmailError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
 
+  const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+
   const router = useRouter();
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    setEmailError(false)
+    setEmailError(false);
   };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setPasswordError(false)
+    setPasswordError(false);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -34,8 +36,12 @@ export default function Login() {
     setEmailError(false);
     setPasswordError(false);
 
-    if (!email || !email.includes('@')) {
+    if (!email) {
       setEmailError(true);
+    }
+    if (!email.includes("@")) {
+      setEmailError(true);
+      setMessageErrorEmail("Invalid Email");
     }
     if (!password) setPasswordError(true);
 
@@ -44,9 +50,9 @@ export default function Login() {
         email,
         password,
       });
-        const token = response.data.access_token;
-        localStorage.setItem("token", token);
-        router.push("/");
+      const token = response.data.access_token;
+      localStorage.setItem("token", token);
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
@@ -94,6 +100,7 @@ export default function Login() {
               onChange={handleEmailChange}
               placeholder="email@company.com"
               error={emailError}
+              erroremailMsg={messageErrorEmail}
             />
             <Input
               label="Password"

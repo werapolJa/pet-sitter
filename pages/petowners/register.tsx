@@ -19,6 +19,8 @@ export default function Register() {
   const [phoneError, setPhoneError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
 
+  const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+
   const router = useRouter()
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -43,9 +45,14 @@ export default function Register() {
     setPhoneError(false);
     setPasswordError(false);
 
-    if (!email || !email.includes('@')) {
+    if (!email) {
       setEmailError(true);
     }
+    if (!email.includes("@")) {
+      setEmailError(true);
+      setMessageErrorEmail("Invalid Email");
+    }
+
     if (!phone) setPhoneError(true);
     if (!password) setPasswordError(true);
 
@@ -109,6 +116,7 @@ export default function Register() {
               onChange={handleEmailChange}
               placeholder="email@company.com"
               error={emailError}
+              erroremailMsg={messageErrorEmail}
             />
             <Input
               label="Phone"
