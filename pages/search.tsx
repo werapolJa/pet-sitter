@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Listbar, MapIcon } from "@/public/assets/listbar";
 import Link from "next/link";
+import mark from "@/public/assets/mark.svg";
 
 interface Sitter {
   name: string;
@@ -43,18 +44,20 @@ export default function Search() {
   ];
   return (
     <div className="min-h-screen ">
-      {/* Search For Pet Sitter Desktop */}
-      <div className=" hidden  container mx-auto px-8 py-4 md:flex justify-between items-center ">
-        <h1 className="text-xl font-semibold">Search For Pet Sitter</h1>
-        <div className="join">
-          <button className="btn btn-outline border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500 hover:border-0">
-            <Listbar /> List
-          </button>
-          <button className="btn btn-sm join-item btn-ghost">//icon</button>
-        </div>
-      </div>
-
       <main className="w-screen md:container mx-auto ">
+        {/* Search For Pet Sitter Desktop */}
+        <div className=" hidden  container mx-auto px-8 py-4 md:flex justify-between items-center ">
+          <h1 className="text-xl font-semibold">Search For Pet Sitter</h1>
+          <div className="grid grid-cols-2  gap-4 px-10 py-3">
+            <button className="btn btn-outline border-orange-500 text-orange-500 hover:text-white hover:bg-orange-500 hover:border-0">
+              <Listbar /> List
+            </button>
+            <button className="btn btn-outline   border-gray-300 text-gray-300 hover:text-white  hover:bg-gray-300 hover:border-0 w-40  hidden md:flex">
+              <MapIcon /> Map
+            </button>
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-64 md:border-r ">
             <div className="space-y-6 m:pr-1 ">
@@ -261,7 +264,6 @@ export default function Search() {
                   <div className="card-body">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-5">
-                     
                         <div className="avatar">
                           <div className="w-10 rounded-full">
                             <img src={sitter.imageUrl} />
@@ -309,14 +311,24 @@ export default function Search() {
                       </div>
                     </div>
 
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      {sitter.location}
+                    <div className="flex items-center text-sm gap-2 ">
+                      <Image src={mark} alt="" />
+                      <h1 className="text-gray-400">{sitter.location}</h1>
                     </div>
+
                     <div className="flex gap-2 my-2">
                       {sitter.petTypes.map((type) => (
                         <span
                           key={type}
-                          className="badge badge-primary badge-outline"
+                          className={
+                            type === "Dog"
+                              ? "badge badge-success badge-outline"
+                              : type === "Cat"
+                              ? "badge badge-secondary badge-outline "
+                              : type === "Rabbit"
+                              ? "badge badge-error badge-outline"
+                              : "badge badge-info badge-outline"
+                          }
                         >
                           {type}
                         </span>
