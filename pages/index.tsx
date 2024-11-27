@@ -210,8 +210,8 @@ export default function Home() {
         <div className="flex-col px-4">
           <div className="flex justify-center py-6 text-center">
             <h1 className="text-lg font-semibold text-black">
-              "Your Pets, Our Priority: <br /> Perfect Care, Anytime, <br />{" "}
-              Anywhere."
+            &quot;Your Pets, Our Priority: <br /> Perfect Care, Anytime, <br />{" "}
+              Anywhere.&quot;
             </h1>
           </div>
           {/* box  Boarding*/}
