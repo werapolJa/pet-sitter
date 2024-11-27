@@ -1,5 +1,5 @@
 import logoback from "@/public/assets/landing-page/logoblack.svg";
-import iconbell from "@/public/assets/landing-page/iconBell.svg";
+import iconbell from "@/public/assets/landing-page/iconbell.svg";
 import iconmessage from "@/public/assets/landing-page/iconmessage.svg";
 import iconhamburger from "@/public/assets/landing-page/iconhamburger.svg";
 import Image from "next/image";
