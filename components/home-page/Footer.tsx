@@ -1,9 +1,9 @@
-import logowhite from "@/public/images/logoWhite.svg";
+import logowhite from "@/public/assets/landing-page/logowhite.svg";
 import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-black w-full flex flex-col justify-center items-center py-6">
+    <footer className="bg-black w-full flex flex-col justify-center items-center py-20">
       <div>
         <Image src={logowhite} alt="Logo White" />
       </div>

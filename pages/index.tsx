@@ -1,18 +1,20 @@
 import Footer from "@/components/home-page/Footer";
 import Header from "@/components/home-page/Header";
-import herocat from "@/public/images/herocat.svg";
-import herodog from "@/public/images/herodog.svg";
-import bluesyar from "@/public/images/bluesyar.svg";
-import pinkstar from "@/public/images/pinkstar.svg";
-import greenstar from "@/public/images/greenstar.svg";
-import goldenstar from "@/public/images/goldenstar.svg";
-import catstar from "@/public/images/catstar.svg";
-import connect from "@/public/images/contect/connect.svg";
-import better from "@/public/images/contect/better.svg";
-import calling from "@/public/images/contect/calling.svg";
-import starsandcircles from "@/public/images/starsandcircles.svg";
-import semicircle from "@/public/images/semicircle.svg";
 import Image from "next/image";
+
+// Images
+import herocat from "@/public/assets/landing-page/herocat.svg";
+import herodog from "@/public/assets/landing-page/herodog.svg";
+import bluesyar from "@/public/assets/landing-page/bluesyar.svg";
+import pinkstar from "@/public/assets/landing-page/pinkstar.svg";
+import greenstar from "@/public/assets/landing-page/greenstar.svg";
+import goldenstar from "@/public/assets/landing-page/goldenstar.svg";
+import catstar from "@/public/assets/landing-page/catstar.svg";
+import connect from "@/public/assets/landing-page/contect/connect.svg";
+import better from "@/public/assets/landing-page/contect/better.svg";
+import calling from "@/public/assets/landing-page/contect/calling.svg";
+import starsandcircles from "@/public/assets/landing-page/starsandcircles.svg";
+import semicircle from "@/public/assets/landing-page/semicircle.svg";
 
 export default function Home() {
   return (
@@ -23,9 +25,9 @@ export default function Home() {
           <Image src={herocat} alt="herocat" />
         </div>
         <h1 className="text-4xl font-bold text-gray-800 md:text-5xl">
-          Pet Sitter, <br /> Perfect <br /> For Your Pet.
+          Pet Sitter, <br /> Perfect, <br /> For Your Pet.
         </h1>
-        <p className="py-6">Find your perfect pet sitter with us.</p>
+        <p className="py-6 text-[#7B7E8F]">Find your perfect pet sitter with us.</p>
         <div className="flex relative">
           {/* md */}
           <div className="md:hidden">
@@ -37,179 +39,175 @@ export default function Home() {
         </div>
       </section>
       {/* --------------------------------------------------------------------------------------------------------------------------------- */}
-      <div className="w-full md:w-64 md:border-r text-[#3A3B46]">
-        <div className=" m:pr-1 ">
-          <input
-            type="text"
-            placeholder="Search"
-            className="hidden md:inline w-full pl-3 pr-10 py-2 border rounded-lg"
-          />
-          {/* Pet Type */}
-          <div className="bg-white ">
-          <div className="space-y-4 bg-[#F6F6F9] py-6 px-9 flex flex-col rounded-2xl">
+      <div className="w-full md:border-r text-[#3A3B46]">
+        {/* Pet Type */}
+        <div className="mx-auto">
+          <div className="space-y-4  py-6 px-9 flex flex-col rounded-2xl">
             <h3 className="font-bold text-base">Pet Type:</h3>
             <div className="flex gap-4 justify-center">
               {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
                 <label key={pet} className="flex items-center gap-2">
-                  <input type="checkbox" className="checkbox font-semibold bg-white" />
+                  <input
+                    type="checkbox"
+                    className="checkbox font-semibold bg-white"
+                  />
                   <span>{pet}</span>
                 </label>
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Rating */}
+        <div className="bg-white">
+          <h3 className="font-bold text-base px-10 py-3 ">Rating:</h3>
+          <div className="flex flex-wrap gap-2 px-10 ">
+            <div className="border-2 border-blue-5 inline px-2  rounded-lg cursor-pointer hover:text-white hover:bg-green-500  group">
+              <div className="rating  ">
+                <h1 className="text-xl mr-1">5</h1>
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+              <div className="rating">
+                <h1 className="text-xl mr-1">4</h1>
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                  defaultChecked
+                />
+              </div>
+            </div>
+
+            <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+              <div className="rating">
+                <h1 className="text-xl mr-1">3</h1>
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                  defaultChecked
+                />
+              </div>
+            </div>
+
+            <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+              <div className="rating">
+                <h1 className="text-xl mr-1">2</h1>
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
+              <div className="rating">
+                <h1 className="text-xl mr-1">1</h1>
+                <input
+                  type="radio"
+                  name="rating-1"
+                  className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                  disabled
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Rating */}
-          <div className="bg-white">
-            <h3 className="font-bold text-base px-10 py-3 ">Rating:</h3>
-            <div className="flex flex-wrap gap-2 px-10 ">
-              <div className="border-2 border-blue-5 inline px-2  rounded-lg cursor-pointer hover:text-white hover:bg-green-500  group">
-                <div className="rating  ">
-                  <h1 className="text-xl mr-1">5</h1>
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                </div>
-              </div>
+          {/* Experience */}
+          <div className="space-y-2 px-10 pt-3 ">
+            <h3 className="font-bold pb-3">Experience:</h3>
+            <select className="select select-bordered w-full hover:border-1 text-[#7B7E8F]">
+              <option>0-2 Years</option>
+              <option>2-5 Years</option>
+              <option>5+ Years</option>
+            </select>
+          </div>
 
-              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
-                <div className="rating">
-                  <h1 className="text-xl mr-1">4</h1>
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                    defaultChecked
-                  />
-                </div>
-              </div>
-
-              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
-                <div className="rating">
-                  <h1 className="text-xl mr-1">3</h1>
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                    defaultChecked
-                  />
-                </div>
-              </div>
-
-              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
-                <div className="rating">
-                  <h1 className="text-xl mr-1">2</h1>
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                </div>
-              </div>
-
-              <div className="border-2 border-blue-5 inline px-2   rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
-                <div className="rating">
-                  <h1 className="text-xl mr-1">1</h1>
-                  <input
-                    type="radio"
-                    name="rating-1"
-                    className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Experience */}
-            <div className="space-y-2 px-10 pt-3 ">
-              <h3 className="font-bold pb-3">Experience:</h3>
-              <select className="select select-bordered w-full hover:border-1 bg-white ">
-                <option>0-2 Years</option>
-                <option>2-5 Years</option>
-                <option>5+ Years</option>
-              </select>
-            </div>
-
-            {/* Buttons Search*/}
-            <div className="inline-block w-full  gap-2 px-10 py-6 md:hidden ">
-              <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white ">
-                Search
-              </button>
-            </div>
-            <div className="hidden md:flex gap-2 px-10 py-6 ">
-              <button className="btn btn-ghost flex-1">Clear</button>
-              <button className="btn btn-primary flex-1">Search</button>
-            </div>
+          {/* Buttons Search*/}
+          <div className="inline-block w-full  gap-2 px-10 py-6 md:hidden ">
+            <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white ">
+              Search
+            </button>
+          </div>
+          <div className="hidden md:flex gap-2 px-10 py-6 ">
+            <button className="btn btn-ghost flex-1">Clear</button>
+            <button className="btn btn-primary flex-1">Search</button>
           </div>
         </div>
         {/* --------------------------------------------------------------------------------------------------------------------------------- */}
-        <div className="flex-col px-4 bg-white">
+        <div className="flex-col px-4">
           <div className="flex justify-center py-6 text-center">
             <h1 className="text-lg font-semibold text-black">
               "Your Pets, Our Priority: <br /> Perfect Care, Anytime, <br />{" "}
@@ -277,15 +275,15 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <Image src={catstar} alt="catstar" className="" />
+            <Image src={catstar} alt="catstar" className="py-8" />
           </div>
         </div>
       </div>
       {/* ------------------------------------------------------------------------------------------------------------------------------------------ */}
-      <div className="flex-col justify-center items-center px-4 bg-white h-full">
+      <div className="flex-col justify-center items-center px-4 h-full">
         {/* connect */}
         <div className="text-center">
-          <Image src={connect} alt="connect" className="mx-auto" />
+          <Image src={connect} alt="connect" className="mx-auto py-8" />
           <div>
             <h1 className="text-xl font-bold mt-4 text-black">
               <span className="text-green-500">Connect</span> With Sitters
@@ -298,7 +296,7 @@ export default function Home() {
         </div>
         {/* better */}
         <div className="text-center">
-          <Image src={better} alt="better" className="mx-auto" />
+          <Image src={better} alt="better" className="mx-auto py-8" />
           <div>
             <h1 className="text-xl font-bold mt-4 text-black">
               <span className="text-blue-500">Better</span> For Your Pets
@@ -311,7 +309,7 @@ export default function Home() {
         </div>
         {/* Calling */}
         <div className="text-center">
-          <Image src={calling} alt="calling" className="mx-auto" />
+          <Image src={calling} alt="calling" className="mx-auto py-8" />
           <div>
             <h1 className="text-xl font-bold mt-4 text-black">
               <span className="text-orange-500">Calling</span> All Pets
@@ -324,18 +322,33 @@ export default function Home() {
         </div>
       </div>
       {/* ---------------------------------------------------------------------------------------------------------------------------------- */}
-      <div className="bg-[#FFF5EC] relative">
+      <div className="bg-[#FFF5EC] relative overflow-hidden flex flex-col items-center py-8">
+        {/* ภาพ starsandcircles ด้านบน */}
         <Image
           src={starsandcircles}
           alt="starsandcircles"
-          className="mx-auto "
+          className="absolute top-0 right-0 w-44"
         />
-        <div>
-          <h1>Perfect Pet Sitter For Your Pet</h1>
-          <button>Become A Pet Sitter</button>
-          <button>Find A Pet Sitter</button>
+
+        {/* เนื้อหา */}
+        <div className="relative z-10 text-center flex flex-col items-center gap-6 py-20">
+          <h1 className="text-2xl md:text-4xl font-bold">
+            Perfect Pet Sitter <br /> For Your Pet
+          </h1>
+          <button className=" text-orange-500 py-2 px-4 rounded-md">
+            Become A Pet Sitter
+          </button>
+          <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-80 text-white ">
+            Search
+          </button>
         </div>
-        <Image src={semicircle} alt="semicircle" className="mx-auto " />
+
+        {/* ภาพ semicircle ด้านล่าง */}
+        <Image
+          src={semicircle}
+          alt="semicircle"
+          className="absolute bottom-0 left-0 w-52"
+        />
       </div>
       <Footer />
     </div>
