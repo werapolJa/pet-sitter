@@ -12,13 +12,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === "POST") {
     const { email, password, phone }: RegistrationRequestBody = req.body;
 
     if (!email || !password || !phone) {
-      return res
-        .status(400)
-        .json({ error: "Some required fields are missing. Please fill in all fields." });
+      return res.status(400).json({
+        error: "Some required fields are missing. Please fill in all fields.",
+      });
     }
 
     try {
