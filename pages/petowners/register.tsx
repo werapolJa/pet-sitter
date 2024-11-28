@@ -123,7 +123,7 @@ export default function Register() {
               onChange={handleEmailChange}
               placeholder="email@company.com"
               error={emailError}
-              erroremailMsg={messageErrorEmail}
+              errorMsg={messageErrorEmail}
             />
             <Input
               label="Phone"
@@ -132,7 +132,7 @@ export default function Register() {
               onChange={handlePhoneChange}
               placeholder="Your phone number"
               error={phoneError}
-              erroremailMsg={messageErrorPhone}
+              errorMsg={messageErrorPhone}
             />
             <Input
               label="Password"

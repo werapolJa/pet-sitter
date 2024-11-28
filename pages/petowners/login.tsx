@@ -100,7 +100,7 @@ export default function Login() {
               onChange={handleEmailChange}
               placeholder="email@company.com"
               error={emailError}
-              erroremailMsg={messageErrorEmail}
+              errorMsg={messageErrorEmail}
             />
             <Input
               label="Password"
