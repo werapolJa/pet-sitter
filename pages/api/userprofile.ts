@@ -30,12 +30,12 @@ export default async function handler(
       return res.status(400).json({ error: "Invalid token" });
     }
 
-    // Fetch user data from the database with an INNER JOIN on auth.users
+    // Fetch user data from the database with an inner join on auth.users
     const query = `
-      SELECT users.full_name, users.phone, users.image, auth.users.email
-      FROM users
-      INNER JOIN auth.users ON users.user_id = auth.users.id
-      WHERE users.user_id = $1
+      select u.full_name, u.phone, u.image, au.email
+      from users u
+      inner join auth.users au on u.user_id = au.id
+      where u.user_id = $1
     `;
     const result = await connectionPool.query(query, [user_id]);
 
