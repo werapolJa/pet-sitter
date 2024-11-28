@@ -9,13 +9,13 @@ interface Sitter {
   full_name: string;
   place: string;
   rating: number;
-  image:string;
-  pet_type1: string;
-  pet_type2: string;
-  pet_type3: string;
-  pet_type4: string;
+  image: string;
+  pet_type_dog: string;
+  pet_type_cat: string;
+  pet_type_brid: string;
+  pet_type_rabbit: string;
   image_1: string;
-  title: string;
+  trade_name: string;
 }
 
 export default function SearchPage() {
@@ -27,14 +27,13 @@ export default function SearchPage() {
   }, []);
   const DataPet = async () => {
     try {
-      const res = await axios.get(`api/search?pet_type=dog`);
+      const res = await axios.get(`api/search`);
       const data = await res.data.data;
       setDataPetSitters(data);
     } catch (error) {}
   };
 
-  // const SITTERS: Sitter[] = [
-  //   {
+  // {
   //     name: "Jane Maison",
   //     location: "Senanikorn, Bangkok",
   //     rating: 5,
@@ -43,31 +42,11 @@ export default function SearchPage() {
   //       "https://images.unsplash.com/photo-1732282537685-bec9036bf4e0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   //     title: "Happy House!",
   //   },
-  //   {
-  //     name: "Cat Lover",
-  //     location: "Senanikorn, Bangkok",
-  //     rating: 4,
-  //     petTypes: ["Cat"],
-  //     imageUrl:
-  //       "https://images.unsplash.com/photo-1732282537685-bec9036bf4e0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     title: "We love cat and your cat",
-  //   },
-  //   {
-  //     name: "Umai",
-  //     location: "Senanikorn, Bangkok",
-  //     rating: 5,
-  //     petTypes: ["Dog", "Cat", "Bird", "Rabbit"],
-  //     imageUrl:
-  //       "https://images.unsplash.com/photo-1732282537685-bec9036bf4e0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     title: "Gentle >< for all pet! (Kid friendly)",
-  //   },
-  // ];
   return (
     <>
       <Header />
       <div className="w-screen">
         <main className="w-screen md:container mx-auto">
-          
           {/* Search For Pet Sitter Desktop */}
           <div className=" hidden container mx-auto py-4 md:flex justify-between items-center">
             <h1 className="text-xl font-semibold">Search For Pet Sitter</h1>
@@ -83,18 +62,18 @@ export default function SearchPage() {
 
           <div className="flex flex-col md:flex-row gap-6 bg-">
             <div className="">
-              <div className="w-full h-auto md:w-96 md:shadow-md md:rounded-xl">
+              <div className="w-full md:w-96 md:shadow-md md:rounded-xl">
                 <div className="space-y-6 m:pr-1 ">
                   {/* input Search */}
 
                   <div className="md:px-5">
-                    <p className="py-5 hidden  md:inline-block">Search</p>
+                    <p className="py-5 hidden md:inline-block">Search</p>
 
                     <div className=" hidden  md:flex w-full border border-gray-200 rounded-xl">
                       <input
                         type="text"
                         placeholder=""
-                        className="  py-2  rounded-lg outline-none border-0 w-full ml-2"
+                        className="  py-2 rounded-lg outline-none border-0 w-full ml-2"
                       />
                       <Image
                         src={search}
@@ -162,7 +141,7 @@ export default function SearchPage() {
                       </div>
                     </div>
 
-                    <div className="border-2 border-blue-5 inline px-2 py-3  rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
+                    <div className="border-2 border-blue-5 inline px-2 py-3 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
                       <div className="rating">
                         <h1 className="text-xl mr-1">4</h1>
                         <input
@@ -193,7 +172,7 @@ export default function SearchPage() {
                       </div>
                     </div>
 
-                    <div className="border-2 border-blue-5 inline px-2 py-3  rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
+                    <div className="border-2 border-blue-5 inline px-2 py-3 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
                       <div className="rating">
                         <h1 className="text-xl mr-1">3</h1>
                         <input
@@ -294,21 +273,21 @@ export default function SearchPage() {
 
             {/* Card */}
             <div className="flex-1 py-6 w-full">
-              <div className="grid grid-cols-1 gap-10 ">
+              <div className="grid grid-cols-1  md:gap-5">
                 {dataPetSitters.map((sitter, index) => (
-                  <div className="card p-5 md:p-0" key={index}>
-                    <div className="card lg:card-side  shadow-xl p-2">
-                      <div className="relative h-48 w-[90%] lg:w-64 mx-auto">
+                  <div className="card p-5 md:p-0 " key={index}>
+                    <div className="card lg:card-side  shadow-2xl flex py-5">
+                      <div className="relative h-48 md:h-48 lg:h-auto w-[90%] lg:w-96 mx-auto lg:mx-0  ">
                         <Image
                           src={sitter.image_1}
                           alt={sitter.full_name}
                           layout="fill"
-                          className="object-cover rounded-xl mt-3 ml-0 lg:ml-3 md:w-96"
+                          className="object-cover rounded-xl lg:ml-3 md:w-96"
                         />
                       </div>
 
-                      <div className="card-body">
-                        <div className="flex justify-between items-center  w-full md:flex-col lg:flex-row md:w-auto">
+                      <div className=" w-[90%] lg:w-full mx-auto lg:mx-10 py-4">
+                        <div className="flex justify-between w-full md:flex-col lg:flex-row">
                           <div className="flex items-center gap-5">
                             <div className="avatar">
                               <div className="w-12 ">
@@ -322,10 +301,10 @@ export default function SearchPage() {
                             </div>
 
                             <div className="">
-                              <h2 className="card-title w-auto">
-                                {sitter.title}
+                              <h2 className="card-title w-auto text-lg">
+                                {sitter.trade_name}
                               </h2>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-muted-foreground ">
                                 By {sitter.full_name}
                               </p>
                             </div>
@@ -365,28 +344,35 @@ export default function SearchPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center text-sm gap-2  xl:py-4">
+                        <div className="flex items-center text-sm gap-2  xl:py-4 ">
                           <Image src={mark} alt="" />
-                          <h1 className="text-gray-400">{sitter.place}</h1>
+                          <h1 className="text-gray-400 py-4 md:py-4">{sitter.place}</h1>
                         </div>
 
-                        <div className="flex gap-2 my-2">
-                          {/* {sitter.petTypes.map((type) => (
-                            <span
-                              key={type}
-                              className={
-                                type === "Dog"
-                                  ? "badge bg-green-100 badge-outline text-green-500 py-2 px-4 font-medium text-base"
-                                  : type === "Cat"
-                                  ? "badge badge-secondary badge-outline "
-                                  : type === "Rabbit"
-                                  ? "badge badge-error badge-outline"
-                                  : "badge badge-info badge-outline"
-                              }
-                            >
-                              {type}
-                            </span>
-                          ))} */}
+                        <div className="flex gap-2 my-2 flex-wrap">
+                          {sitter.pet_type_dog && (
+                            <div className="badge bg-green-100 badge-outline text-green-500 py-4 px-4 font-medium text-base">
+                              {sitter.pet_type_dog}
+                            </div>
+                          )}
+
+                          {sitter.pet_type_cat && (
+                            <div className="badge bg-pink-100 badge-outline text-pink-500 py-4 px-4 font-medium text-base">
+                              {sitter.pet_type_cat}
+                            </div>
+                          )}
+
+                          {sitter.pet_type_brid && (
+                            <div className="badge bg-blue-100 badge-outline text-blue-500 py-4 px-4 font-medium text-base">
+                              {sitter.pet_type_brid}
+                            </div>
+                          )}
+
+                          {sitter.pet_type_rabbit && (
+                            <div className="badge bg-orange-100 badge-outline text-orange-500 py-4 px-4 font-medium text-base">
+                              {sitter.pet_type_rabbit}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
