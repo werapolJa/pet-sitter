@@ -44,12 +44,12 @@ export default async function handler(
     if (pet_type) {
       const petTypes = Array.isArray(pet_type) ? pet_type : [pet_type];
       petTypes.forEach((type) => {
-        query += ` and (pet_sitters.pet_type1::text ilike $${
+        query += ` and (pet_sitters.pet_type_dog::text ilike $${
           queryParams.length + 1
-        } or pet_sitters.pet_type2::text ilike $${
+        } or pet_sitters.pet_type_cat::text ilike $${
           queryParams.length + 1
-        } or pet_sitters.pet_type3::text ilike $${queryParams.length + 1}
-          or pet_sitters.pet_type4::text ilike $${queryParams.length + 1}
+        } or pet_sitters.pet_type_bird::text ilike $${queryParams.length + 1}
+          or pet_sitters.pet_type_rabbit::text ilike $${queryParams.length + 1}
           )`;
         queryParams.push(type);
       });

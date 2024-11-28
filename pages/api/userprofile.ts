@@ -30,11 +30,20 @@ export default async function handler(
       return res.status(400).json({ error: "Invalid token" });
     }
 
-    // Fetch user data from the database
-    const query = `select full_name, email, phone, image from users where user_id = $1`;
+    // Fetch user data from the database with an INNER JOIN on auth.users
+    const query = `
+      SELECT users.full_name, users.phone, users.image, auth.users.email
+      FROM users
+      INNER JOIN auth.users ON users.user_id = auth.users.id
+      WHERE users.user_id = $1
+    `;
     const result = await connectionPool.query(query, [user_id]);
 
-    res.status(200).json({ data: result.rows });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ data: result.rows[0] });
   } catch (error) {
     console.error("Error fetching user data:", error);
     return res.status(500).json({ error: "Internal server error" });
