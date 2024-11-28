@@ -20,6 +20,7 @@ export default function Register() {
   const [passwordError, setPasswordError] = useState<boolean>(false);
 
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+  const [messageErrorPhone, setMessageErrorPhone] = useState<string>("");
 
   const router = useRouter()
 
@@ -62,7 +63,6 @@ export default function Register() {
         phone,
         password,
       });
-      console.log(response.status); 
       if (response.status === 201) {
         router.push('/petowners/login');
         setEmail("")
@@ -70,10 +70,17 @@ export default function Register() {
         setPhone("")
       }
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        if(error.response?.data?.error.includes("email")){
+          setEmailError(true)
+          setMessageErrorEmail(`${error.response?.data?.error}`)
+        }else if(error.response?.data?.error.includes("phone")){
+          setPhoneError(true)
+          setMessageErrorPhone(`${error.response?.data?.error}`)
+        }
+      } 
     }
   };
-
   return (
     <div className="w-screen h-screen">
       <div className="w-full h-full relative">
@@ -116,7 +123,7 @@ export default function Register() {
               onChange={handleEmailChange}
               placeholder="email@company.com"
               error={emailError}
-              erroremailMsg={messageErrorEmail}
+              errorMsg={messageErrorEmail}
             />
             <Input
               label="Phone"
@@ -125,6 +132,7 @@ export default function Register() {
               onChange={handlePhoneChange}
               placeholder="Your phone number"
               error={phoneError}
+              errorMsg={messageErrorPhone}
             />
             <Input
               label="Password"

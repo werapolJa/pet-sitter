@@ -7,7 +7,7 @@ interface InputProps {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: boolean;
-  erroremailMsg?: string;
+  errorMsg?: string;
 }
 
 export default function Input({
@@ -17,15 +17,15 @@ export default function Input({
   onChange,
   placeholder,
   error,
-  erroremailMsg,
+  errorMsg,
 }: InputProps) {
   return (
     <label className="form-control">
       <div className="label">
         <span className="label-text text-base font-medium">{label}</span>
-        {error && erroremailMsg && (
+        {error && errorMsg && (
           <p className="text-red-500 text-sm mt-1 text-right">
-            {erroremailMsg}
+            {errorMsg}
           </p>
         )}
       </div>

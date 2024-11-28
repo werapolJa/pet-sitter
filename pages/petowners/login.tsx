@@ -17,6 +17,7 @@ export default function Login() {
   const [passwordError, setPasswordError] = useState<boolean>(false);
 
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+  const [messageErrorPassword, setMessageErrorPassword] = useState<string>("");
 
   const router = useRouter();
 
@@ -39,10 +40,6 @@ export default function Login() {
     if (!email) {
       setEmailError(true);
     }
-    if (!email.includes("@")) {
-      setEmailError(true);
-      setMessageErrorEmail("Invalid Email");
-    }
     if (!password) setPasswordError(true);
 
     try {
@@ -54,7 +51,19 @@ export default function Login() {
       localStorage.setItem("token", token);
       router.push("/");
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        if(error.response?.data?.error.includes("Email")){
+          setEmailError(true)
+          setMessageErrorEmail(`${error.response?.data?.error}`)
+        }else if(error.response?.data?.error.includes("Password")){
+          setPasswordError(true)
+          setMessageErrorPassword(`${error.response?.data?.error}`)
+        }else if(error.response?.data?.error.includes("Your")){
+          setEmailError(true)
+          setPasswordError(true)
+          setMessageErrorEmail(`${error.response?.data?.error}`)
+        }
+    }
     }
   };
 
@@ -100,7 +109,7 @@ export default function Login() {
               onChange={handleEmailChange}
               placeholder="email@company.com"
               error={emailError}
-              erroremailMsg={messageErrorEmail}
+              errorMsg={messageErrorEmail}
             />
             <Input
               label="Password"
@@ -109,6 +118,7 @@ export default function Login() {
               onChange={handlePasswordChange}
               placeholder="Create your password"
               error={passwordError}
+              errorMsg={messageErrorPassword}
             />
             <button
               type="submit"
