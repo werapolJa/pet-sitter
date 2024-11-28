@@ -30,8 +30,14 @@ export default async function handler(
     }
 
     try {
-      const phoneCheckQuery = `SELECT * FROM users WHERE phone = $1`;
+      const emailCheckQuery = `select * from auth.users where email = $1`;
       const { rows: existingUser } = await connectionPool.query(
+        emailCheckQuery,
+        [email]
+      );
+
+      const phoneCheckQuery = `select * from users where phone = $1`;
+      const { rows: existingPhone } = await connectionPool.query(
         phoneCheckQuery,
         [phone]
       );
@@ -39,8 +45,15 @@ export default async function handler(
       if (existingUser.length > 0) {
         return res
           .status(400)
+          .json({ error: "User with this email already exists" });
+      }
+
+      if (existingPhone.length > 0) {
+        return res
+          .status(400)
           .json({ error: "User with this phone number already exists" });
       }
+
 
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email,
@@ -56,7 +69,7 @@ export default async function handler(
 
       const supabaseUserId = data.user?.id;
 
-      const query = `INSERT INTO users (user_id, phone) VALUES ($1, $2) RETURNING *`;
+      const query = `insert into users (user_id, phone) values ($1, $2) returning *`;
       const values = [supabaseUserId, phone];
 
       const { rows } = await connectionPool.query(query, values);
