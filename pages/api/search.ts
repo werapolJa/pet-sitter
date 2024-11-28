@@ -62,7 +62,7 @@ export default async function handler(
       queryParams.push(`%${experience}%`);
     }
 
-    if (rating) { 
+    if (rating) {
       query += ` and pet_sitters.rating::text = $${queryParams.length + 1}`;
       queryParams.push(rating as string);
     }
@@ -75,9 +75,7 @@ export default async function handler(
     }
 
     if (queryParams.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "At least one valid search parameter is required." });
+      query = query.replace("where 1=1", "");
     }
 
     const result = await connectionPool.query<PetSitter>(query, queryParams);
