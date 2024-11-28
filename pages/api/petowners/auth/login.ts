@@ -13,8 +13,16 @@ export default async function handler(
   if (req.method === "POST") {
     const { email, password }: LoginRequestBody = req.body;
 
-    if (!email || !password) {
+    if (!email && !password) {
       return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: "Email are required" });
+    }
+
+    if (!password) {
+      return res.status(400).json({ error: "Password are required" });
     }
 
     try {
