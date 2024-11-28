@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function Header() {
   return (
-    <nav className="flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12">
+    <nav className="flex items-center justify-between py-3 px-5 md:px-0 bg-white text-black border-b  md:container mx-auto">
       {/* Logo */}
       <button className="w-20 md:w-32">
         <Image src={logoback} alt="Logo" />
