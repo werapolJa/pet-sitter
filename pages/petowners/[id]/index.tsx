@@ -1,5 +1,13 @@
-import { useState } from "react";
+import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import profileDefaultIcon from "@/public/assets/profile-default-icon.svg";
+import plusIcon from "@/public/assets/plus-icon.svg";
+import Header from "@/components/home-page/Header";
+import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
+import Input from "@/components/pet-owner/Input";
+import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
 
 const ProfileImage = ({
   profileImage,
@@ -9,9 +17,8 @@ const ProfileImage = ({
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
   <div className="relative rounded-full w-32 h-32 md:w-60 md:h-60 bg-gray-200 flex items-center justify-center mt-6">
-    {/* If profile image exists, show the image, else show the default icon */}
-    <img
-      src={profileImage || "/assets/profile-default-icon.svg"}
+    <Image
+      src={profileImage || profileDefaultIcon}
       alt="Profile"
       className={`object-cover w-full h-full rounded-full ${
         !profileImage ? "p-12 md:p-0 w-10 h-10 md:w-20 md:h-20 opacity-80" : ""
@@ -21,7 +28,7 @@ const ProfileImage = ({
       className="absolute bottom-1 right-1 md:bottom-1 md:right-1 bg-orange-100 text-white rounded-full p-2 md:p-4 md:w-15 md:h-15"
       onClick={() => document.getElementById("file-upload")?.click()}
     >
-      <img className="md:w-4 md:h-4" src="/assets/plus-icon.svg" />
+      <Image className="md:w-4 md:h-4" src={plusIcon} alt="Add" />
     </button>
     <input
       type="file"
@@ -33,69 +40,293 @@ const ProfileImage = ({
   </div>
 );
 
-const FormInputSection = () => (
-  <div className="mt-6">
-    <form>
-      <div className="mb-1 md:mb-10 gap-1">
-        <label className="block text-base font-medium mb-2">Your Name*</label>
-        <input
-          type="text"
-          className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
-          placeholder="Your Name"
-          required
-        />
-      </div>
+const FormInputSection = () => {
+  const router = useRouter();
+  const { id } = router.query;
 
-      <div className="md:mb-10 flex flex-col md:flex-row md:space-x-4 md:space-y-0 gap-1">
-        <div className="w-full md:w-1/2 ">
-          <label className="block text-base font-medium mb-2">Email*</label>
-          <input
-            type="email"
-            className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
-            placeholder="Email"
-            required
-          />
-        </div>
-        <div className="md:mb-10 w-full md:w-1/2">
-          <label className="block text-base font-medium mb-2">Phone*</label>
-          <input
-            type="tel"
-            className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
-            placeholder="Phone"
-            required
-          />
-        </div>
-      </div>
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [idNumber, setIdNumber] = useState<string>("");
+  const [birthDate, setBirthDate] = useState<string | null>(null);
 
-      <div className="md:mb-10 flex flex-col md:flex-row md:space-x-4 md:space-y-0 gap-1">
-        <div className="w-full md:w-1/2">
-          <label className="block text-base font-medium mb-2">ID Number</label>
-          <input
+  const [nameError, setNameError] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<boolean>(false);
+  const [phoneError, setPhoneError] = useState<boolean>(false);
+  const [idNumberError, setIdNumberError] = useState<boolean>(false);
+  const [birthDateError, setBirthDateError] = useState<boolean>(false);
+
+  const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+  const [messageErrorIdNumber, setMessageErrorIdNumber] = useState<string>("");
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    setNameError(false);
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setEmailError(false);
+    setMessageErrorEmail("");
+  };
+
+  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+    setPhoneError(false);
+  };
+
+  const handleIdNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIdNumber(e.target.value);
+    setIdNumberError(false);
+  };
+
+  const handleBirthDateChange = (date: string | null) => {
+    if (date) {
+      const currentDate = new Date();
+      const selectedDate = new Date(date);
+
+      if (selectedDate > currentDate) {
+        setBirthDateError(true);
+        setBirthDate(""); // Optionally clear the date
+      } else {
+        setBirthDate(date);
+        setBirthDateError(false);
+      }
+    } else {
+      setBirthDate(null); // Clear the date
+      setBirthDateError(false); // Reset the error
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      const updatedData = { name, email, phone, idNumber, birthDate };
+      try {
+        const response = await fetch(`/api/update-profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Attach token to the header
+          },
+          body: JSON.stringify(updatedData),
+        });
+        const result = await response.json();
+        if (result.success) {
+          // Handle success, maybe redirect or show success message
+        } else {
+          // Handle error (e.g., show error message)
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
+    }
+
+    // Reset error states
+    setNameError(false);
+    setEmailError(false);
+    setPhoneError(false);
+    setIdNumberError(false);
+    setBirthDateError(false);
+
+    let hasError = false;
+
+    if (!name || name.length < 6 || name.length > 20) {
+      setNameError(true);
+      hasError = true;
+    }
+
+    if (!email) {
+      setEmailError(true);
+      setMessageErrorEmail("Email is required.");
+      hasError = true;
+    } else if (!email.includes("@") || !email.endsWith(".com")) {
+      setEmailError(true);
+      setMessageErrorEmail(
+        "Email must be in a valid format (e.g., example@domain.com)."
+      );
+      hasError = true;
+    } else {
+      // Check if email is unique (this needs to be done through an API call)
+      try {
+        const response = await fetch(`/api/check-email?email=${email}`);
+        const data = await response.json();
+
+        if (data.exists) {
+          setEmailError(true);
+          setMessageErrorEmail("Email already exists.");
+          hasError = true;
+        }
+      } catch (error) {
+        console.error("Error checking email:", error);
+        setEmailError(true);
+        setMessageErrorEmail("Error checking email uniqueness.");
+        hasError = true;
+      }
+    }
+
+    if (!phone) {
+      setPhoneError(true);
+      hasError = true;
+    } else {
+      try {
+        const phoneResponse = await fetch(`/api/check-phone?phone=${phone}`);
+        const phoneData = await phoneResponse.json();
+        if (phoneData.exists) {
+          setPhoneError(true);
+          hasError = true;
+        }
+      } catch (error) {
+        console.error("Error checking phone number:", error);
+        setPhoneError(true);
+        hasError = true;
+      }
+    }
+
+    if (idNumber && !/^\d{13}$/.test(idNumber)) {
+      setIdNumberError(true);
+      setMessageErrorIdNumber("ID Number must be 13 digits.");
+      hasError = true;
+    } else if (idNumber) {
+      try {
+        const idResponse = await fetch(
+          `/api/check-id-number?idNumber=${idNumber}`
+        );
+        const idData = await idResponse.json();
+        if (idData.exists) {
+          setIdNumberError(true);
+          setMessageErrorIdNumber("ID Number already exists.");
+          hasError = true;
+        }
+      } catch (error) {
+        console.error("Error checking ID number:", error);
+        setIdNumberError(true);
+        setMessageErrorIdNumber("Error checking ID number uniqueness.");
+        hasError = true;
+      }
+    }
+
+    // Validate Birth Date (only if filled)
+    if (birthDate) {
+      const selectedDate = new Date(birthDate);
+      const currentDate = new Date();
+      if (selectedDate > currentDate) {
+        setBirthDateError(true);
+        hasError = true;
+      }
+    }
+
+    if (hasError) return;
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // or from cookies
+    if (!token) {
+      router.push("/petowners/login"); // Redirect to login if no token
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`/api/user-profile`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Attach token to the header
+            },
+          });
+          const data = await response.json();
+          // Update the state with the user data
+          setName(data.name);
+          setEmail(data.email);
+          setPhone(data.phone);
+          setIdNumber(data.idNumber);
+          setBirthDate(data.birthDate);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, []);
+
+  return (
+    <div className="mt-6">
+      <form onSubmit={handleSubmit}>
+        <div className="mb-6">
+          <Input
+            label="Your Name*"
             type="text"
-            className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
-            placeholder="Your ID number"
+            value={name}
+            onChange={handleNameChange}
+            placeholder="Your Name"
+            error={nameError}
           />
         </div>
-        <div className="w-full md:w-1/2 relative">
-          <label className="block text-base font-medium mb-2">
-            Date of Birth
-          </label>
-          <input
-            type="date"
-            className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
-          />
-          <span className="absolute top-3 right-3 text-gray-500"></span>
-        </div>
-      </div>
 
-      <div className="flex justify-end mt-6 gap-1">
-        <button className="py-3 px-6 rounded-3xl text-base font-bold text-white bg-orange-500">
-          Update Profile
-        </button>
-      </div>
-    </form>
-  </div>
-);
+        <div className="mb-6 flex flex-col md:flex-row md:space-x-4">
+          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+            <Input
+              label="Email*"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="Email"
+              error={emailError}
+              erroremailMsg={messageErrorEmail}
+            />
+          </div>
+
+          <div className="w-full md:w-1/2">
+            <Input
+              label="Phone*"
+              type="tel"
+              value={phone}
+              onChange={handlePhoneChange}
+              placeholder="Phone"
+              error={phoneError}
+            />
+          </div>
+        </div>
+
+        <div className="mb-6 flex flex-col md:flex-row md:space-x-4">
+          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+            <Input
+              label="ID Number"
+              type="text"
+              value={idNumber}
+              onChange={handleIdNumberChange}
+              placeholder="Your ID number"
+              error={idNumberError}
+            />
+          </div>
+
+          <div className="w-full md:w-1/2">
+            <DatePickerComponent
+              label="Date of Birth"
+              value={birthDate}
+              onChange={handleBirthDateChange}
+              error={birthDateError}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end mt-6">
+          <button
+            type="submit"
+            className="w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
+          >
+            Update Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 const ProfilePage = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -112,30 +343,29 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="w-full md:bg-custom-gray flex flex-col md:flex-row min-h-screen">
-      {/* Sidebar */}
-      <Sidebar />
+    <div>
+      <Header />
+      <div className="w-full md:bg-custom-gray flex flex-col md:flex-row min-h-screen">
+        <Sidebar />
+        <div className="flex flex-col w-full py-6 px-4 md:hidden">
+          <span className="text-xl font-bold text-black">Profile</span>
+          <ProfileImage
+            profileImage={profileImage}
+            onImageChange={handleImageUpload}
+          />
+          <FormInputSection />
+        </div>
 
-      {/* Main Content */}
-      {/* Mobile */}
-      <div className="flex flex-col w-full h-[752px] py-6 px-4 md:hidden">
-        <span className="text-xl font-bold text-black">Profile</span>
-        <ProfileImage
-          profileImage={profileImage}
-          onImageChange={handleImageUpload}
-        />
-        <FormInputSection />
+        <div className="w-[956px] h-[888px] ml-10 my-10 md:ml-20 p-10 bg-white rounded-2xl hidden md:block">
+          <span className="text-2xl font-bold text-black">Profile</span>
+          <ProfileImage
+            profileImage={profileImage}
+            onImageChange={handleImageUpload}
+          />
+          <FormInputSection />
+        </div>
       </div>
-
-      {/* Desktop */}
-      <div className="w-[956px] h-[888px] ml-10 my-10 md:ml-20 p-10 bg-white rounded-2xl hidden md:block">
-        <span className="text-2xl font-bold text-black">Profile</span>
-        <ProfileImage
-          profileImage={profileImage}
-          onImageChange={handleImageUpload}
-        />
-        <FormInputSection />
-      </div>
+      <Footer />
     </div>
   );
 };

@@ -11,7 +11,7 @@ const ProfileImage = ({
   <div className="relative rounded-full w-32 h-32 md:w-60 md:h-60 bg-gray-200 flex items-center justify-center mt-6">
     {/* If profile image exists, show the image, else show the default icon */}
     <img
-      src={profileImage || "/images/profile-default-icon.svg"}
+      src={profileImage || "/assets/profile-default-icon.svg"}
       alt="Profile"
       className={`object-cover w-full h-full rounded-full ${
         !profileImage ? "p-12 md:p-0 w-10 h-10 md:w-20 md:h-20 opacity-80" : ""
@@ -21,7 +21,7 @@ const ProfileImage = ({
       className="absolute bottom-1 right-1 md:bottom-1 md:right-1 bg-orange-100 text-white rounded-full p-2 md:p-4 md:w-15 md:h-15"
       onClick={() => document.getElementById("file-upload")?.click()}
     >
-      <img className="md:w-4 md:h-4" src="/images/plus-icon.svg" />
+      <img className="md:w-4 md:h-4" src="/assets/plus-icon.svg" />
     </button>
     <input
       type="file"
@@ -42,6 +42,7 @@ const FormInputSection = () => (
           type="text"
           className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
           placeholder="Your Name"
+          required
         />
       </div>
 
@@ -52,6 +53,7 @@ const FormInputSection = () => (
             type="email"
             className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
             placeholder="Email"
+            required
           />
         </div>
         <div className="md:mb-10 w-full md:w-1/2">
@@ -60,6 +62,7 @@ const FormInputSection = () => (
             type="tel"
             className="input input-bordered w-full rounded-lg border-gray-200 focus:ring-orange-500 focus:border-orange-500"
             placeholder="Phone"
+            required
           />
         </div>
       </div>
