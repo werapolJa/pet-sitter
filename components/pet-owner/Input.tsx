@@ -8,6 +8,8 @@ interface InputProps {
   placeholder?: string;
   error?: boolean;
   errorMsg?: string;
+  maxLength?: number;
+  pattern?: string;
 }
 
 export default function Input({
@@ -18,15 +20,15 @@ export default function Input({
   placeholder,
   error,
   errorMsg,
+  maxLength,
+  pattern,
 }: InputProps) {
   return (
     <label className="form-control">
       <div className="label">
         <span className="label-text text-base font-medium">{label}</span>
         {error && errorMsg && (
-          <p className="text-red-500 text-sm mt-1 text-right">
-            {errorMsg}
-          </p>
+          <p className="text-red-500 text-sm mt-1 text-right">{errorMsg}</p>
         )}
       </div>
       <div
