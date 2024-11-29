@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
 import Image from "next/image";
 import profileDefaultIcon from "@/public/assets/profile-default-icon.svg";
 import plusIcon from "@/public/assets/plus-icon.svg";
@@ -57,6 +58,7 @@ const FormInputSection = () => {
   const [birthDateError, setBirthDateError] = useState<boolean>(false);
 
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+  const [messageErrorPhone, setMessageErrorPhone] = useState<string>("");
   const [messageErrorIdNumber, setMessageErrorIdNumber] = useState<string>("");
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -73,11 +75,13 @@ const FormInputSection = () => {
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPhone(e.target.value);
     setPhoneError(false);
+    setMessageErrorPhone("");
   };
 
   const handleIdNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIdNumber(e.target.value);
     setIdNumberError(false);
+    setMessageErrorIdNumber("");
   };
 
   const handleBirthDateChange = (date: string | null) => {
@@ -101,41 +105,13 @@ const FormInputSection = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
-    if (token) {
-      const updatedData = { name, email, phone, idNumber, birthDate };
-      try {
-        const response = await fetch(`/api/update-profile`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Attach token to the header
-          },
-          body: JSON.stringify(updatedData),
-        });
-        const result = await response.json();
-        if (result.success) {
-          // Handle success, maybe redirect or show success message
-        } else {
-          // Handle error (e.g., show error message)
-        }
-      } catch (error) {
-        console.error("Error updating profile:", error);
-      }
-    }
-
-    // Reset error states
-    setNameError(false);
-    setEmailError(false);
-    setPhoneError(false);
-    setIdNumberError(false);
-    setBirthDateError(false);
-
     let hasError = false;
 
     if (!name || name.length < 6 || name.length > 20) {
       setNameError(true);
       hasError = true;
+    } else {
+      setNameError(false); // Reset error if name is valid
     }
 
     if (!email) {
@@ -149,10 +125,12 @@ const FormInputSection = () => {
       );
       hasError = true;
     } else {
-      // Check if email is unique (this needs to be done through an API call)
+      setEmailError(false); // Reset email error if valid
+      // Check if email is unique using axios
       try {
-        const response = await fetch(`/api/check-email?email=${email}`);
-        const data = await response.json();
+        const { data } = await axios.get(`/api/checkemail`, {
+          params: { email },
+        });
 
         if (data.exists) {
           setEmailError(true);
@@ -167,35 +145,50 @@ const FormInputSection = () => {
       }
     }
 
+    // Phone validation
     if (!phone) {
       setPhoneError(true);
+      setMessageErrorPhone("Phone number is required.");
+      hasError = true;
+    } else if (!/^\d{10}$/.test(phone)) {
+      setPhoneError(true);
+      setMessageErrorPhone("Phone number must be 10 digits.");
       hasError = true;
     } else {
+      setPhoneError(false); // Reset phone error if valid
+      // Check if phone number is unique using axios
       try {
-        const phoneResponse = await fetch(`/api/check-phone?phone=${phone}`);
-        const phoneData = await phoneResponse.json();
-        if (phoneData.exists) {
+        const { data } = await axios.get(`/api/checkphone`, {
+          params: { phone },
+        });
+
+        if (data.exists) {
           setPhoneError(true);
+          setMessageErrorPhone("Phone number already exists.");
           hasError = true;
         }
       } catch (error) {
         console.error("Error checking phone number:", error);
         setPhoneError(true);
+        setMessageErrorPhone("Error checking phone number uniqueness.");
         hasError = true;
       }
     }
 
+    // ID Number validation
     if (idNumber && !/^\d{13}$/.test(idNumber)) {
       setIdNumberError(true);
       setMessageErrorIdNumber("ID Number must be 13 digits.");
       hasError = true;
     } else if (idNumber) {
+      setIdNumberError(false); // Reset ID number error if valid
+      // Check if ID number is unique using axios
       try {
-        const idResponse = await fetch(
-          `/api/check-id-number?idNumber=${idNumber}`
-        );
-        const idData = await idResponse.json();
-        if (idData.exists) {
+        const { data } = await axios.get(`/api/checkidnumber`, {
+          params: { idNumber },
+        });
+
+        if (data.exists) {
           setIdNumberError(true);
           setMessageErrorIdNumber("ID Number already exists.");
           hasError = true;
@@ -208,51 +201,73 @@ const FormInputSection = () => {
       }
     }
 
-    // Validate Birth Date (only if filled)
+    // Birth Date validation
     if (birthDate) {
       const selectedDate = new Date(birthDate);
       const currentDate = new Date();
       if (selectedDate > currentDate) {
         setBirthDateError(true);
         hasError = true;
+      } else {
+        setBirthDateError(false); // Reset birth date error if valid
       }
     }
 
     if (hasError) return;
+
+    const updatedData = { name, email, phone, idNumber, birthDate };
+
+    try {
+      // Send updated profile data to the server using axios
+      await axios.put(`/api/petowners/updateprofile`, updatedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Attach token to the header
+        },
+      });
+      // Handle success, maybe redirect or show success message
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+
+    // Reset error states
+    setNameError(false);
+    setEmailError(false);
+    setPhoneError(false);
+    setIdNumberError(false);
+    setBirthDateError(false);
+    setMessageErrorEmail("");
+    setMessageErrorPhone("");
+    setMessageErrorIdNumber("");
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // or from cookies
-    if (!token) {
-      router.push("/petowners/login"); // Redirect to login if no token
-    }
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(`/api/user-profile`, {
-            method: "GET",
+    async function fetchUserData() {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/petowners/${id}/userprofile`,
+          {
             headers: {
-              Authorization: `Bearer ${token}`, // Attach token to the header
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Attach token to the header
             },
-          });
-          const data = await response.json();
-          // Update the state with the user data
-          setName(data.name);
-          setEmail(data.email);
-          setPhone(data.phone);
-          setIdNumber(data.idNumber);
-          setBirthDate(data.birthDate);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      };
-      fetchData();
+          }
+        );
+
+        const data = response.data; // axios already parses the response into JSON
+        // Update the state with the user data
+        setName(data.name);
+        setEmail(data.email);
+        setPhone(data.phone);
+        setIdNumber(data.idNumber);
+        setBirthDate(data.birthDate);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     }
-  }, []);
+
+    fetchUserData(); // Call the function to fetch user data
+  }, [id]); // Make sure the effect runs again if id changes
 
   return (
     <div className="mt-6">
@@ -265,6 +280,7 @@ const FormInputSection = () => {
             onChange={handleNameChange}
             placeholder="Your Name"
             error={nameError}
+            errorMsg="Name is required"
           />
         </div>
 
@@ -277,7 +293,7 @@ const FormInputSection = () => {
               onChange={handleEmailChange}
               placeholder="Email"
               error={emailError}
-              erroremailMsg={messageErrorEmail}
+              errorMsg={messageErrorEmail}
             />
           </div>
 
@@ -289,6 +305,7 @@ const FormInputSection = () => {
               onChange={handlePhoneChange}
               placeholder="Phone"
               error={phoneError}
+              errorMsg={messageErrorPhone}
             />
           </div>
         </div>
@@ -302,6 +319,9 @@ const FormInputSection = () => {
               onChange={handleIdNumberChange}
               placeholder="Your ID number"
               error={idNumberError}
+              errorMsg={messageErrorIdNumber}
+              maxLength={13}
+              pattern="\d*"
             />
           </div>
 
