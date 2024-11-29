@@ -10,9 +10,9 @@ export default async function handler(
   }
 
   try {
-    const { userID } = req.query;
+    const { userid } = req.query;
 
-    if (!userID || typeof userID !== "string") {
+    if (!userid || typeof userid !== "string") {
       return res.status(400).json({ error: "invalid or missing user id" });
     }
 
@@ -22,7 +22,7 @@ export default async function handler(
       inner join auth.users au on u.user_id = au.id
       where u.user_id = $1
     `;
-    const result = await connectionPool.query(query, [userID]);
+    const result = await connectionPool.query(query, [userid]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "user not found" });
