@@ -15,13 +15,13 @@ export default function Header() {
       {/* Icons for Mobile */}
       <div className="flex justify-between w-32 md:hidden">
         <button>
-          <Image src={iconbell} alt="iconBell" />
+          <Image src={iconbell} alt="iconbell" />
         </button>
         <button>
-          <Image src={iconmessage} alt="iconMessage" />
+          <Image src={iconmessage} alt="iconmessage" />
         </button>
         <button>
-          <Image src={iconhamburger} alt="iconHamburger" />
+          <Image src={iconhamburger} alt="iconhamburger" />
         </button>
       </div>
 

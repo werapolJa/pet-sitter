@@ -20,15 +20,15 @@ export default function Home() {
   return (
     <div>
       <Header />
-      <section className="bg-gray-100 md:flex md:justify-between">
+      <section className=" md:flex md:justify-between md:py-16">
         <div className="hidden md:block">
           <Image src={herocat} alt="herocat" />
         </div>
         <div className="flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl font-bold text-gray-800 md:text-7xl">
+          <h1 className="text-4xl font-bold text-gray-800 md:text-8xl">
             Pet Sitter, <br /> Perfect, <br /> For Your Pet.
           </h1>
-          <p className="py-6 text-[#7B7E8F] md:text-lg">
+          <p className="py-6 text-[#7B7E8F] md:text-xl">
             Find your perfect pet sitter with us.
           </p>
         </div>
@@ -46,83 +46,81 @@ export default function Home() {
       <div className=" text-[#3A3B46] ">
         {/* Pet Type */}
         <div className="md:flex md:flex-col md:justify-start">
-          <div className="md:max-w-5xl md:mx-auto ">
-
-          <div className="py-6 px-9 rounded-2xl md:px-0">
-            <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0">
-              <h3 className="font-bold text-base px-6 md:p-0">Pet Type:</h3>
-              <div className="flex gap-4">
-                {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
-                  <label key={pet} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="checkbox font-semibold bg-white"
-                    />
-                    <span>{pet}</span>
-                  </label>
-                ))}
+          <div className="md:mx-auto md:w-3/4">
+            <div className="py-6 px-9 rounded-2xl md:px-0 md:bg-[#F6F6F9]">
+              <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0">
+                <h3 className="font-bold text-base  md:p-0 md:px-6">
+                  Pet Type:
+                </h3>
+                <div className="flex gap-4">
+                  {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
+                    <label key={pet} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="checkbox font-semibold bg-white"
+                      />
+                      <span>{pet}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="flex flex-col px-10 py-3 gap-4 md:flex-row md:items-center md:p-0">
-            {/* Rating */}
-            <div className="flex items-center gap-4">
-              <h3 className="font-bold text-base">Rating:</h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { rating: 5, stars: 5 },
-                  { rating: 4, stars: 4 },
-                  { rating: 3, stars: 3 },
-                  { rating: 2, stars: 2 },
-                  { rating: 1, stars: 1 },
-                ].map(({ rating, stars }) => (
-                  <div
-                    key={rating}
-                    className="border-2 border-blue-500 px-2 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group md:h-9"
-                  >
-                    <div className="rating flex items-center">
-                      <h1 className="text-xl mr-1">{rating}</h1>
-                      {[...Array(stars)].map((_, index) => (
-                        <input
-                          key={index}
-                          type="radio"
-                          name={`rating-${rating}`}
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                          defaultChecked={index + 1 === stars}
-                        />
-                      ))}
+            <div className="flex flex-col px-10 py-3 gap-4 md:flex-row md:items-center md:p-0 md:pb-16 md:justify-between">
+              {/* Rating */}
+              <div className="flex flex-col md:items-center gap-4 md:flex-row">
+                <h3 className="font-bold text-base md:px-6 md:py-8">Rating:</h3>
+                <div className="flex flex-wrap gap-2 ">
+                  {[
+                    { rating: 5, stars: 5 },
+                    { rating: 4, stars: 4 },
+                    { rating: 3, stars: 3 },
+                    { rating: 2, stars: 2 },
+                    { rating: 1, stars: 1 },
+                  ].map(({ rating, stars }) => (
+                    <div
+                      key={rating}
+                      className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group h-10 py-1"
+                    >
+                      <div className="rating flex items-center">
+                        <h1 className="text-xl mr-1">{rating}</h1>
+                        {[...Array(stars)].map((_, index) => (
+                          <input
+                            key={index}
+                            type="radio"
+                            name={`rating-${rating}`}
+                            className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                            disabled
+                            defaultChecked={index + 1 === stars}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+              {/* Experience */}
+              <div className="flex flex-col md:items-center gap-4 md:ml-4 md:flex-row">
+                <h3 className="font-bold pb-3 md:pb-0">Experience:</h3>
+                <select className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F]">
+                  <option>0-2 Years</option>
+                  <option>2-5 Years</option>
+                  <option>5+ Years</option>
+                </select>
+              </div>
+
+              {/* Search Button */}
+              <div className="flex justify-center md:ml-4">
+                <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white md:w-36">
+                  Search
+                </button>
               </div>
             </div>
-
-            {/* Experience */}
-            <div className="flex items-center gap-4 md:ml-4">
-              <h3 className="font-bold pb-3 md:pb-0">Experience:</h3>
-              <select className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F]">
-                <option>0-2 Years</option>
-                <option>2-5 Years</option>
-                <option>5+ Years</option>
-              </select>
-            </div>
-
-            {/* Search Button */}
-            <div className="flex justify-center md:ml-4">
-              <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white md:w-auto">
-                Search
-              </button>
-            </div>
-          </div>
           </div>
         </div>
-
         {/* --------------------------------------------------------------------------------------------------------------------------------- */}
         <div className="flex flex-col px-4 md:items-center">
           <div className="flex justify-center py-6 text-center">
-            <h1 className="text-lg font-semibold text-black">
+            <h1 className="text-lg font-semibold text-black md:text-3xl">
               &quot;Your Pets, Our Priority: <br className="md:hidden" />{" "}
               Perfect Care, Anytime, <br className="md:hidden" />{" "}
               Anywhere.&quot;
@@ -212,7 +210,7 @@ export default function Home() {
           </div>
         </div>
         {/* ------------------------------------------------------------------------------------------------------------------------------------------ */}
-        <div className="flex-col justify-center items-center px-4 h-full md:flex md:flex-row md:justify-between">
+        <div className="flex-col justify-center items-center px-4 h-full md:flex md:flex-row md:justify-between md:px-20">
           {/* connect */}
           <div className="text-center">
             <Image src={connect} alt="connect" className="mx-auto py-8" />
@@ -255,25 +253,26 @@ export default function Home() {
         </div>
       </div>
       {/* ---------------------------------------------------------------------------------------------------------------------------------- */}
-      <div className="bg-[#FFF5EC] relative overflow-hidden flex flex-col items-center py-8">
+      <div className="bg-[#FFF5EC] relative overflow-hidden flex flex-col items-center py-8 md:m-20 rounded-2xl">
         {/* ภาพ starsandcircles ด้านบน */}
         <Image
           src={starsandcircles}
           alt="starsandcircles"
           className="absolute top-0 right-0 w-44"
         />
-
         {/* เนื้อหา */}
         <div className="relative z-10 text-center flex flex-col items-center gap-6 py-20">
           <h1 className="text-2xl md:text-4xl font-bold">
             Perfect Pet Sitter <br /> For Your Pet
           </h1>
+          <div className="md:flex">
           <button className=" text-orange-500 py-2 px-4 rounded-md">
             Become A Pet Sitter
           </button>
-          <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-80 text-white ">
-            Search
+          <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-80 md:w-40 text-white ">
+            Find A Pet Sitter
           </button>
+          </div>
         </div>
 
         {/* ภาพ semicircle ด้านล่าง */}
