@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Input from "@/components/pet-owner/Input";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useAuth } from "@/context/authentication";
 
 import registerSVG01 from "@/public/assets/registerpetowner01.svg";
 import registerSVG02 from "@/public/assets/registerpetowner02.svg";
@@ -22,7 +22,7 @@ export default function Register() {
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
   const [messageErrorPhone, setMessageErrorPhone] = useState<string>("");
 
-  const router = useRouter()
+  const { register } = useAuth()!;
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -58,17 +58,12 @@ export default function Register() {
     if (!password) setPasswordError(true);
 
     try {
-      const response = await axios.post("/api/petowners/auth/register", {
+      const data = {
         email,
-        phone,
         password,
-      });
-      if (response.status === 201) {
-        router.push('/petowners/login');
-        setEmail("")
-        setPassword("")
-        setPhone("")
+        phone
       }
+      await register?.(data)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if(error.response?.data?.error.includes("email")){
@@ -81,6 +76,7 @@ export default function Register() {
       } 
     }
   };
+  
   return (
     <div className="w-screen h-screen">
       <div className="w-full h-full relative">

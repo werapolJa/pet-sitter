@@ -1,9 +1,9 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import Input from "@/components/pet-owner/Input";
-import axios from "axios";
-import { useRouter } from "next/router";
 import Link from "next/link";
+import axios from "axios";
+import { useAuth } from "@/context/authentication";
 
 import registerSVG01 from "@/public/assets/registerpetowner01.svg";
 import registerSVG02 from "@/public/assets/registerpetowner02.svg";
@@ -19,7 +19,8 @@ export default function Login() {
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
   const [messageErrorPassword, setMessageErrorPassword] = useState<string>("");
 
-  const router = useRouter();
+  const { login } = useAuth()!;
+
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -39,17 +40,17 @@ export default function Login() {
 
     if (!email) {
       setEmailError(true);
+      setMessageErrorEmail("Email is required.");
     }
-    if (!password) setPasswordError(true);
+
+    if (!password) {
+      setPasswordError(true);
+      setMessageErrorPassword("Password is required.");
+      return;
+    }
 
     try {
-      const response = await axios.post("/api/petowners/auth/login", {
-        email,
-        password,
-      });
-      const token = response.data.access_token;
-      localStorage.setItem("token", token);
-      router.push("/");
+      await login?.({ email, password });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if(error.response?.data?.error.includes("Email")){
@@ -63,7 +64,7 @@ export default function Login() {
           setPasswordError(true)
           setMessageErrorEmail(`${error.response?.data?.error}`)
         }
-    }
+      }
     }
   };
 
@@ -72,19 +73,19 @@ export default function Login() {
       <div className="w-full h-full relative">
         <Image
           src={registerSVG01}
-          alt="ิbackground icon"
+          alt="Background icon"
           className="absolute right-0 top-0 hidden md:block"
           loading="lazy"
         />
         <Image
           src={registerSVG03}
-          alt="ิbackground icon"
+          alt="Background icon"
           className="absolute right-0 top-0 block md:hidden"
           loading="lazy"
         />
         <Image
           src={registerSVG02}
-          alt="ิbackground icon"
+          alt="Background icon"
           className="absolute left-0 bottom-0 hidden md:block"
           loading="lazy"
         />
