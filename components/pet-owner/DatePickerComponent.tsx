@@ -9,6 +9,7 @@ interface DatePickerProps {
   value: string | null;
   onChange: (date: string | null) => void;
   error: boolean;
+  errorMsg?: string;
   placeholder?: string;
 }
 
@@ -17,6 +18,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
   value,
   onChange,
   error,
+  errorMsg,
   placeholder = "Select your birth date",
 }) => {
   const [internalError, setInternalError] = useState(false);
@@ -34,14 +36,25 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className="w-full">
-        <label
-          htmlFor="birthdate"
-          className="block text-base font-medium mb-2 mt-2"
+      <label className="form-control w-full">
+        <div className="label">
+          <span className="label-text text-base font-medium">{label}</span>
+          {(error || internalError) && (
+            <p className="textleft text-red-500 text-[14px] mt-2">
+              {errorMsg || "Birthdate cannot be in the future."}
+            </p>
+          )}
+          {(error || internalError) && errorMsg && (
+            <p className="text-red-500 text-sm mt-1 text-right">{errorMsg}</p>
+          )}
+        </div>
+        <div
+          className={`input flex items-center gap-2 ${
+            error || internalError
+              ? "input-error border-red-500 focus-within:outline-none"
+              : "input-bordered focus-within:outline-none focus-within:border-orange-500"
+          }`}
         >
-          {label}
-        </label>
-        <div className="relative">
           <DatePicker
             value={parsedDate}
             onChange={handleDateChange}
@@ -51,7 +64,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
                 <button
                   {...props}
                   type="button"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
+                  className="flex items-center justify-center"
                 >
                   <img
                     src="/assets/date-picker-icon.svg"
@@ -64,15 +77,14 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
             slotProps={{
               day: {
                 sx: {
-                  // Style for today's date
                   "&.MuiPickersDay-today": {
-                    backgroundColor: "#FF7037", // Orange background for today
-                    color: "#FFFFFF", // White text for today
-                    borderRadius: "50%", // Ensures it's circular
+                    backgroundColor: "#FF7037",
+                    color: "#FFFFFF",
+                    borderRadius: "50%",
                     border: "2px solid #FF7037",
                   },
                   "&.MuiPickersDay-today:hover": {
-                    backgroundColor: "#E0602F", // Darker orange on hover
+                    backgroundColor: "#E0602F",
                   },
                 },
               },
@@ -87,30 +99,31 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
               },
               textField: {
                 fullWidth: true,
-                variant: "outlined",
+                variant: "standard",
                 error: error || internalError,
-                className: `w-full h-[48px] ${
-                  error || internalError ? "border-red-500" : "border-slate-200"
-                }`,
-                placeholder: placeholder,
-                inputProps: {
-                  className: "w-full h-full px-4 py-4 text-base",
-                  style: {
-                    height: "16px",
-                    fontSize: "16px",
-                    borderRadius: "8px",
-                  },
+                placeholder: error ? "Please fill out this field" : placeholder,
+                InputProps: {
+                  disableUnderline: true,
+                  className: "grow focus:outline-none px-2 py-1",
                 },
               },
             }}
           />
+          {(error || internalError) && (
+            <span
+              className="badge text-xl text-white flex-shrink-0"
+              style={{
+                backgroundColor: "red",
+                borderRadius: "50%",
+                width: "25px",
+                height: "25px",
+              }}
+            >
+              !
+            </span>
+          )}
         </div>
-        {(error || internalError) && (
-          <span className="text-red-500 text-sm mt-1">
-            Please select a valid date. Birthdate cannot be in the future.
-          </span>
-        )}
-      </div>
+      </label>
     </LocalizationProvider>
   );
 };
