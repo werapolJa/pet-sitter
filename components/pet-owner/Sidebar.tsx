@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
+import ProfileTabs from "@/components/pet-owner/ProfileTabs";
+
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const { userid } = router.query;
@@ -80,31 +82,7 @@ const Sidebar: React.FC = () => {
     <div>
       {/* mobile */}
       <div className="md:hidden">
-        <ul className="w-max flex whitespace-nowrap flex-row shadow-md bg-white md:hidden">
-          {petOwnersTabs.map((tab, index) => (
-            <li
-              key={index}
-              aria-label={`Go to ${tab.label.toLowerCase()}`}
-              onClick={() => handleTabClick(tab.path)}
-              className={`w-full flex flex-row items-center justify-center py-3 px-6 group transition duration-300 cursor-pointer ${
-                activeTab === tab.path ? "bg-orange-100" : ""
-              }`}
-            >
-              {React.cloneElement(tab.icon, {
-                className: `w-[24px] h-[24px] mr-4 ${
-                  activeTab === tab.path ? "text-orange-500" : "text-gray-300"
-                } transition duration-300`,
-              })}
-              <span
-                className={`text-lg leading-relaxed font-bold ${
-                  activeTab === tab.path ? "text-orange-500" : "text-gray-500"
-                } transition duration-300`}
-              >
-                {tab.label}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <ProfileTabs />
       </div>
 
       {/* Desktop */}

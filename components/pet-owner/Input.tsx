@@ -46,6 +46,8 @@ export default function Input({
           }`}
           value={value}
           onChange={onChange}
+          maxLength={maxLength}
+          pattern={pattern}
         />
         {error && (
           <span

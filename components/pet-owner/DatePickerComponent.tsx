@@ -21,7 +21,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
   onChange,
   error,
   errorMsg,
-  placeholder = "Select your birth date",
+  placeholder = "Select your date of birth ",
 }) => {
   const [internalError, setInternalError] = useState(false);
   const parsedDate = value ? dayjs(value) : null;
