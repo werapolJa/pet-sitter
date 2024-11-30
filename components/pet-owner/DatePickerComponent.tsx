@@ -3,6 +3,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
+import Image from "next/image";
+import datePickericon from "@/public/assets/date-picker-icon.svg";
 
 interface DatePickerProps {
   label: string;
@@ -40,7 +42,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
         <div className="label">
           <span className="label-text text-base font-medium">{label}</span>
           {(error || internalError) && (
-            <p className="textleft text-red-500 text-[14px] mt-2">
+            <p className="textleft text-red-500 text-sm mt-2">
               {errorMsg || "Birthdate cannot be in the future."}
             </p>
           )}
@@ -66,8 +68,8 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
                   type="button"
                   className="flex items-center justify-center"
                 >
-                  <img
-                    src="/assets/date-picker-icon.svg"
+                  <Image
+                    src={datePickericon}
                     alt="Calendar Icon"
                     className="w-6 h-6"
                   />
@@ -77,6 +79,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
             slotProps={{
               day: {
                 sx: {
+                  fontSize: "14px",
                   "&.MuiPickersDay-today": {
                     backgroundColor: "#FF7037",
                     color: "#FFFFFF",
@@ -104,7 +107,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
                 placeholder: error ? "Please fill out this field" : placeholder,
                 InputProps: {
                   disableUnderline: true,
-                  className: "grow focus:outline-none px-2 py-1",
+                  className: "grow focus:outline-none px-2 py-1 text-base",
                 },
               },
             }}
