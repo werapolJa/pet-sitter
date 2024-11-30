@@ -38,23 +38,8 @@ const EditProfileForm = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!login) {
-      router.push("petowners/login"); // Redirect to login if not logged in
-    } else {
-      const fetchProfile = async () => {
-        setLoading(true); // Start loading
-        try {
-          await getProfile(); // Fetch profile only if logged in
-        } catch (error) {
-          console.error("Error fetching profile:", error);
-        } finally {
-          setLoading(false); // Stop loading after fetching is done
-        }
-      };
-
-      fetchProfile(); // Fetch profile if logged in
-    }
-  }, [login, router]);
+    getProfile();
+  }, [userid]);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -170,7 +155,7 @@ const EditProfileForm = () => {
   };
 
   const editProfile = async () => {
-    if (!isAuthenticated || !userid) return;
+    if (!userid) return;
     try {
       const updatedData = {
         full_name: name,
@@ -213,7 +198,7 @@ const EditProfileForm = () => {
   };
 
   const getProfile = async () => {
-    if (!isAuthenticated || !userid) return;
+    if (!userid) return;
     console.log("Fetching user data...");
 
     try {
