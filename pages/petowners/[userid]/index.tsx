@@ -9,47 +9,19 @@ import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
+import { useAuth } from "@/context/authentication";
 
-const ProfileImage = ({
-  profileImage,
-  onImageChange,
-}: {
-  profileImage: string | null;
-  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}) => (
-  <div className="relative rounded-full w-32 h-32 md:w-60 md:h-60 bg-gray-200 flex items-center justify-center mt-6">
-    <Image
-      src={profileImage || profileDefaultIcon}
-      alt="Profile"
-      className={`object-cover w-full h-full rounded-full ${
-        !profileImage ? "p-12 md:p-0 w-10 h-10 md:w-20 md:h-20 opacity-80" : ""
-      }`}
-    />
-    <button
-      className="absolute bottom-1 right-1 md:bottom-1 md:right-1 bg-orange-100 text-white rounded-full p-2 md:p-4 md:w-15 md:h-15"
-      onClick={() => document.getElementById("file-upload")?.click()}
-    >
-      <Image className="md:w-4 md:h-4" src={plusIcon} alt="Add" />
-    </button>
-    <input
-      type="file"
-      id="file-upload"
-      className="hidden"
-      accept="image/*"
-      onChange={onImageChange}
-    />
-  </div>
-);
-
-const FormInputSection = () => {
+const EditProfile = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { userid } = router.query;
+  const { user, logout, isAuthenticated } = useAuth();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [idNumber, setIdNumber] = useState<string>("");
   const [birthDate, setBirthDate] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null); // Added image state
 
   const [nameError, setNameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
@@ -57,13 +29,22 @@ const FormInputSection = () => {
   const [idNumberError, setIdNumberError] = useState<boolean>(false);
   const [birthDateError, setBirthDateError] = useState<boolean>(false);
 
+  const [messageErrorName, setMessageErrorName] = useState<string>("");
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
   const [messageErrorPhone, setMessageErrorPhone] = useState<string>("");
   const [messageErrorIdNumber, setMessageErrorIdNumber] = useState<string>("");
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getProfile();
+  }, [userid]);
+
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
     setNameError(false);
+    setMessageErrorName("");
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -107,8 +88,13 @@ const FormInputSection = () => {
 
     let hasError = false;
 
-    if (!name || name.length < 6 || name.length > 20) {
+    if (!name) {
       setNameError(true);
+      setMessageErrorName("Name is required.");
+      hasError = true;
+    } else if (name.length < 6 || name.length > 20) {
+      setNameError(true);
+      setMessageErrorName("Name must be between 6 and 20 characters.");
       hasError = true;
     } else {
       setNameError(false); // Reset error if name is valid
@@ -126,23 +112,6 @@ const FormInputSection = () => {
       hasError = true;
     } else {
       setEmailError(false); // Reset email error if valid
-      // Check if email is unique using axios
-      try {
-        const { data } = await axios.get(`/api/checkemail`, {
-          params: { email },
-        });
-
-        if (data.exists) {
-          setEmailError(true);
-          setMessageErrorEmail("Email already exists.");
-          hasError = true;
-        }
-      } catch (error) {
-        console.error("Error checking email:", error);
-        setEmailError(true);
-        setMessageErrorEmail("Error checking email uniqueness.");
-        hasError = true;
-      }
     }
 
     // Phone validation
@@ -156,23 +125,6 @@ const FormInputSection = () => {
       hasError = true;
     } else {
       setPhoneError(false); // Reset phone error if valid
-      // Check if phone number is unique using axios
-      try {
-        const { data } = await axios.get(`/api/checkphone`, {
-          params: { phone },
-        });
-
-        if (data.exists) {
-          setPhoneError(true);
-          setMessageErrorPhone("Phone number already exists.");
-          hasError = true;
-        }
-      } catch (error) {
-        console.error("Error checking phone number:", error);
-        setPhoneError(true);
-        setMessageErrorPhone("Error checking phone number uniqueness.");
-        hasError = true;
-      }
     }
 
     // ID Number validation
@@ -182,23 +134,6 @@ const FormInputSection = () => {
       hasError = true;
     } else if (idNumber) {
       setIdNumberError(false); // Reset ID number error if valid
-      // Check if ID number is unique using axios
-      try {
-        const { data } = await axios.get(`/api/checkidnumber`, {
-          params: { idNumber },
-        });
-
-        if (data.exists) {
-          setIdNumberError(true);
-          setMessageErrorIdNumber("ID Number already exists.");
-          hasError = true;
-        }
-      } catch (error) {
-        console.error("Error checking ID number:", error);
-        setIdNumberError(true);
-        setMessageErrorIdNumber("Error checking ID number uniqueness.");
-        hasError = true;
-      }
     }
 
     // Birth Date validation
@@ -214,20 +149,38 @@ const FormInputSection = () => {
     }
 
     if (hasError) return;
+    editProfile();
+  };
 
-    const updatedData = { name, email, phone, idNumber, birthDate };
-
+  const editProfile = async () => {
     try {
-      // Send updated profile data to the server using axios
-      await axios.put(`/api/petowners/updateprofile`, updatedData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Attach token to the header
-        },
-      });
-      // Handle success, maybe redirect or show success message
+      const updatedData = {
+        full_name: name,
+        email: email,
+        phone: phone,
+        image: image || null,
+        id_number: idNumber || null,
+        birthdate: birthDate || null,
+      };
+
+      // Sending the PUT request
+      const response = await axios.put(
+        `http://localhost:3000/api/petowners/userprofile/${userid}`,
+        updatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Logging the response data and alerting success
+      console.log("Profile updated successfully:", response.data);
+      alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
 
     // Reset error states
@@ -241,33 +194,44 @@ const FormInputSection = () => {
     setMessageErrorIdNumber("");
   };
 
-  useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/petowners/${id}/userprofile`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`, // Attach token to the header
-            },
-          }
-        );
+  const getProfile = async () => {
+    if (!isAuthenticated || !userid) return;
+    console.log("Fetching user data...");
 
-        const data = response.data; // axios already parses the response into JSON
-        // Update the state with the user data
-        setName(data.name);
-        setEmail(data.email);
-        setPhone(data.phone);
-        setIdNumber(data.idNumber);
-        setBirthDate(data.birthDate);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/petowners/userprofile/${userid}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const data = response.data.data;
+      setName(data.full_name);
+      setEmail(data.email);
+      setPhone(data.phone);
+      setIdNumber(data.id_number);
+      setBirthDate(data.birthdate);
+      setImage(data.image);
+      setLoading(false);
+      console.log("Fetched user data:", data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setError("Failed to load user data");
+      setLoading(false);
     }
+  };
 
-    fetchUserData(); // Call the function to fetch user data
-  }, [id]); // Make sure the effect runs again if id changes
+  if (loading) {
+    return <div>Loading...</div>; // Or use a spinner
+  }
+
+  if (error) {
+    return <div>{error}</div>; // Display the error message if something goes wrong
+  }
 
   return (
     <div className="mt-6">
@@ -280,7 +244,7 @@ const FormInputSection = () => {
             onChange={handleNameChange}
             placeholder="Your Name"
             error={nameError}
-            errorMsg="Name is required"
+            errorMsg={messageErrorName}
           />
         </div>
 
@@ -348,15 +312,54 @@ const FormInputSection = () => {
   );
 };
 
+const ProfileImage = ({
+  image,
+  onImageChange,
+}: {
+  image: string | null;
+  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => (
+  <div className="relative rounded-full w-32 h-32 md:w-60 md:h-60 bg-gray-200 flex items-center justify-center mt-6">
+    <Image
+      src={image || profileDefaultIcon}
+      alt="Profile"
+      width={240}
+      height={240}
+      className={`object-cover w-full h-full rounded-full ${
+        !image ? "p-12 md:p-0 w-10 h-10 md:w-20 md:h-20 opacity-80" : ""
+      }`}
+    />
+    <button
+      className="absolute bottom-1 right-1 md:bottom-1 md:right-1 bg-orange-100 text-white rounded-full p-2 md:p-4 md:w-15 md:h-15"
+      onClick={() => document.getElementById("file-upload")?.click()}
+    >
+      <Image
+        className="md:w-4 md:h-4"
+        src={plusIcon}
+        alt="Add"
+        width={16}
+        height={16}
+      />
+    </button>
+    <input
+      type="file"
+      id="file-upload"
+      className="hidden"
+      accept="image/*"
+      onChange={onImageChange}
+    />
+  </div>
+);
+
 const ProfilePage = () => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result as string);
+        setImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -369,20 +372,14 @@ const ProfilePage = () => {
         <Sidebar />
         <div className="flex flex-col w-full py-6 px-4 md:hidden">
           <span className="text-xl font-bold text-black">Profile</span>
-          <ProfileImage
-            profileImage={profileImage}
-            onImageChange={handleImageUpload}
-          />
-          <FormInputSection />
+          <ProfileImage image={image} onImageChange={handleImageUpload} />
+          <EditProfile />
         </div>
 
         <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:block">
           <span className="text-2xl font-bold text-black">Profile</span>
-          <ProfileImage
-            profileImage={profileImage}
-            onImageChange={handleImageUpload}
-          />
-          <FormInputSection />
+          <ProfileImage image={image} onImageChange={handleImageUpload} />
+          <EditProfile />
         </div>
       </div>
       <Footer />

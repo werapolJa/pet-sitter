@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 const Sidebar: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { userid } = router.query;
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Sidebar: React.FC = () => {
   const petOwnersTabs = [
     {
       label: "Profile",
-      path: `/petowners/${id}`,
+      path: `/petowners/${userid}`,
       icon: (
         <svg
           className="w-[24px] h-[24px] mr-4 transition duration-300"
@@ -35,7 +35,7 @@ const Sidebar: React.FC = () => {
     },
     {
       label: "Your Pet",
-      path: `/petowners/${id}/yourpet`,
+      path: `/petowners/${userid}/yourpet`,
       icon: (
         <svg
           className="w-[24px] h-[24px] mr-4 transition duration-300"
@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
     },
     {
       label: " Booking History",
-      path: `/petowners/${id}/booking`,
+      path: `/petowners/${userid}/booking`,
       icon: (
         <svg
           className="w-[24px] h-[24px] mr-4 transition duration-300"
