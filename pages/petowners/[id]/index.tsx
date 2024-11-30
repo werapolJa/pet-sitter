@@ -284,7 +284,7 @@ const FormInputSection = () => {
           />
         </div>
 
-        <div className="mb-6 flex flex-col md:flex-row md:space-x-4">
+        <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
           <div className="w-full md:w-1/2 mb-6 md:mb-0">
             <Input
               label="Email*"
@@ -310,7 +310,7 @@ const FormInputSection = () => {
           </div>
         </div>
 
-        <div className="mb-6 flex flex-col md:flex-row md:space-x-4">
+        <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
           <div className="w-full md:w-1/2 mb-6 md:mb-0">
             <Input
               label="ID Number"
@@ -338,7 +338,7 @@ const FormInputSection = () => {
         <div className="flex justify-end mt-6">
           <button
             type="submit"
-            className="w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
+            className="mt-8 w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
           >
             Update Profile
           </button>
@@ -376,7 +376,7 @@ const ProfilePage = () => {
           <FormInputSection />
         </div>
 
-        <div className="w-[956px] h-[888px] ml-10 my-10 md:ml-20 p-10 bg-white rounded-2xl hidden md:block">
+        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:block">
           <span className="text-2xl font-bold text-black">Profile</span>
           <ProfileImage
             profileImage={profileImage}
