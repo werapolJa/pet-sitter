@@ -50,10 +50,10 @@ export default async function handler(
 
       // First update the 'users' table
       const userUpdateQuery = `
-        UPDATE users u
-        SET full_name = $1, phone = $2, image = $3, id_number = $4, birthdate = $5
-        WHERE u.user_id = $6
-        RETURNING u.full_name, u.phone, u.image, u.id_number, u.birthdate;
+        update users u
+        set full_name = $1, phone = $2, image = $3, id_number = $4, birthdate = $5
+        where u.user_id = $6
+        returning u.full_name, u.phone, u.image, u.id_number, u.birthdate;
       `;
 
       const userResult = await client.query(userUpdateQuery, [
@@ -72,9 +72,9 @@ export default async function handler(
 
       // Then update the 'auth.users' table
       const authUserUpdateQuery = `
-        UPDATE auth.users
-        SET email = $1
-        WHERE id = $2;
+        update auth.users
+        set email = $1
+        where id = $2;
       `;
 
       const authUserResult = await client.query(authUserUpdateQuery, [

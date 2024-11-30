@@ -11,10 +11,10 @@ import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
 import { useAuth } from "@/context/authentication";
 
-const EditProfile = () => {
+const EditProfileForm = () => {
   const router = useRouter();
   const { userid } = router.query;
-  const { user, logout, isAuthenticated } = useAuth();
+  const { login, user, logout, isAuthenticated } = useAuth();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -38,8 +38,23 @@ const EditProfile = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getProfile();
-  }, [userid]);
+    if (!login) {
+      router.push("petowners/login"); // Redirect to login if not logged in
+    } else {
+      const fetchProfile = async () => {
+        setLoading(true); // Start loading
+        try {
+          await getProfile(); // Fetch profile only if logged in
+        } catch (error) {
+          console.error("Error fetching profile:", error);
+        } finally {
+          setLoading(false); // Stop loading after fetching is done
+        }
+      };
+
+      fetchProfile(); // Fetch profile if logged in
+    }
+  }, [login, router]);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -119,9 +134,11 @@ const EditProfile = () => {
       setPhoneError(true);
       setMessageErrorPhone("Phone number is required.");
       hasError = true;
-    } else if (!/^\d{10}$/.test(phone)) {
+    } else if (!/^[0]\d{9}$/.test(phone)) {
       setPhoneError(true);
-      setMessageErrorPhone("Phone number must be 10 digits.");
+      setMessageErrorPhone(
+        "Phone number must start with 0 and have 10 digits."
+      );
       hasError = true;
     } else {
       setPhoneError(false); // Reset phone error if valid
@@ -153,6 +170,7 @@ const EditProfile = () => {
   };
 
   const editProfile = async () => {
+    if (!isAuthenticated || !userid) return;
     try {
       const updatedData = {
         full_name: name,
@@ -373,13 +391,13 @@ const ProfilePage = () => {
         <div className="flex flex-col w-full py-6 px-4 md:hidden">
           <span className="text-xl font-bold text-black">Profile</span>
           <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfile />
+          <EditProfileForm />
         </div>
 
         <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:block">
           <span className="text-2xl font-bold text-black">Profile</span>
           <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfile />
+          <EditProfileForm />
         </div>
       </div>
       <Footer />
