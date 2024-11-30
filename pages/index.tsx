@@ -1,6 +1,7 @@
 import Footer from "@/components/home-page/Footer";
 import Header from "@/components/home-page/Header";
 import Image from "next/image";
+import Link from "next/link";
 
 // Images
 import herocat from "@/public/assets/landing-page/herocat.svg";
@@ -71,26 +72,32 @@ export default function Home() {
                 <h3 className="font-bold text-base md:px-6 md:py-8">Rating:</h3>
                 <div className="flex flex-wrap gap-2 ">
                   {[
+                    // สร้าง array ที่มีค่าระดับการให้คะแนน (rating) และจำนวนดาว (stars) ที่ต้องการแสดง
                     { rating: 5, stars: 5 },
                     { rating: 4, stars: 4 },
                     { rating: 3, stars: 3 },
                     { rating: 2, stars: 2 },
                     { rating: 1, stars: 1 },
                   ].map(({ rating, stars }) => (
+                    // ใช้ .map เพื่อวนลูปแต่ละ object ใน array และสร้าง UI สำหรับแต่ละระดับคะแนน
                     <div
-                      key={rating}
-                      className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group h-10 py-1"
+                      key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
+                      className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group md:h-9"
+                      // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
                     >
                       <div className="rating flex items-center">
+                        {/* แสดงตัวเลขของระดับคะแนน */}
                         <h1 className="text-xl mr-1">{rating}</h1>
+                        {/* วนลูปเพื่อสร้าง input (radio buttons) ที่แสดงดาวตามจำนวน stars */}
                         {[...Array(stars)].map((_, index) => (
                           <input
-                            key={index}
-                            type="radio"
-                            name={`rating-${rating}`}
+                            key={index} // ใช้ index เป็น key สำหรับแต่ละดาว
+                            type="radio" // ระบุว่า input เป็น radio button
+                            name={`rating-${rating}`} // ชื่อ group ของ radio แต่ละระดับคะแนน
                             className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                            disabled
-                            defaultChecked={index + 1 === stars}
+                            // สไตล์ของ radio เป็นรูปร่างดาว และเปลี่ยนสีเมื่อ hover
+                            disabled // ปิดการใช้งาน (ไม่ให้คลิกได้)
+                            defaultChecked={index + 1 === stars} // ทำให้ดาวสุดท้ายในระดับนั้นถูกเลือกโดยดีฟอลต์
                           />
                         ))}
                       </div>
@@ -110,9 +117,11 @@ export default function Home() {
 
               {/* Search Button */}
               <div className="flex justify-center md:ml-4">
-                <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white md:w-36">
-                  Search
-                </button>
+                <Link href="/search">
+                  <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white md:w-36">
+                    Search
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -266,12 +275,14 @@ export default function Home() {
             Perfect Pet Sitter <br /> For Your Pet
           </h1>
           <div className="md:flex">
-          <button className=" text-orange-500 py-2 px-4 rounded-md">
-            Become A Pet Sitter
-          </button>
-          <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-80 md:w-40 text-white ">
-            Find A Pet Sitter
-          </button>
+            <button className=" text-orange-500 py-2 px-4 rounded-md">
+              Become A Pet Sitter
+            </button>
+            <Link href="/search">
+              <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-80 md:w-40 text-white ">
+                Find A Pet Sitter
+              </button>
+            </Link>
           </div>
         </div>
 

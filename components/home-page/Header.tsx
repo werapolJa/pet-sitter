@@ -3,6 +3,7 @@ import iconbell from "@/public/assets/landing-page/iconbell.svg";
 import iconmessage from "@/public/assets/landing-page/iconmessage.svg";
 import iconhamburger from "@/public/assets/landing-page/iconhamburger.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -11,7 +12,6 @@ export default function Header() {
       <button className="w-20 md:w-32">
         <Image src={logoback} alt="Logo" />
       </button>
-
       {/* Icons for Mobile */}
       <div className="flex justify-between w-32 md:hidden">
         <button>
@@ -33,9 +33,11 @@ export default function Header() {
         <button>
           <h1 className="font-bold">Login</h1>
         </button>
+        <Link href="/search">
         <button className="bg-orange-500 w-36 h-12 rounded-full">
           <h1 className="text-white font-bold">Find A Pet Sitter</h1>
         </button>
+        </Link>
       </div>
     </nav>
   );
