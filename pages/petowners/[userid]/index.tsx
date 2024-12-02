@@ -15,6 +15,7 @@ import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
+import withAuth from "@/utils/withAuth";
 
 const EditProfileForm = () => {
   const router = useRouter();
@@ -390,4 +391,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default withAuth(ProfilePage);
