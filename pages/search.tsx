@@ -29,38 +29,26 @@ export default function SearchPage() {
   const [loading, setLoanding] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>("");
   const [checkListArray, setCheckListArray] = useState<string[]>([]);
-  const [checkListText, setCheckListText] = useState<string>("");
   const [textUrl, setTextUrl] = useState<string>("");
-  console.log(textUrl);
 
   const CheckListInput = (value: string, checked: boolean) => {
-    console.log(checked);
     if (checked) {
-     
-      if (!checkListText.includes(value)) {
-        setCheckListArray((prev) => [...prev, value]); 
+      if (!checkListArray.includes(value)) {
+        setCheckListArray((prev) => [...prev, value]);
         setTextUrl((prev) => {
-        
           return prev ? `pet_type=${value}&${prev}` : `pet_type=${value}`;
         });
       }
     } else {
- 
       setCheckListArray((prev) => prev.filter((item) => item !== value));
       setTextUrl((prev) => {
-      
         const updatedUrl = prev
           .split("&")
-          .filter((item) => !item.includes(value)) 
+          .filter((item) => !item.includes(value))
           .join("&");
         return updatedUrl;
       });
     }
-
-    console.log("Current checkListText:", checkListText);
-    console.log("Current textUrl:", textUrl);
-
-    // console.log(textUrl);
   };
 
   const SearchData = (value: string) => {
@@ -388,7 +376,7 @@ export default function SearchPage() {
                               </div>
 
                               <div className="rating rating-sm flex h-full py-1">
-                                {[1, 2, 3, 4, 5].map((star, index) => (
+                                {[1, 2, 3, 4, 5].map((star) => (
                                   <input
                                     key={star}
                                     name={`rating-${star}`} // Ensure unique `name` for each sitter
