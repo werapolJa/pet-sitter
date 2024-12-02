@@ -1,15 +1,15 @@
-import { Listbar, MapIcon } from "@/public/assets/listbar";
+// import { Listbar, MapIcon } from "@/public/assets/listbar";
 import Image from "next/image";
 import search from "@/public/assets/search.svg";
 import { useState } from "react";
 
 function SearchBox({}) {
   const [searchInput,setSearchInput] = useState<string>("")
-  const SearchData=(e: React.MouseEvent<HTMLButtonElement>)=>{
-    console.log(e.target);
+  // const SearchData=(e: React.MouseEvent<HTMLButtonElement>)=>{
+  //   console.log(e.target);
     
 
-  }
+  // }
   return (
     <div className="w-full md:w-96 md:shadow-md md:rounded-xl h-full">
       <div className="space-y-6 m:pr-1 ">
