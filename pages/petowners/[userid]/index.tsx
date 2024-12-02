@@ -1,4 +1,10 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import React, {
+  useEffect,
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+} from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import Image from "next/image";
@@ -9,12 +15,10 @@ import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
-import { useAuth } from "@/context/authentication";
 
 const EditProfileForm = () => {
   const router = useRouter();
   const { userid } = router.query;
-  const { login, user, logout, isAuthenticated } = useAuth();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -37,9 +41,34 @@ const EditProfileForm = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getProfile = useCallback(async () => {
+    if (!userid) return;
+    console.log("Fetching user data...");
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/petowners/userprofile/${userid}`
+      );
+
+      const data = response.data.data;
+      setName(data.full_name);
+      setEmail(data.email);
+      setPhone(data.phone);
+      setIdNumber(data.id_number);
+      setBirthDate(data.birthdate);
+      setImage(data.image);
+      setLoading(false);
+      console.log("Fetched user data:", data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setError("Failed to load user data");
+      setLoading(false);
+    }
+  }, [userid]);
+
   useEffect(() => {
     getProfile();
-  }, [userid]);
+  }, [userid, getProfile]);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -196,31 +225,6 @@ const EditProfileForm = () => {
           setMessageErrorIdNumber(`${error.response?.data?.error}`);
         }
       }
-    }
-  };
-
-  const getProfile = async () => {
-    if (!userid) return;
-    console.log("Fetching user data...");
-
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/petowners/userprofile/${userid}`
-      );
-
-      const data = response.data.data;
-      setName(data.full_name);
-      setEmail(data.email);
-      setPhone(data.phone);
-      setIdNumber(data.id_number);
-      setBirthDate(data.birthdate);
-      setImage(data.image);
-      setLoading(false);
-      console.log("Fetched user data:", data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      setError("Failed to load user data");
-      setLoading(false);
     }
   };
 
