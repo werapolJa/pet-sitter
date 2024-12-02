@@ -58,6 +58,11 @@ export default async function handler(
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            role: 'petowners'
+          }
+        }
       });
 
       if (supabaseError) {

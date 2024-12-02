@@ -6,11 +6,32 @@ import { useRouter } from "next/router";
 
 // Same types as before
 interface SupabaseJwtPayload {
-  sub: string;  //UID
-  email: string; 
+  sub: string;  // UID
+  email: string;
   role: string;
   exp: number;
+  iat: number;
+  aud: string;
+  phone: string;
+  app_metadata: {
+    provider: string;
+    providers: string[];
+  };
+  user_metadata: {
+    email: string;
+    email_verified: boolean;
+    phone_verified: boolean;
+    role: string;
+    sub: string;
+  };
+  aal: string;
+  amr: {
+    method: string;
+    timestamp: number;
+  }[];
+  is_anonymous: boolean;
 }
+
 
 interface AuthContextType {
   user: SupabaseJwtPayload | null;
@@ -59,16 +80,12 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   // Login method
   const login = async (data: { [key: string]: string }) => {
-    try {
       const result = await axios.post("/api/petowners/auth/login", data);
       const token = result.data.access_token;
       localStorage.setItem("token", token);
       const userDataFromToken = jwtDecode<SupabaseJwtPayload>(token);
       setState({ ...state, user: userDataFromToken });
       router.push("/");
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   // Register method

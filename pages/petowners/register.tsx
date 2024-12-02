@@ -21,6 +21,7 @@ export default function Register() {
 
   const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
   const [messageErrorPhone, setMessageErrorPhone] = useState<string>("");
+  const [messageErrorPassword, setMessageErrorPassword] = useState<string>("");
 
   const { register } = useAuth()!;
 
@@ -46,16 +47,35 @@ export default function Register() {
     setPhoneError(false);
     setPasswordError(false);
 
-    if (!email) {
-      setEmailError(true);
-    }
-    if (!email.includes("@")) {
-      setEmailError(true);
-      setMessageErrorEmail("Invalid Email");
-    }
-
+    if (!email) setEmailError(true);
     if (!phone) setPhoneError(true);
     if (!password) setPasswordError(true);
+
+    const isValidEmail = (email: string) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+    
+    if (!isValidEmail(email)) {
+      setEmailError(true);
+      setMessageErrorEmail("Please enter a valid email address.");
+    }
+    
+    const isValidPhone = (phone: string) => {
+      const phoneRegex = /^[0-9]{10}$/;
+      return phoneRegex.test(phone);
+    };
+    
+    if (!isValidPhone(phone)) {
+      setPhoneError(true);
+      setMessageErrorPhone("Phone number must be exactly 10 digits.");
+    }
+    
+    if (password.length < 8) {
+      setPasswordError(true);
+      setMessageErrorPassword("Password should have a minimum of 8 characters.");
+    }
+    
 
     try {
       const data = {
@@ -137,6 +157,7 @@ export default function Register() {
               onChange={handlePasswordChange}
               placeholder="Create your password"
               error={passwordError}
+              errorMsg={messageErrorPassword}
             />
             <button
               type="submit"

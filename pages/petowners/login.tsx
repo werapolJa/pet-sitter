@@ -46,20 +46,14 @@ export default function Login() {
     if (!password) {
       setPasswordError(true);
       setMessageErrorPassword("Password is required.");
-      return;
     }
 
     try {
       await login?.({ email, password });
     } catch (error) {
+      setMessageErrorPassword("");
       if (axios.isAxiosError(error)) {
-        if(error.response?.data?.error.includes("Email")){
-          setEmailError(true)
-          setMessageErrorEmail(`${error.response?.data?.error}`)
-        }else if(error.response?.data?.error.includes("Password")){
-          setPasswordError(true)
-          setMessageErrorPassword(`${error.response?.data?.error}`)
-        }else if(error.response?.data?.error.includes("Your")){
+        if(error.response?.data?.error.includes("Your")){
           setEmailError(true)
           setPasswordError(true)
           setMessageErrorEmail(`${error.response?.data?.error}`)
