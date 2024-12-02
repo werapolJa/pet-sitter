@@ -48,6 +48,79 @@ export default async function handler(
       // Begin transaction
       await client.query("BEGIN");
 
+      // Check if the full_name is already used by another user (excluding current user)
+      const nameCheckQuery = `
+      select full_name 
+      from users 
+      where full_name = $1 AND user_id != $2
+    `;
+
+      const { rows: existingName } = await client.query(nameCheckQuery, [
+        full_name,
+        userid,
+      ]);
+
+      if (Array.isArray(existingName) && existingName.length > 0) {
+        return res
+          .status(400)
+          .json({ error: "User with this name already exists" });
+      }
+
+      // Check if the email is already used by another user (excluding current user)
+      const emailCheckQuery = `
+      select au.email  
+      from auth.users au 
+      inner join users u ON u.user_id = au.id 
+      where au.email = $1 AND u.user_id != $2
+    `;
+
+      const { rows: existingEmail } = await client.query(emailCheckQuery, [
+        email,
+        userid,
+      ]);
+
+      if (Array.isArray(existingEmail) && existingEmail.length > 0) {
+        return res
+          .status(400)
+          .json({ error: "User with this email already exists" });
+      }
+
+      // Check if the phone is already used by another user (excluding current user)
+      const phoneCheckQuery = `
+      select phone 
+      from users 
+      where phone = $1 AND user_id != $2
+    `;
+
+      const { rows: existingPhone } = await client.query(phoneCheckQuery, [
+        phone,
+        userid,
+      ]);
+
+      if (Array.isArray(existingPhone) && existingPhone.length > 0) {
+        return res
+          .status(400)
+          .json({ error: "User with this phone already exists" });
+      }
+
+      // Check if the ID number is already used by another user (excluding current user)
+      const idNumberCheckQuery = `
+       select id_number 
+       from users 
+       where id_number = $1 AND user_id != $2
+     `;
+
+      const { rows: existingIdNumber } = await client.query(
+        idNumberCheckQuery,
+        [id_number, userid]
+      );
+
+      if (Array.isArray(existingIdNumber) && existingIdNumber.length > 0) {
+        return res
+          .status(400)
+          .json({ error: "User with this ID number already exists" });
+      }
+
       // First update the 'users' table
       const userUpdateQuery = `
         update users u

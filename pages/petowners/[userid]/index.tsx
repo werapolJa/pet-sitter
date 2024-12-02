@@ -169,32 +169,34 @@ const EditProfileForm = () => {
       // Sending the PUT request
       const response = await axios.put(
         `http://localhost:3000/api/petowners/userprofile/${userid}`,
-        updatedData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+        updatedData
       );
 
       // Logging the response data and alerting success
       console.log("Profile updated successfully:", response.data);
       alert("Profile updated successfully!");
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.log(error.response?.data?.error);
+        if (error.response?.data?.error.includes("name")) {
+          setNameError(true);
+          setMessageErrorName(`${error.response?.data?.error}`);
+        }
+        if (error.response?.data?.error.includes("email")) {
+          setEmailError(true);
+          setMessageErrorEmail(`${error.response?.data?.error}`);
+        }
+        if (error.response?.data?.error.includes("phone")) {
+          setPhoneError(true);
+          setMessageErrorPhone(`${error.response?.data?.error}`);
+        }
+        if (error.response?.data?.error.includes("ID")) {
+          setIdNumberError(true);
+          setMessageErrorIdNumber(`${error.response?.data?.error}`);
+        }
+      }
     }
-
-    // Reset error states
-    setNameError(false);
-    setEmailError(false);
-    setPhoneError(false);
-    setIdNumberError(false);
-    setBirthDateError(false);
-    setMessageErrorEmail("");
-    setMessageErrorPhone("");
-    setMessageErrorIdNumber("");
   };
 
   const getProfile = async () => {
@@ -203,13 +205,7 @@ const EditProfileForm = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/petowners/userprofile/${userid}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+        `http://localhost:3000/api/petowners/userprofile/${userid}`
       );
 
       const data = response.data.data;
