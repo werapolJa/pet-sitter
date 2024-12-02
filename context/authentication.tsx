@@ -6,11 +6,32 @@ import { useRouter } from "next/router";
 
 // Same types as before
 interface SupabaseJwtPayload {
-  sub: string;  //UID
-  email: string; 
+  sub: string;  // UID
+  email: string;
   role: string;
   exp: number;
+  iat: number;
+  aud: string;
+  phone: string;
+  app_metadata: {
+    provider: string;
+    providers: string[];
+  };
+  user_metadata: {
+    email: string;
+    email_verified: boolean;
+    phone_verified: boolean;
+    role: string;
+    sub: string;
+  };
+  aal: string;
+  amr: {
+    method: string;
+    timestamp: number;
+  }[];
+  is_anonymous: boolean;
 }
+
 
 interface AuthContextType {
   user: SupabaseJwtPayload | null;
