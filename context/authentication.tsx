@@ -80,16 +80,12 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   // Login method
   const login = async (data: { [key: string]: string }) => {
-    try {
       const result = await axios.post("/api/petowners/auth/login", data);
       const token = result.data.access_token;
       localStorage.setItem("token", token);
       const userDataFromToken = jwtDecode<SupabaseJwtPayload>(token);
       setState({ ...state, user: userDataFromToken });
       router.push("/");
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   // Register method
