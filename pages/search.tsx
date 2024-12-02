@@ -36,22 +36,22 @@ export default function SearchPage() {
   const CheckListInput = (value: string, checked: boolean) => {
     console.log(checked);
     if (checked) {
-      // ตรวจสอบว่า value นี้อยู่ใน checkListText หรือยัง
+     
       if (!checkListText.includes(value)) {
-        setCheckListArray((prev) => [...prev, value]); // เพิ่มค่าเข้าไปใน checkListText
+        setCheckListArray((prev) => [...prev, value]); 
         setTextUrl((prev) => {
-          // เพิ่มค่า pet_type ลงใน textUrl ถ้ายังไม่มี
+        
           return prev ? `pet_type=${value}&${prev}` : `pet_type=${value}`;
         });
       }
     } else {
-      // ถ้า uncheck, ลบค่าออกจาก checkListText และ textUrl
-      setCheckListArray((prev) => prev.filter((item) => item !== value)); // ลบค่าออกจาก checkListText
+ 
+      setCheckListArray((prev) => prev.filter((item) => item !== value));
       setTextUrl((prev) => {
-        // ลบ pet_type ที่ตรงกับ value จาก textUrl
+      
         const updatedUrl = prev
           .split("&")
-          .filter((item) => !item.includes(value)) // ลบค่า pet_type ที่ตรงกับ value
+          .filter((item) => !item.includes(value)) 
           .join("&");
         return updatedUrl;
       });
@@ -60,7 +60,7 @@ export default function SearchPage() {
     console.log("Current checkListText:", checkListText);
     console.log("Current textUrl:", textUrl);
 
-    console.log(textUrl);
+    // console.log(textUrl);
   };
 
   const SearchData = (value: string) => {
@@ -109,7 +109,7 @@ export default function SearchPage() {
             <div className="flex flex-col md:flex-row gap-6 ">
               {/* left sidebar */}
 
-              <div className="w-full md:w-96 md:shadow-md md:rounded-xl h-full">
+              <div className="w-full md:w-96 md:shadow-md md:rounded-xl h-full  md:sticky top-10">
                 <div className="space-y-6 m:pr-1 ">
                   {/* input Search */}
 
