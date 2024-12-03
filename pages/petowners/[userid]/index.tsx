@@ -48,7 +48,7 @@ const EditProfileForm = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/petowners/userprofile/${userid}`
+        `/api/petowners/userprofile/${userid}`
       );
 
       const data = response.data.data;
@@ -198,7 +198,7 @@ const EditProfileForm = () => {
 
       // Sending the PUT request
       const response = await axios.put(
-        `http://localhost:3000/api/petowners/userprofile/${userid}`,
+        `/api/petowners/userprofile/${userid}`,
         updatedData
       );
 
