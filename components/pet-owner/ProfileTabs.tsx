@@ -1,6 +1,15 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+  palette: {
+    secondary: {
+      main: "#5B5D6F", // Set as the secondary color
+    },
+  },
+});
 
 interface IconProps {
   color?: string; // Optional prop to define custom color
@@ -76,77 +85,81 @@ const IconLabelTabs: React.FC = () => {
   };
 
   return (
-    <Tabs
-      value={value}
-      onChange={handleChange}
-      aria-label="icon label tabs example"
-      sx={{
-        "& .MuiTab-root": {
-          color: " #5B5D6F", // Default font color
-          fontFamily: '"Satoshi", sans-serif', // Directly apply font in sx prop
-          fontWeight: "bold",
-          fontSize: "18px",
-          padding: "12px 24px",
-          gap: "12px",
-          height: "10px",
-          "& .MuiTab-icon": {
-            color: "#f5f5f0", // Default icon color
-          },
-        },
-        "& .Mui-selected": {
-          color: "#FF7037", // Font color when selected
-        },
-        "& .MuiTabs-indicator": {
-          display: "none", // Removes the indicator line at the bottom of the tabs
-        },
-      }}
-    >
-      <Tab
-        label="Profile"
-        icon={<PersonIcon />}
-        iconPosition="start"
+    <ThemeProvider theme={theme}>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        textColor="secondary"
+        indicatorColor="secondary"
+        aria-label="icon label tabs example"
         sx={{
-          textTransform: "capitalize",
-          "&:focus": {
-            backgroundColor: "#ffe6cc",
-            color: "#FF7037",
+          "& .MuiTab-root": {
+            color: " #5B5D6F", // Default font color
+            fontFamily: '"Satoshi", sans-serif', // Directly apply font in sx prop
+            fontWeight: "bold",
+            fontSize: "18px",
+            padding: "12px 24px",
+            gap: "12px",
+            height: "10px",
+            "& .MuiTab-icon": {
+              color: "#f5f5f0", // Default icon color
+            },
           },
-          "&:hover": {
-            color: "#FF7037",
+          "& .Mui-selected": {
+            color: "#FF7037", // Font color when selected
+          },
+          "& .MuiTabs-indicator": {
+            display: "none", // Removes the indicator line at the bottom of the tabs
           },
         }}
-      />
-      <Tab
-        label="Your Pet"
-        icon={<PetIcon />}
-        iconPosition="start"
-        sx={{
-          textTransform: "capitalize",
-          "&:focus": {
-            backgroundColor: "#ffe6cc",
-            color: "#FF7037",
-          },
-          "&:hover": {
-            color: "#FF7037",
-          },
-        }}
-      />
-      <Tab
-        label="Booking History"
-        icon={<BookingIcon />}
-        iconPosition="start"
-        sx={{
-          textTransform: "capitalize",
-          "&:focus": {
-            backgroundColor: "#ffe6cc",
-            color: "#FF7037",
-          },
-          "&:hover": {
-            color: "#FF7037",
-          },
-        }}
-      />
-    </Tabs>
+      >
+        <Tab
+          label="Profile"
+          icon={<PersonIcon />}
+          iconPosition="start"
+          sx={{
+            textTransform: "capitalize",
+            "&:focus": {
+              backgroundColor: "#ffe6cc",
+              color: "#FF7037",
+            },
+            "&:hover": {
+              color: "#FF7037",
+            },
+          }}
+        />
+        <Tab
+          label="Your Pet"
+          icon={<PetIcon />}
+          iconPosition="start"
+          sx={{
+            textTransform: "capitalize",
+            "&:focus": {
+              backgroundColor: "#ffe6cc",
+              color: "#FF7037",
+            },
+            "&:hover": {
+              color: "#FF7037",
+            },
+          }}
+        />
+        <Tab
+          label="Booking History"
+          icon={<BookingIcon />}
+          iconPosition="start"
+          sx={{
+            textTransform: "capitalize",
+            "&:focus": {
+              backgroundColor: "#ffe6cc",
+              color: "#FF7037",
+            },
+            "&:hover": {
+              color: "#FF7037",
+            },
+          }}
+        />
+      </Tabs>
+    </ThemeProvider>
   );
 };
 
