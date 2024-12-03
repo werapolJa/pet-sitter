@@ -20,6 +20,8 @@ import withAuth from "@/utils/withAuth";
 const EditProfileForm = () => {
   const router = useRouter();
   const { userid } = router.query;
+  console.log(userid)
+  console.log("1")
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
