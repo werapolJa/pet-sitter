@@ -93,23 +93,31 @@ const IconLabelTabs: React.FC = () => {
         indicatorColor="secondary"
         aria-label="icon label tabs example"
         sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          padding: "0",
+          minHeight: "51px",
+
           "& .MuiTab-root": {
-            color: " #5B5D6F", // Default font color
-            fontFamily: '"Satoshi", sans-serif', // Directly apply font in sx prop
+            color: " #5B5D6F",
+            fontFamily: '"Satoshi", sans-serif',
             fontWeight: "bold",
             fontSize: "18px",
-            padding: "12px 24px",
+            padding: "0 20px",
             gap: "12px",
-            height: "10px",
+            minHeight: "51px",
+            height: "51px",
             "& .MuiTab-icon": {
-              color: "#f5f5f0", // Default icon color
+              color: "#f5f5f0",
             },
           },
           "& .Mui-selected": {
-            color: "#FF7037", // Font color when selected
+            color: "#FF7037",
           },
           "& .MuiTabs-indicator": {
-            display: "none", // Removes the indicator line at the bottom of the tabs
+            display: "none",
           },
         }}
       >
