@@ -29,16 +29,18 @@ export default function Header() {
       const res = await axios.get(`/api/petowners/userprofile/${user?.sub}`);
       setProfile(res.data.data);
     } catch (error) {
-      console.log("Error occurred:");
+      console.log("Error occurred:", error);
     }
   }
 
   return (
-    <nav className="flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12">
+    <nav  className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-screen ${isOpen ? " fixed z-50" : ""}`}>
       {/* Logo */}
+      <Link href="/">
       <button className="w-20 md:w-32">
         <Image src={logoback} alt="Logo" />
       </button>
+      </Link>
       {/* Icons for Mobile */}
       {isAuthenticated ? (
         <>
@@ -57,29 +59,33 @@ export default function Header() {
 
               {/* Dropdown Menu */}
               {isOpen && (
-                <ul className="fixed left-0 w-screen h-screen mt-2  bg-white shadow-lg rounded-lg p-4 z-50">
+                <ul className="fixed left-0 w-screen h-screen mt-2  bg-white shadow-lg rounded-lg p-4 z-50 space-y-4">
+                  <Link href={`/petowners/${user?.sub}`}>
+                    <li className="mb-2">
+                      <p className="text-black hover:bg-gray-200">
+                        Profile
+                      </p>
+                    </li>
+                  </Link>
                   <li className="mb-2">
-                    <p className="text-black hover:text-orange-500">Profile</p>
+                    <p className="text-black hover:bg-gray-200">Your Pet</p>
                   </li>
                   <li className="mb-2">
-                    <p className="text-black hover:text-orange-500">Your Pet</p>
-                  </li>
-                  <li className="mb-2">
-                    <p className="text-black hover:text-orange-500">
+                    <p className="text-black hover:bg-gray-200">
                       Booking History
                     </p>
                   </li>
                   <hr />
-                  <li className="mb-2">
-                    <p className="text-black hover:text-orange-500">
-                    Log out
-                    </p>
+                  <li className="mb-2 text-black hover:bg-gray-200">
+                    <p onClick={() => logout()}>Log out</p>
                   </li>
-                  <li>
-                    <p className="block w-full text-center bg-orange-500 text-white py-2 rounded-full hover:bg-orange-600">
-                      Find A Pet Sitter
-                    </p>
-                  </li>
+                  <Link href="/search">
+                    <li className="py-4">
+                      <p className="block w-full text-center bg-orange-500 text-white py-3 rounded-full hover:bg-orange-600 ">
+                        Find A Pet Sitter
+                      </p>
+                    </li>
+                  </Link>
                 </ul>
               )}
             </div>
@@ -102,22 +108,24 @@ export default function Header() {
 
               {/* Dropdown Menu */}
               {isOpen && (
-                <ul className="fixed left-0 w-screen h-screen mt-2  bg-white shadow-lg rounded-lg p-4 z-50">
-                  <li className="mb-2">
-                    <p className="text-black hover:text-orange-500">
+                <ul className="fixed left-0 w-screen h-screen mt-2  bg-white shadow-lg rounded-lg p-4 z-50 ">
+                  <li className="mb-2 py-2">
+                    <p className="text-black hover:bg-gray-200">
                       Become a Pet Sitter
                     </p>
                   </li>
                   <Link href="/petowners/login">
-                    <li className="mb-2">
-                      <p className="text-black hover:text-orange-500">Login</p>
+                    <li className="mb-2 py-2">
+                      <p className="text-black hover:bg-gray-200">Login</p>
                     </li>
                   </Link>
-                  <li>
-                    <p className="block w-full text-center bg-orange-500 text-white py-2 rounded-full hover:bg-orange-600">
-                      Find A Pet Sitter
-                    </p>
-                  </li>
+                  <Link href="/search">
+                    <li>
+                      <p className="block w-full text-center bg-orange-500 text-white py-2 rounded-full hover:bg-orange-600">
+                        Find A Pet Sitter
+                      </p>
+                    </li>
+                  </Link>
                 </ul>
               )}
             </div>
@@ -159,9 +167,11 @@ export default function Header() {
                 tabIndex={0}
                 className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
               >
-                <li>
-                  <a>Profile</a>
-                </li>
+                <Link href={`/petowners/${user?.sub}`}>
+                  <li>
+                    <a>Profile</a>
+                  </li>
+                </Link>
                 <li>
                   <a>Your Pet</a>
                 </li>
