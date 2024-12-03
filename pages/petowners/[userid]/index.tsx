@@ -1,3 +1,4 @@
+"use client";
 import React, {
   useEffect,
   useState,
@@ -5,7 +6,6 @@ import React, {
   FormEvent,
   useCallback,
 } from "react";
-import { useRouter } from "next/router";
 import axios from "axios";
 import Image from "next/image";
 import profileDefaultIcon from "@/public/assets/profile-default-icon.svg";
@@ -16,10 +16,10 @@ import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
 import withAuth from "@/utils/withAuth";
-
+import { useParams } from "next/navigation";
 const EditProfileForm = () => {
-  const router = useRouter();
-  const { userid } = router.query;
+  const params = useParams();
+  const userid = params?.userid;
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -47,9 +47,7 @@ const EditProfileForm = () => {
     console.log("Fetching user data...");
 
     try {
-      const response = await axios.get(
-        `/api/petowners/userprofile/${userid}`
-      );
+      const response = await axios.get(`/api/petowners/userprofile/${userid}`);
 
       const data = response.data.data;
       setName(data.full_name);
