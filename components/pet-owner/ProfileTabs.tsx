@@ -1,4 +1,7 @@
+"use client";
+
 import * as React from "react";
+import { useRouter } from "next/router";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -6,13 +9,13 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     secondary: {
-      main: "#5B5D6F", // Set as the secondary color
+      main: "#5B5D6F",
     },
   },
 });
 
 interface IconProps {
-  color?: string; // Optional prop to define custom color
+  color?: string;
 }
 
 const PersonIcon: React.FC<IconProps> = ({ color = "currentColor" }) => (
@@ -76,13 +79,36 @@ const BookingIcon: React.FC<IconProps> = ({ color = "currentColor" }) => (
   </svg>
 );
 
-// Define a functional component with React.FC and type the state
 const IconLabelTabs: React.FC = () => {
   const [value, setValue] = React.useState(0);
+  const router = useRouter();
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+    const { userid } = router.query;
+    switch (newValue) {
+      case 0:
+        router.push(`/petowners/${userid}`);
+        break;
+      case 1:
+        router.push(`/petowners/${userid}/yourpet`);
+        break;
+      case 2:
+        router.push(`/petowners/${userid}/booking`);
+        break;
+    }
   };
+
+  React.useEffect(() => {
+    const { pathname } = router;
+    if (pathname.endsWith("/yourpet")) {
+      setValue(1);
+    } else if (pathname.endsWith("/booking")) {
+      setValue(2);
+    } else {
+      setValue(0);
+    }
+  }, [router.pathname]);
 
   return (
     <ThemeProvider theme={theme}>
