@@ -7,7 +7,7 @@ export default function YourPet() {
   return (
     <div>
       <Header />
-      <div className="w-full md:bg-custom-gray flex flex-col md:flex-row min-h-screen">
+      <div className="w-full md:bg-custom-gray flex flex-col md:flex-row min-h-screen ">
         <Sidebar />
       </div>
       <Footer />
