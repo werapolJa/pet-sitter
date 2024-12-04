@@ -20,8 +20,10 @@ import PhoneInput from "@/components/pet-owner/PhoneInput";
 import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
 import CustomAlert from "@/components/pet-owner/CustomAlert";
 import withAuth from "@/utils/withAuth";
+import { useAuth } from "@/context/authentication";
 
 const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
+  const {user} = useAuth()
   const router = useRouter();
   const { userid } = router.query;
   console.log(userid);
@@ -54,6 +56,10 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   >("success");
 
   const getProfile = useCallback(async () => {
+    if(userid !== user?.sub){
+      router.push("/")
+    }
+
     if (!userid) return;
     console.log("Fetching user data...");
 
