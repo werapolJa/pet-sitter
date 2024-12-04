@@ -81,13 +81,17 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
                 sx: {
                   fontSize: "14px",
                   "&.MuiPickersDay-today": {
-                    backgroundColor: "#FF7037",
-                    color: "#FFFFFF",
-                    borderRadius: "50%",
-                    border: "2px solid #FF7037",
+                    border: "none",
                   },
                   "&.MuiPickersDay-today:hover": {
                     backgroundColor: "#E0602F",
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: "#FF7037 !important",
+                    color: "#FFFFFF !important",
+                  },
+                  "&.Mui-selected:hover": {
+                    backgroundColor: "#E0602F !important",
                   },
                 },
               },
