@@ -373,24 +373,29 @@ const ProfileImage = ({
 
 const ProfilePage = () => {
   const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { userid } = router.query;
 
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
-        const response = await axios.get(`/api/petowners/userprofile/${userid}`);
+        const response = await axios.get(
+          `/api/petowners/userprofile/${userid}`
+        );
         const profileImage = response.data.data?.image || null;
         setImage(profileImage);
       } catch (err) {
         console.log("Error fetching profile image:", err);
-      }
+      } 
     };
 
-    fetchProfileImage();
+    if (userid) {
+      fetchProfileImage();
+    }
   }, [userid]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
       alert("No file selected.");
@@ -401,6 +406,8 @@ const ProfilePage = () => {
       return;
     }
 
+    setLoading(true); 
+
     const reader = new FileReader();
     reader.onload = () => {
       setImage(reader.result as string);
@@ -410,20 +417,16 @@ const ProfilePage = () => {
     const formData = new FormData();
     formData.append("image", file);
 
-    axios
-      .post("/api/upload", formData, {
+    try {
+      const response = await axios.post("/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((response) => {
-        if (response.data.status === "ok") {
-          setImage(response.data.urls[0]);
-        } else {
-          alert("Failed to upload image. Please try again.");
-        }
-      })
-      .catch(() => {
-        alert("Error uploading image. Please try again.");
       });
+      setImage(response.data.urls[0]); 
+    } catch (err) {
+      console.log("Error uploading image:", err);
+    } finally {
+      setLoading(false); 
+    }
   };
 
   return (
@@ -433,19 +436,28 @@ const ProfilePage = () => {
         <Sidebar />
         <div className="flex flex-col w-full py-6 px-4 md:hidden">
           <span className="text-xl font-bold text-black">Profile</span>
-          <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfileForm inputimage={image}/>
+          {loading ? (
+            <div className="loading loading-dots loading-lg"></div> 
+          ) : (
+            <ProfileImage image={image} onImageChange={handleImageUpload} />
+          )}
+          <EditProfileForm inputimage={image} />
         </div>
 
-        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:block">
+        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:flex md:flex-col">
           <span className="text-2xl font-bold text-black">Profile</span>
-          <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfileForm inputimage={image}/>
+          {loading ? (
+            <div className="loading loading-dots loading-lg"></div> 
+          ) : (
+            <ProfileImage image={image} onImageChange={handleImageUpload} />
+          )}
+          <EditProfileForm inputimage={image} />
         </div>
       </div>
       <Footer />
     </div>
   );
 };
+
 
 export default withAuth(ProfilePage);
