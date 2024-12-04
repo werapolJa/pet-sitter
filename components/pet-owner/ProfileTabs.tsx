@@ -148,63 +148,57 @@ const IconLabelTabs: React.FC = () => {
       >
         <Tab
           label="Profile"
-          icon={<PersonIcon color={value === 0 ? "#FF7037" : "#AEB1C3"} />} // Set initial icon color based on selected state
+          icon={<PersonIcon color={value === 0 ? "#FF7037" : "#AEB1C3"} />}
           iconPosition="start"
           value={0}
           sx={{
             textTransform: "capitalize",
             backgroundColor: value === 0 ? "#ffe6cc" : "transparent",
-            color: value === 0 ? "#FF7037" : "currentColor", // Set text color based on selected state
+            color: value === 0 ? "#FF7037" : "#AEB1C3",
             "&:hover": {
-              color: "#FF7037", // Change text color on hover
-              "& .MuiSvgIcon-root": {
-                color: "#FF7037", // Change icon color on hover
+              backgroundColor: value === 0 ? "#ffe6cc" : "transparent",
+              color: "#FF7037",
+              "& svg path": {
+                fill: "#FF7037", // Change icon color directly on hover
               },
-            },
-            "& .MuiSvgIcon-root": {
-              color: value === 0 ? "#FF7037" : "#AEB1C3", // Set initial icon color
             },
           }}
         />
 
         <Tab
           label="Your Pet"
-          icon={<PetIcon color={value === 1 ? "#FF7037" : "#AEB1C3"} />} // Set initial icon color based on selected state
+          icon={<PetIcon color={value === 1 ? "#FF7037" : "#AEB1C3"} />}
           iconPosition="start"
           value={1}
           sx={{
             textTransform: "capitalize",
             backgroundColor: value === 1 ? "#ffe6cc" : "transparent",
-            color: value === 1 ? "#FF7037" : "#AEB1C3", // Set text color based on selected state
+            color: value === 1 ? "#FF7037" : "#AEB1C3",
             "&:hover": {
-              color: "#FF7037", // Change text color on hover
-              "& .MuiSvgIcon-root": {
-                color: "#FF7037", // Change icon color on hover
+              backgroundColor: value === 1 ? "#ffe6cc" : "transparent",
+              color: "#FF7037",
+              "& svg path": {
+                fill: "#FF7037", // Change icon color directly on hover
               },
-            },
-            "& .MuiSvgIcon-root": {
-              color: value === 1 ? "#FF7037" : "#AEB1C3", // Set initial icon color
             },
           }}
         />
 
         <Tab
           label="Booking History"
-          icon={<BookingIcon color={value === 2 ? "#FF7037" : "#AEB1C3"} />} // Set initial icon color based on selected state
+          icon={<BookingIcon color={value === 2 ? "#FF7037" : "#AEB1C3"} />}
           iconPosition="start"
           value={2}
           sx={{
             textTransform: "capitalize",
             backgroundColor: value === 2 ? "#ffe6cc" : "transparent",
-            color: value === 2 ? "#FF7037" : "#AEB1C3", // Set text color based on selected state
+            color: value === 2 ? "#FF7037" : "#AEB1C3",
             "&:hover": {
-              color: "#FF7037", // Change text color on hover
-              "& .MuiSvgIcon-root": {
-                color: "#FF7037", // Change icon color on hover
+              backgroundColor: value === 2 ? "#ffe6cc" : "transparent",
+              color: "#FF7037",
+              "& svg path": {
+                fill: "#FF7037", // Change icon color directly on hover
               },
-            },
-            "& .MuiSvgIcon-root": {
-              color: value === 2 ? "#FF7037" : "#AEB1C3", // Set initial icon color
             },
           }}
         />
