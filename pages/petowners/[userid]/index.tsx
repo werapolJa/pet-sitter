@@ -21,7 +21,7 @@ import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
 import CustomAlert from "@/components/pet-owner/CustomAlert";
 import withAuth from "@/utils/withAuth";
 
-const EditProfileForm = () => {
+const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   const router = useRouter();
   const { userid } = router.query;
   console.log(userid);
@@ -32,7 +32,6 @@ const EditProfileForm = () => {
   const [phone, setPhone] = useState<string>("");
   const [idNumber, setIdNumber] = useState<string>("");
   const [birthDate, setBirthDate] = useState<string | null>(null);
-  const [image, setImage] = useState<string | null>(null); // Added image state
 
   const [nameError, setNameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
@@ -67,7 +66,6 @@ const EditProfileForm = () => {
       setPhone(data.phone);
       setIdNumber(data.id_number);
       setBirthDate(data.birthdate);
-      setImage(data.image);
       setLoading(false);
       console.log("Fetched user data:", data);
     } catch (error) {
@@ -201,7 +199,7 @@ const EditProfileForm = () => {
         full_name: name,
         email: email,
         phone: phone,
-        image: image || null,
+        image: inputimage,
         id_number: idNumber || null,
         birthdate: birthDate || null,
       };
@@ -375,22 +373,57 @@ const ProfileImage = ({
 
 const ProfilePage = () => {
   const [image, setImage] = useState<string | null>(null);
+  const router = useRouter();
+  const { userid } = router.query;
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const response = await axios.get(`/api/petowners/userprofile/${userid}`);
+        const profileImage = response.data.data?.image || null;
+        setImage(profileImage);
+      } catch (err) {
+        console.log("Error fetching profile image:", err);
+      }
+    };
+
+    fetchProfileImage();
+  }, [userid]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      alert("No file selected.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
 
     const formData = new FormData();
     formData.append("image", file);
 
-    try {
-      const response = await axios.post("/api/upload", formData, {
+    axios
+      .post("/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((response) => {
+        if (response.data.status === "ok") {
+          setImage(response.data.urls[0]);
+        } else {
+          alert("Failed to upload image. Please try again.");
+        }
+      })
+      .catch(() => {
+        alert("Error uploading image. Please try again.");
       });
-      setImage(response.data.urls[0]);
-    } catch (error) {
-      console.log("Error uploading image:", error);
-    } 
   };
 
   return (
@@ -401,13 +434,13 @@ const ProfilePage = () => {
         <div className="flex flex-col w-full py-6 px-4 md:hidden">
           <span className="text-xl font-bold text-black">Profile</span>
           <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfileForm />
+          <EditProfileForm inputimage={image}/>
         </div>
 
         <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:block">
           <span className="text-2xl font-bold text-black">Profile</span>
           <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfileForm />
+          <EditProfileForm inputimage={image}/>
         </div>
       </div>
       <Footer />
