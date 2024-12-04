@@ -43,7 +43,9 @@ export default function IdCardInput({
 
     // Remove spaces before sending to parent component
     const unformattedNumber = formattedNumber.replace(/\s/g, "");
-    onChange && onChange(unformattedNumber);
+    if (onChange) {
+      onChange(unformattedNumber);
+    }
   };
 
   return (
