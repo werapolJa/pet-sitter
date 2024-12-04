@@ -15,6 +15,8 @@ import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
+import IdCardInput from "@/components/pet-owner/IdCardInput";
+import PhoneInput from "@/components/pet-owner/PhoneInput";
 
 const EditProfileForm = () => {
   const router = useRouter();
@@ -82,14 +84,14 @@ const EditProfileForm = () => {
     setMessageErrorEmail("");
   };
 
-  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
+  const handlePhoneChange = (value: string) => {
+    setPhone(value);
     setPhoneError(false);
     setMessageErrorPhone("");
   };
 
-  const handleIdNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setIdNumber(e.target.value);
+  const handleIdNumberChange = (value: string) => {
+    setIdNumber(value);
     setIdNumberError(false);
     setMessageErrorIdNumber("");
   };
@@ -265,7 +267,7 @@ const EditProfileForm = () => {
           </div>
 
           <div className="w-full md:w-1/2">
-            <Input
+            <PhoneInput
               label="Phone*"
               type="tel"
               value={phone}
@@ -279,7 +281,7 @@ const EditProfileForm = () => {
 
         <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
           <div className="w-full md:w-1/2 mb-6 md:mb-0">
-            <Input
+            <IdCardInput
               label="ID Number"
               type="text"
               value={idNumber}
@@ -287,8 +289,6 @@ const EditProfileForm = () => {
               placeholder="Your ID number"
               error={idNumberError}
               errorMsg={messageErrorIdNumber}
-              maxLength={13}
-              pattern="\d*"
             />
           </div>
 
