@@ -17,6 +17,7 @@ import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
 import IdCardInput from "@/components/pet-owner/IdCardInput";
 import PhoneInput from "@/components/pet-owner/PhoneInput";
+import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
 
 const EditProfileForm = () => {
   const router = useRouter();
@@ -231,7 +232,7 @@ const EditProfileForm = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Or use a spinner
+    return <SkeletonLoader />; // Or use a spinner
   }
 
   if (error) {
