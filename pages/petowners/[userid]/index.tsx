@@ -19,6 +19,7 @@ import withAuth from "@/utils/withAuth";
 import IdCardInput from "@/components/pet-owner/IdCardInput";
 import PhoneInput from "@/components/pet-owner/PhoneInput";
 import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
+import CustomAlert from "@/components/pet-owner/CustomAlert";
 
 const EditProfileForm = () => {
   const router = useRouter();
@@ -46,6 +47,12 @@ const EditProfileForm = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
 
   const getProfile = useCallback(async () => {
     if (!userid) return;
@@ -207,7 +214,9 @@ const EditProfileForm = () => {
 
       // Logging the response data and alerting success
       console.log("Profile updated successfully:", response.data);
-      alert("Profile updated successfully!");
+      setAlertSeverity("success");
+      setAlertMessage("Profile updated successfully!");
+      setOpenAlert(true);
     } catch (error) {
       console.log(error);
       if (axios.isAxiosError(error)) {
@@ -313,6 +322,14 @@ const EditProfileForm = () => {
           </button>
         </div>
       </form>
+      <CustomAlert
+        open={openAlert}
+        message={alertMessage}
+        severity={alertSeverity}
+        onClose={() => setOpenAlert(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        size="medium"
+      />
     </div>
   );
 };
