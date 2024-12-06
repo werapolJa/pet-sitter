@@ -34,7 +34,7 @@ export default function Header() {
   }
 
   return (
-    <nav  className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-screen ${isOpen ? " fixed z-50" : ""}`}>
+    <nav  className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-full ${isOpen ? " fixed z-50" : ""}`}>
       {/* Logo */}
       <Link href="/">
       <button className="w-20 md:w-32">
