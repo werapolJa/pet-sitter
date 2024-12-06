@@ -15,11 +15,11 @@ import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
-import withAuth from "@/utils/withAuth";
 import IdCardInput from "@/components/pet-owner/IdCardInput";
 import PhoneInput from "@/components/pet-owner/PhoneInput";
 import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
 import CustomAlert from "@/components/pet-owner/CustomAlert";
+import withAuth from "@/utils/withAuth";
 
 const EditProfileForm = () => {
   const router = useRouter();
