@@ -21,7 +21,6 @@ export default function Login() {
 
   const { login } = useAuth()!;
 
-
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setEmailError(false);
@@ -53,10 +52,10 @@ export default function Login() {
     } catch (error) {
       setMessageErrorPassword("");
       if (axios.isAxiosError(error)) {
-        if(error.response?.data?.error.includes("Your")){
-          setEmailError(true)
-          setPasswordError(true)
-          setMessageErrorEmail(`${error.response?.data?.error}`)
+        if (error.response?.data?.error.includes("Your")) {
+          setEmailError(true);
+          setPasswordError(true);
+          setMessageErrorEmail(`${error.response?.data?.error}`);
         }
       }
     }
@@ -124,7 +123,8 @@ export default function Login() {
             <div className="flex justify-between">
               <div className="form-control">
                 <label className="label cursor-pointer flex gap-2">
-                  <input type="checkbox" className="checkbox" />
+                  <input type="checkbox" className="checkbox border-gray-500 [--chkbg:theme(colors.orange.500)] [--chkfg:while (condition) {
+                        }] checked:border-orange-500 hover:border-orange-500" />
                   <span className="label-text text-[16px] font-semibold">
                     Remember?
                   </span>

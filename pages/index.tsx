@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Footer from "@/components/home-page/Footer";
 import Header from "@/components/home-page/Header";
 import Image from "next/image";
@@ -17,8 +17,24 @@ import better from "@/public/assets/landing-page/contect/better.svg";
 import calling from "@/public/assets/landing-page/contect/calling.svg";
 import starsandcircles from "@/public/assets/landing-page/starsandcircles.svg";
 import semicircle from "@/public/assets/landing-page/semicircle.svg";
+import { useSearchContext } from "@/context/searchbar";
+
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
+  const {
+    experience,
+    handlePetType,
+    handleRatingChange,
+    handleExperienceChange,
+  } = useSearchContext();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push({
+      pathname: "/search",
+    });
+  };
   return (
     <div>
       <Header />
@@ -47,19 +63,30 @@ export default function Home() {
       {/* --------------------------------------------------------------------------------------------------------------------------------- */}
       <div className=" text-[#3A3B46] ">
         {/* Pet Type */}
-        <div className="md:flex md:flex-col md:justify-start">
+
+        <form
+          className="md:flex md:flex-col md:justify-start"
+          onSubmit={handleSubmit}
+        >
           <div className="md:mx-auto md:w-3/4">
             <div className="py-6 px-9 rounded-2xl md:px-0 md:bg-[#F6F6F9]">
               <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0">
-                <h3 className="font-bold text-base  md:p-0 md:px-6">
+                <h3 className="font-bold text-base md:p-0 md:px-6">
                   Pet Type:
                 </h3>
                 <div className="flex gap-4">
                   {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
-                    <label key={pet} className="flex items-center gap-2">
+                    <label key={pet} className="flex items-center space-x-2">
                       <input
                         type="checkbox"
                         className="checkbox font-semibold bg-white"
+                        value={pet}
+                        onClick={(e) =>
+                          handlePetType(
+                            (e.target as HTMLInputElement).value,
+                            (e.target as HTMLInputElement).checked
+                          )
+                        }
                       />
                       <span>{pet}</span>
                     </label>
@@ -71,34 +98,27 @@ export default function Home() {
               {/* Rating */}
               <div className="flex flex-col md:items-center gap-4 md:flex-row">
                 <h3 className="font-bold text-base md:px-6 md:py-8">Rating:</h3>
-                <div className="flex flex-wrap gap-2 ">
+                <div className="flex flex-wrap gap-2">
                   {[
-                    // สร้าง array ที่มีค่าระดับการให้คะแนน (rating) และจำนวนดาว (stars) ที่ต้องการแสดง
                     { rating: 5, stars: 5 },
                     { rating: 4, stars: 4 },
                     { rating: 3, stars: 3 },
                     { rating: 2, stars: 2 },
                     { rating: 1, stars: 1 },
                   ].map(({ rating, stars }) => (
-                    // ใช้ .map เพื่อวนลูปแต่ละ object ใน array และสร้าง UI สำหรับแต่ละระดับคะแนน
                     <div
-                      key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
+                      key={rating}
                       className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group md:h-9"
-                      // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
+                      onClick={() => handleRatingChange(rating)} // กดเพื่อเลือก rating
                     >
                       <div className="rating flex items-center">
-                        {/* แสดงตัวเลขของระดับคะแนน */}
                         <h1 className="text-xl mr-1">{rating}</h1>
-                        {/* วนลูปเพื่อสร้าง input (radio buttons) ที่แสดงดาวตามจำนวน stars */}
                         {[...Array(stars)].map((_, index) => (
                           <input
-                            key={index} // ใช้ index เป็น key สำหรับแต่ละดาว
-                            type="radio" // ระบุว่า input เป็น radio button
-                            name={`rating-${rating}`} // ชื่อ group ของ radio แต่ละระดับคะแนน
+                            key={index}
+                            name={`rating-${rating}`}
                             className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                            // สไตล์ของ radio เป็นรูปร่างดาว และเปลี่ยนสีเมื่อ hover
-                            disabled // ปิดการใช้งาน (ไม่ให้คลิกได้)
-                            defaultChecked={index + 1 === stars} // ทำให้ดาวสุดท้ายในระดับนั้นถูกเลือกโดยดีฟอลต์
+                            defaultChecked={index + 1 === stars}
                           />
                         ))}
                       </div>
@@ -109,24 +129,31 @@ export default function Home() {
               {/* Experience */}
               <div className="flex flex-col md:items-center gap-4 md:ml-4 md:flex-row">
                 <h3 className="font-bold pb-3 md:pb-0">Experience:</h3>
-                <select className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F]">
+                <select
+                  className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F]"
+                  value={experience}
+                  onChange={handleExperienceChange} // เมื่อเลือก experience
+                >
+                  <option>All</option>
                   <option>0-2 Years</option>
-                  <option>2-5 Years</option>
+                  <option>3-5 Years</option>
                   <option>5+ Years</option>
                 </select>
               </div>
 
               {/* Search Button */}
+
               <div className="flex justify-center md:ml-4">
-                <Link href="/search">
-                  <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white md:w-36">
-                    Search
-                  </button>
-                </Link>
+                <button
+                  type="submit" // เมื่อคลิกจะทำการ submit
+                  className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white md:w-36"
+                >
+                  Search
+                </button>
               </div>
             </div>
           </div>
-        </div>
+        </form>
         {/* --------------------------------------------------------------------------------------------------------------------------------- */}
         <div className="flex flex-col px-4 md:items-center">
           <div className="flex justify-center py-6 text-center">

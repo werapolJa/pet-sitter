@@ -10,6 +10,7 @@ import imagebgicon from "@/public/assets/imagebg-default-icon.svg";
 // import { SearchBox } from "@/components/home-page/Search";
 import LoadingPage from "@/components/Loading";
 import Footer from "@/components/home-page/Footer";
+import { useSearchContext } from "@/context/searchbar";
 
 interface Sitter {
   full_name: string;
@@ -27,46 +28,41 @@ interface Sitter {
 export default function SearchPage() {
   const [dataPetSitters, setDataPetSitters] = useState<Array<Sitter>>([]);
   const [loading, setLoanding] = useState<boolean>(false);
-  const [searchInput, setSearchInput] = useState<string>("");
-  const [checkListArray, setCheckListArray] = useState<string[]>([]);
-  const [textUrl, setTextUrl] = useState<string>("");
-  const [rating, setRating] = useState<number | null>(null);
-  console.log(rating);
-
-  const CheckListInput = (value: string, checked: boolean) => {
-    if (checked) {
-      if (!checkListArray.includes(value)) {
-        setCheckListArray((prev) => [...prev, value]);
-        setTextUrl((prev) => {
-          return prev ? `pet_type=${value}&${prev}` : `pet_type=${value}`;
-        });
-      }
-    } else {
-      setCheckListArray((prev) => prev.filter((item) => item !== value));
-      setTextUrl((prev) => {
-        const updatedUrl = prev
-          .split("&")
-          .filter((item) => !item.includes(value))
-          .join("&");
-        return updatedUrl;
-      });
-    }
-  };
-
-  const SearchData = (value: string) => {
-    setSearchInput(value);
-  };
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
 
   useEffect(() => {
     DataPet();
-  }, [searchInput, textUrl]);
+  }, []);
+  const {
+    rating: userRating,
+    experience,
+    textUrl,
+    selectedPets,
+    handlePetType,
+    handleRatingChange,
+    handleExperienceChange,
+    clearForm,
+    SearchData,
+    searchInput,
+  } = useSearchContext();
 
   const DataPet = async () => {
+    let url = `api/search`;
+    if (!searchInput && !textUrl && !userRating && experience === "All") {
+      url = `api/search`;
+    } else {
+      url = `api/search?`;
+      if (textUrl) url += `${textUrl}&`;
+      if (userRating !== null) url += `rating=${userRating}&`;
+      if (experience !== "All") url += `experience=${experience}&`;
+      if (searchInput !== "") url += `trade_name=${searchInput}&`;
+      url = url.slice(0, -1); // ลบ `&` สุดท้ายออก
+      console.log(url);
+    }
+
     try {
       setLoanding(true);
-      const res = await axios.get(
-        `api/search?${textUrl}&trade_name=${searchInput}`
-      );
+      const res = await axios.get(url);
       const data = await res.data.data;
       setDataPetSitters(data);
       setLoanding(false);
@@ -99,7 +95,13 @@ export default function SearchPage() {
             <div className="flex flex-col md:flex-row gap-6 ">
               {/* left sidebar */}
 
-              <form action="" className="">
+              <form
+                className=""
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  DataPet();
+                }}
+              >
                 <div className="w-full md:w-96 md:shadow-md md:rounded-xl h-auto  md:sticky top-10">
                   <div className="space-y-6 m:pr-1 ">
                     {/* input Search */}
@@ -136,13 +138,12 @@ export default function SearchPage() {
                           >
                             <input
                               type="checkbox"
-                              className="checkbox font-semibold bg-white"
+                             className="checkbox border-gray-500 [--chkbg:theme(colors.orange.500)] [--chkfg:while (condition) {
+                        }] checked:border-orange-500 hover:border-orange-500"
                               value={pet}
-                              onClick={(e) =>
-                                CheckListInput(
-                                  (e.target as HTMLInputElement).value,
-                                  (e.target as HTMLInputElement).checked
-                                )
+                              checked={selectedPets.includes(pet)}
+                              onChange={(e) =>
+                                handlePetType(e.target.value, e.target.checked)
                               }
                             />
                             <span>{pet}</span>
@@ -151,12 +152,13 @@ export default function SearchPage() {
                       </div>
                     </div>
 
-                    {/* Rating */}
+                    {/* Rating h*/}
                     <h3 className="font-bold text-base px-5 md:px-5">
                       Rating:
                     </h3>
 
                     {/* Rating Start */}
+
                     <div className="flex flex-wrap gap-2 px-5">
                       {[
                         // สร้าง array ที่มีค่าระดับการให้คะแนน (rating) และจำนวนดาว (stars) ที่ต้องการแสดง
@@ -169,24 +171,28 @@ export default function SearchPage() {
                         // ใช้ .map เพื่อวนลูปแต่ละ object ใน array และสร้าง UI สำหรับแต่ละระดับคะแนน
                         <div
                           key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
-                          className="border-2 border-[#DCDFED] rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group md:h-9 z-10"
-                          onClick={() => {
-                            setRating(rating);
-                          }}
+                          className={`border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9 ${
+                            selectedRating === rating || userRating === rating
+                              ? "text-orange-500 border-orange-500"
+                              : null
+                          }`}
                           // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
+                          onClick={() => {
+                            setSelectedRating(rating),
+                              handleRatingChange(rating);
+                          }}
                         >
-                          <div className="rating flex items-center justify-center px-2">
+                          <div className="rating flex items-center">
                             {/* แสดงตัวเลขของระดับคะแนน */}
-                            <h1 className="text-xl mr-1 ">{rating}</h1>
+                            <h1 className="text-xl mr-1">{rating}</h1>
                             {/* วนลูปเพื่อสร้าง input (radio buttons) ที่แสดงดาวตามจำนวน stars */}
                             {[...Array(stars)].map((_, index) => (
                               <input
                                 key={index} // ใช้ index เป็น key สำหรับแต่ละดาว
                                 name={`rating-${rating}`} // ชื่อ group ของ radio แต่ละระดับคะแนน
-                                className="mask mask-star-2 bg-green-500 group-hover:bg-white "
-                                onClick={() => {
-                                  setRating(rating);
-                                }}
+                                className="mask mask-star-2 bg-green-500 group-hover:bg-green-500 !transform-none"
+                                // สไตล์ของ radio เป็นรูปร่างดาว และเปลี่ยนสีเมื่อ hover
+                                defaultChecked={index + 1 === stars} // ทำให้ดาวสุดท้ายในระดับนั้นถูกเลือกโดยดีฟอลต์
                               />
                             ))}
                           </div>
@@ -195,11 +201,16 @@ export default function SearchPage() {
                     </div>
 
                     {/* Experience */}
-                    <div className="space-y-2 px-5 pt-3 md:px-5">
-                      <h3 className="font-bold pb-3">Experience:</h3>
-                      <select className="select select-bordered w-full hover:border-1 text-gray-400">
+                    <div className="flex flex-col px-5">
+                      <h3 className="font-bold pb-3 md:pb-5 ">Experience:</h3>
+                      <select
+                        className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F] "
+                        value={experience}
+                        onChange={handleExperienceChange} // เมื่อเลือก experience
+                      >
+                        <option>All</option>
                         <option>0-2 Years</option>
-                        <option>2-5 Years</option>
+                        <option>3-5 Years</option>
                         <option>5+ Years</option>
                       </select>
                     </div>
@@ -210,8 +221,11 @@ export default function SearchPage() {
                         Search
                       </button>
                     </div>
-                    <div className="hidden md:flex gap-2 px-5 py-6 md:px-5">
-                      <button className="btn flex-1 bg-orange-100 text-orange-500 rounded-full">
+                    <div className="hidden md:flex gap-2 pb-5 md:px-5">
+                      <button
+                        className="btn flex-1 bg-orange-100 text-orange-500 rounded-full"
+                        onClick={() => clearForm()}
+                      >
                         Clear
                       </button>
                       <button className="btn flex-1 bg-orange-500 text-white rounded-full">
@@ -377,209 +391,143 @@ export default function SearchPage() {
               </div>
             </div>
             <div className="md:flex ">
-              <div className="w-full  md:w-96 md:shadow-md md:rounded-xl h-full ">
-                <div className="space-y-6 m:pr-1 ">
-                  {/* input Search */}
+              {/* search bar */}
+              <form
+                className=""
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  DataPet();
+                }}
+              >
+                <div className="w-full md:w-96 md:shadow-md md:rounded-xl h-auto  md:sticky top-10">
+                  <div className="space-y-6 m:pr-1 ">
+                    {/* input Search */}
 
-                  <div className="md:px-5">
-                    <p className="py-5 hidden md:inline-block">Search</p>
+                    <div className="md:px-5">
+                      <p className="py-5 hidden md:inline-block">Search</p>
 
-                    <div className=" hidden md:flex w-full border border-gray-200 rounded-xl">
-                      <input
-                        type="text"
-                        className="py-2 rounded-lg outline-none border-0 w-full ml-2"
-                        onChange={(e) => SearchData(e.target.value)}
-                        value={searchInput}
-                      />
-                      <Image
-                        src={search}
-                        alt="search-icon"
-                        className="mr-2 ml-1 rounded-full"
-                        width={20}
-                        height={20}
-                        loading="lazy"
-                      />
+                      <div className=" hidden md:flex w-full border border-gray-200 rounded-xl">
+                        <input
+                          type="text"
+                          className="py-2 rounded-lg outline-none border-0 w-full ml-2"
+                          onChange={(e) => SearchData(e.target.value)}
+                          value={searchInput}
+                        />
+                        <Image
+                          src={search}
+                          alt="search-icon"
+                          className="mr-2 ml-1 rounded-full"
+                          width={20}
+                          height={20}
+                          loading="lazy"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Pet Type */}
-                  <div className="space-y-2 bg-gray-100 w-full  px-5 py-6 md:px-5 md:bg-white">
-                    <h3 className="font-bold text-base">Pet Type:</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
-                        <label
-                          key={pet}
-                          className="flex items-center space-x-2"
+                    {/* Pet Type */}
+                    <div className="space-y-2 bg-gray-100 w-full  px-5 py-6 md:px-5 md:bg-white">
+                      <h3 className="font-bold text-base">Pet Type:</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {["Dog", "Cat", "Bird", "Rabbit"].map((pet) => (
+                          <label
+                            key={pet}
+                            className="flex items-center space-x-2"
+                          >
+                            <input
+                              type="checkbox"
+                              className="checkbox font-semibold bg-white"
+                              value={pet}
+                              checked={selectedPets.includes(pet)}
+                              onChange={(e) =>
+                                handlePetType(e.target.value, e.target.checked)
+                              }
+                            />
+                            <span>{pet}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Rating h*/}
+                    <h3 className="font-bold text-base px-5 md:px-5">
+                      Rating:
+                    </h3>
+
+                    {/* Rating Start */}
+
+                    <div className="flex flex-wrap gap-2 px-5">
+                      {[
+                        // สร้าง array ที่มีค่าระดับการให้คะแนน (rating) และจำนวนดาว (stars) ที่ต้องการแสดง
+                        { rating: 5, stars: 5 },
+                        { rating: 4, stars: 4 },
+                        { rating: 3, stars: 3 },
+                        { rating: 2, stars: 2 },
+                        { rating: 1, stars: 1 },
+                      ].map(({ rating, stars }) => (
+                        // ใช้ .map เพื่อวนลูปแต่ละ object ใน array และสร้าง UI สำหรับแต่ละระดับคะแนน
+                        <div
+                          key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
+                          className={`border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9 ${
+                            selectedRating === rating || userRating === rating
+                              ? "text-orange-500 border-orange-500"
+                              : null
+                          }`}
+                          // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
+                          onClick={() => {
+                            setSelectedRating(rating),
+                              handleRatingChange(rating);
+                          }}
                         >
-                          <input
-                            type="checkbox"
-                            className="checkbox font-semibold bg-white"
-                            value={pet}
-                            onClick={(e) =>
-                              CheckListInput(
-                                (e.target as HTMLInputElement).value,
-                                (e.target as HTMLInputElement).checked
-                              )
-                            }
-                          />
-                          <span>{pet}</span>
-                        </label>
+                          <div className="rating flex items-center">
+                            {/* แสดงตัวเลขของระดับคะแนน */}
+                            <h1 className="text-xl mr-1">{rating}</h1>
+                            {/* วนลูปเพื่อสร้าง input (radio buttons) ที่แสดงดาวตามจำนวน stars */}
+                            {[...Array(stars)].map((_, index) => (
+                              <input
+                                key={index} // ใช้ index เป็น key สำหรับแต่ละดาว
+                                name={`rating-${rating}`} // ชื่อ group ของ radio แต่ละระดับคะแนน
+                                className="mask mask-star-2 bg-green-500 group-hover:bg-green-500 !transform-none"
+                                // สไตล์ของ radio เป็นรูปร่างดาว และเปลี่ยนสีเมื่อ hover
+                                defaultChecked={index + 1 === stars} // ทำให้ดาวสุดท้ายในระดับนั้นถูกเลือกโดยดีฟอลต์
+                              />
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  </div>
 
-                  {/* Rating */}
-                  <h3 className="font-bold text-base px-5 md:px-5">Rating:</h3>
-                  <div className="flex flex-wrap gap-3 px-5 md:px-5">
-                    <div className="border-2 border-blue-5 inline px-2 py-3  rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
-                      <div className="rating">
-                        <h1 className="text-xl mr-1">5</h1>
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                      </div>
+                    {/* Experience */}
+                    <div className="flex flex-col px-5">
+                      <h3 className="font-bold pb-3 md:pb-5 ">Experience:</h3>
+                      <select
+                        className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F] "
+                        value={experience}
+                        onChange={handleExperienceChange} // เมื่อเลือก experience
+                      >
+                        <option>All</option>
+                        <option>0-2 Years</option>
+                        <option>3-5 Years</option>
+                        <option>5+ Years</option>
+                      </select>
                     </div>
 
-                    <div className="border-2 border-blue-5 inline px-2 py-3 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
-                      <div className="rating">
-                        <h1 className="text-xl mr-1">4</h1>
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                          defaultChecked
-                        />
-                      </div>
+                    {/* Buttons Search*/}
+                    <div className="inline-block w-full  gap-2 px-5 md:hidden ">
+                      <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white btn-lg ">
+                        Search
+                      </button>
                     </div>
-
-                    <div className="border-2 border-blue-5 inline px-2 py-3 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
-                      <div className="rating">
-                        <h1 className="text-xl mr-1">3</h1>
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                          defaultChecked
-                        />
-                      </div>
+                    <div className="hidden md:flex gap-2 pb-5 md:px-5">
+                      <button className="btn flex-1 bg-orange-100 text-orange-500 rounded-full">
+                        Clear
+                      </button>
+                      <button className="btn flex-1 bg-orange-500 text-white rounded-full">
+                        Search
+                      </button>
                     </div>
-
-                    <div className="border-2 border-blue-5 inline px-2 py-3  rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group">
-                      <div className="rating">
-                        <h1 className="text-xl mr-1">2</h1>
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    <div className="border-2 border-blue-5 inline px-2 py-3  rounded-xl cursor-pointer hover:text-white hover:bg-green-500  group">
-                      <div className="rating">
-                        <h1 className="text-xl mr-1">1</h1>
-                        <input
-                          type="radio"
-                          name="rating-1"
-                          className="mask mask-star-2 bg-green-500 group-hover:bg-white"
-                          disabled
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Experience */}
-                  <div className="space-y-2 px-5 pt-3 md:px-5">
-                    <h3 className="font-bold pb-3">Experience:</h3>
-                    <select className="select select-bordered w-full hover:border-1 text-gray-400">
-                      <option>0-2 Years</option>
-                      <option>2-5 Years</option>
-                      <option>5+ Years</option>
-                    </select>
-                  </div>
-
-                  {/* Buttons Search*/}
-                  <div className="inline-block w-full  gap-2 px-5 md:hidden">
-                    <button className="btn bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 rounded-full w-full text-white btn-lg ">
-                      Search
-                    </button>
-                  </div>
-                  <div className="hidden md:flex gap-2 px-5 py-6 md:px-5">
-                    <button className="btn flex-1 bg-orange-100 text-orange-500 rounded-full">
-                      Clear
-                    </button>
-                    <button className="btn flex-1 bg-orange-500 text-white rounded-full">
-                      Search
-                    </button>
                   </div>
                 </div>
-              </div>
+              </form>
               <div className="flex max-w-4xl mx-auto  h-auto  items-center justify-center ">
                 <div className="">ไม่มีข้อมูล</div>
               </div>

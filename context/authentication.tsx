@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import React from "react";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useRouter } from "next/router";
 
 // Same types as before
 interface SupabaseJwtPayload {
-  sub: string;  // UID
+  sub: string; // UID
   email: string;
   role: string;
   exp: number;
@@ -31,7 +31,6 @@ interface SupabaseJwtPayload {
   }[];
   is_anonymous: boolean;
 }
-
 
 interface AuthContextType {
   user: SupabaseJwtPayload | null;
@@ -80,12 +79,12 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   // Login method
   const login = async (data: { [key: string]: string }) => {
-      const result = await axios.post("/api/petowners/auth/login", data);
-      const token = result.data.access_token;
-      localStorage.setItem("token", token);
-      const userDataFromToken = jwtDecode<SupabaseJwtPayload>(token);
-      setState({ ...state, user: userDataFromToken });
-      router.push("/");
+    const result = await axios.post("/api/petowners/auth/login", data);
+    const token = result.data.access_token;
+    localStorage.setItem("token", token);
+    const userDataFromToken = jwtDecode<SupabaseJwtPayload>(token);
+    setState({ ...state, user: userDataFromToken });
+    router.push("/");
   };
 
   // Register method
@@ -98,6 +97,8 @@ function AuthProvider({ children }: AuthProviderProps) {
   const logout = () => {
     localStorage.removeItem("token");
     setState({ ...state, user: null, error: null });
+    router.push("/");
+  
   };
 
   const isAuthenticated = Boolean(state.user);
