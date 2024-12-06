@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Footer from "@/components/home-page/Footer";
 import Header from "@/components/home-page/Header";
 import Image from "next/image";
@@ -59,7 +59,8 @@ export default function Home() {
                     <label key={pet} className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        className="checkbox font-semibold bg-white"
+                        className="checkbox border-gray-500 [--chkbg:theme(colors.orange.500)] [--chkfg:while (condition) {
+                        }] checked:border-orange-500 hover:border-orange-500" 
                       />
                       <span>{pet}</span>
                     </label>
@@ -83,7 +84,7 @@ export default function Home() {
                     // ใช้ .map เพื่อวนลูปแต่ละ object ใน array และสร้าง UI สำหรับแต่ละระดับคะแนน
                     <div
                       key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
-                      className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-white hover:bg-green-500 group md:h-9"
+                      className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9"
                       // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
                     >
                       <div className="rating flex items-center">
@@ -95,7 +96,7 @@ export default function Home() {
                             key={index} // ใช้ index เป็น key สำหรับแต่ละดาว
                             type="radio" // ระบุว่า input เป็น radio button
                             name={`rating-${rating}`} // ชื่อ group ของ radio แต่ละระดับคะแนน
-                            className="mask mask-star-2 bg-green-500 group-hover:bg-white"
+                            className="mask mask-star-2 bg-green-500 group-hover:bg-green-500"
                             // สไตล์ของ radio เป็นรูปร่างดาว และเปลี่ยนสีเมื่อ hover
                             disabled // ปิดการใช้งาน (ไม่ให้คลิกได้)
                             defaultChecked={index + 1 === stars} // ทำให้ดาวสุดท้ายในระดับนั้นถูกเลือกโดยดีฟอลต์
