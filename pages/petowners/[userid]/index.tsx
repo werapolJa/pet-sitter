@@ -15,13 +15,17 @@ import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
+import IdCardInput from "@/components/pet-owner/IdCardInput";
+import PhoneInput from "@/components/pet-owner/PhoneInput";
+import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
+import CustomAlert from "@/components/pet-owner/CustomAlert";
 import withAuth from "@/utils/withAuth";
 
 const EditProfileForm = () => {
   const router = useRouter();
   const { userid } = router.query;
-  console.log(userid)
-  console.log("1")
+  console.log(userid);
+  console.log("1");
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -44,14 +48,18 @@ const EditProfileForm = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
+
   const getProfile = useCallback(async () => {
     if (!userid) return;
     console.log("Fetching user data...");
 
     try {
-      const response = await axios.get(
-        `/api/petowners/userprofile/${userid}`
-      );
+      const response = await axios.get(`/api/petowners/userprofile/${userid}`);
 
       const data = response.data.data;
       setName(data.full_name);
@@ -85,14 +93,14 @@ const EditProfileForm = () => {
     setMessageErrorEmail("");
   };
 
-  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
+  const handlePhoneChange = (value: string) => {
+    setPhone(value);
     setPhoneError(false);
     setMessageErrorPhone("");
   };
 
-  const handleIdNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setIdNumber(e.target.value);
+  const handleIdNumberChange = (value: string) => {
+    setIdNumber(value);
     setIdNumberError(false);
     setMessageErrorIdNumber("");
   };
@@ -206,7 +214,9 @@ const EditProfileForm = () => {
 
       // Logging the response data and alerting success
       console.log("Profile updated successfully:", response.data);
-      alert("Profile updated successfully!");
+      setAlertSeverity("success");
+      setAlertMessage("Profile updated successfully!");
+      setOpenAlert(true);
     } catch (error) {
       console.log(error);
       if (axios.isAxiosError(error)) {
@@ -232,7 +242,7 @@ const EditProfileForm = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Or use a spinner
+    return <SkeletonLoader />; // Or use a spinner
   }
 
   if (error) {
@@ -268,7 +278,7 @@ const EditProfileForm = () => {
           </div>
 
           <div className="w-full md:w-1/2">
-            <Input
+            <PhoneInput
               label="Phone*"
               type="tel"
               value={phone}
@@ -282,7 +292,7 @@ const EditProfileForm = () => {
 
         <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
           <div className="w-full md:w-1/2 mb-6 md:mb-0">
-            <Input
+            <IdCardInput
               label="ID Number"
               type="text"
               value={idNumber}
@@ -290,8 +300,6 @@ const EditProfileForm = () => {
               placeholder="Your ID number"
               error={idNumberError}
               errorMsg={messageErrorIdNumber}
-              maxLength={13}
-              pattern="\d*"
             />
           </div>
 
@@ -314,6 +322,14 @@ const EditProfileForm = () => {
           </button>
         </div>
       </form>
+      <CustomAlert
+        open={openAlert}
+        message={alertMessage}
+        severity={alertSeverity}
+        onClose={() => setOpenAlert(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        size="medium"
+      />
     </div>
   );
 };
