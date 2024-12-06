@@ -3,6 +3,7 @@ import Footer from "@/components/home-page/Footer";
 import Header from "@/components/home-page/Header";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 // Images
 import herocat from "@/public/assets/landing-page/herocat.svg";
@@ -19,6 +20,7 @@ import starsandcircles from "@/public/assets/landing-page/starsandcircles.svg";
 import semicircle from "@/public/assets/landing-page/semicircle.svg";
 
 export default function Home() {
+  const [selectedRating , setSelectedRating] = useState<number | null>(null)
   return (
     <div>
       <Header />
@@ -84,8 +86,9 @@ export default function Home() {
                     // ใช้ .map เพื่อวนลูปแต่ละ object ใน array และสร้าง UI สำหรับแต่ละระดับคะแนน
                     <div
                       key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
-                      className="border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9"
+                      className={`border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9 ${selectedRating === rating ? "text-orange-500 border-orange-500" : null}`}
                       // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
+                      onClick={() => setSelectedRating(rating)}
                     >
                       <div className="rating flex items-center">
                         {/* แสดงตัวเลขของระดับคะแนน */}
@@ -94,11 +97,9 @@ export default function Home() {
                         {[...Array(stars)].map((_, index) => (
                           <input
                             key={index} // ใช้ index เป็น key สำหรับแต่ละดาว
-                            type="radio" // ระบุว่า input เป็น radio button
                             name={`rating-${rating}`} // ชื่อ group ของ radio แต่ละระดับคะแนน
-                            className="mask mask-star-2 bg-green-500 group-hover:bg-green-500"
+                            className="mask mask-star-2 bg-green-500 group-hover:bg-green-500 !transform-none"
                             // สไตล์ของ radio เป็นรูปร่างดาว และเปลี่ยนสีเมื่อ hover
-                            disabled // ปิดการใช้งาน (ไม่ให้คลิกได้)
                             defaultChecked={index + 1 === stars} // ทำให้ดาวสุดท้ายในระดับนั้นถูกเลือกโดยดีฟอลต์
                           />
                         ))}
@@ -110,7 +111,7 @@ export default function Home() {
               {/* Experience */}
               <div className="flex flex-col md:items-center gap-4 md:ml-4 md:flex-row">
                 <h3 className="font-bold pb-3 md:pb-0">Experience:</h3>
-                <select className="select select-bordered w-full md:w-auto hover:border-1 text-[#7B7E8F]">
+                <select className="select select-bordered w-full md:w-auto focus:outline-none hover:border-1 text-[#7B7E8F]">
                   <option>0-2 Years</option>
                   <option>2-5 Years</option>
                   <option>5+ Years</option>
