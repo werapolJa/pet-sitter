@@ -20,8 +20,10 @@ import PhoneInput from "@/components/pet-owner/PhoneInput";
 import SkeletonLoader from "@/components/pet-owner/SkeletonLoader";
 import CustomAlert from "@/components/pet-owner/CustomAlert";
 import withAuth from "@/utils/withAuth";
+import { useAuth } from "@/context/authentication";
 
-const EditProfileForm = () => {
+const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
+  const {user} = useAuth()
   const router = useRouter();
   const { userid } = router.query;
   console.log(userid);
@@ -32,7 +34,6 @@ const EditProfileForm = () => {
   const [phone, setPhone] = useState<string>("");
   const [idNumber, setIdNumber] = useState<string>("");
   const [birthDate, setBirthDate] = useState<string | null>(null);
-  const [image, setImage] = useState<string | null>(null); // Added image state
 
   const [nameError, setNameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
@@ -55,6 +56,10 @@ const EditProfileForm = () => {
   >("success");
 
   const getProfile = useCallback(async () => {
+    if(userid !== user?.sub){
+      router.push("/")
+    }
+
     if (!userid) return;
     console.log("Fetching user data...");
 
@@ -67,7 +72,6 @@ const EditProfileForm = () => {
       setPhone(data.phone);
       setIdNumber(data.id_number);
       setBirthDate(data.birthdate);
-      setImage(data.image);
       setLoading(false);
       console.log("Fetched user data:", data);
     } catch (error) {
@@ -201,7 +205,7 @@ const EditProfileForm = () => {
         full_name: name,
         email: email,
         phone: phone,
-        image: image || null,
+        image: inputimage,
         id_number: idNumber || null,
         birthdate: birthDate || null,
       };
@@ -375,15 +379,59 @@ const ProfileImage = ({
 
 const ProfilePage = () => {
   const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const { userid } = router.query;
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const response = await axios.get(
+          `/api/petowners/userprofile/${userid}`
+        );
+        const profileImage = response.data.data?.image || null;
+        setImage(profileImage);
+      } catch (err) {
+        console.log("Error fetching profile image:", err);
+      } 
+    };
+
+    if (userid) {
+      fetchProfileImage();
+    }
+  }, [userid]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      alert("No file selected.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file.");
+      return;
+    }
+
+    setLoading(true); 
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await axios.post("/api/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImage(response.data.urls[0]); 
+    } catch (err) {
+      console.log("Error uploading image:", err);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -394,19 +442,28 @@ const ProfilePage = () => {
         <Sidebar />
         <div className="flex flex-col w-full py-6 px-4 md:hidden">
           <span className="text-xl font-bold text-black">Profile</span>
-          <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfileForm />
+          {loading ? (
+            <div className="loading loading-dots loading-lg"></div> 
+          ) : (
+            <ProfileImage image={image} onImageChange={handleImageUpload} />
+          )}
+          <EditProfileForm inputimage={image} />
         </div>
 
-        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:block">
+        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:flex md:flex-col">
           <span className="text-2xl font-bold text-black">Profile</span>
-          <ProfileImage image={image} onImageChange={handleImageUpload} />
-          <EditProfileForm />
+          {loading ? (
+            <div className="loading loading-dots loading-lg"></div> 
+          ) : (
+            <ProfileImage image={image} onImageChange={handleImageUpload} />
+          )}
+          <EditProfileForm inputimage={image} />
         </div>
       </div>
       <Footer />
     </div>
   );
 };
+
 
 export default withAuth(ProfilePage);
