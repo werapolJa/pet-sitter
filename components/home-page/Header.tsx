@@ -8,16 +8,18 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-
+import { useSearchContext } from "@/context/searchbar";
 export default function Header() {
   const { isAuthenticated, logout, user } = useAuth();
   const [profile, setProfile] = useState<{ image?: string }>({});
   const [isOpen, setIsOpen] = useState(false);
+  const { homeResetPetType } = useSearchContext();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
+ 
   useEffect(() => {
     if (user) {
       getDataProfile();
@@ -34,13 +36,18 @@ export default function Header() {
   }
 
   return (
-    <nav  className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-full ${isOpen ? " fixed z-50" : ""}`}>
+    <nav
+      className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-screen ${
+        isOpen ? " fixed z-50" : ""
+      }`}
+    >
       {/* Logo */}
-      <Link href="/">
-      <button className="w-20 md:w-32">
-        <Image src={logoback} alt="Logo" />
-      </button>
+      <Link href={`/`}>
+        <button className="w-20 md:w-32" onClick={() => homeResetPetType()}>
+          <Image src={logoback} alt="Logo" />
+        </button>
       </Link>
+
       {/* Icons for Mobile */}
       {isAuthenticated ? (
         <>
@@ -62,9 +69,7 @@ export default function Header() {
                 <ul className="fixed left-0 w-screen h-screen mt-2  bg-white shadow-lg rounded-lg p-4 z-50 space-y-4">
                   <Link href={`/petowners/${user?.sub}`}>
                     <li className="mb-2">
-                      <p className="text-black hover:bg-gray-200">
-                        Profile
-                      </p>
+                      <p className="text-black hover:bg-gray-200">Profile</p>
                     </li>
                   </Link>
                   <li className="mb-2">
