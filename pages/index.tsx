@@ -23,7 +23,7 @@ import { useSearchContext } from "@/context/searchbar";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const [selectedRating , setSelectedRating] = useState<number | null>(null)
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const router = useRouter();
   const {
     experience,
@@ -82,8 +82,7 @@ export default function Home() {
                       <input
                         type="checkbox"
                         className="checkbox border-gray-500 [--chkbg:theme(colors.orange.500)] [--chkfg:while (condition) {
-                        }] checked:border-orange-500 hover:border-orange-500" 
-                       
+                        }] checked:border-orange-500 hover:border-orange-500"
                         value={pet}
                         onClick={(e) =>
                           handlePetType(
@@ -112,9 +111,16 @@ export default function Home() {
                   ].map(({ rating, stars }) => (
                     <div
                       key={rating} // ใช้ rating เป็น key เพื่อระบุว่า element แต่ละตัวไม่ซ้ำกัน
-                      className={`border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9 ${selectedRating === rating ? "text-orange-500 border-orange-500" : null}`}
+                      className={`border-2 border-[#DCDFED] px-2 rounded-xl cursor-pointer hover:text-orange-500 hover:border-orange-500 group md:h-9 ${
+                        selectedRating === rating
+                          ? "text-orange-500 border-orange-500"
+                          : null
+                      }`}
                       // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
-                      onClick={() => setSelectedRating(rating)}
+                      onClick={() => {
+                        setSelectedRating(rating);
+                        handleRatingChange(rating);
+                      }}
                     >
                       <div className="rating flex items-center">
                         <h1 className="text-xl mr-1">{rating}</h1>

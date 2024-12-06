@@ -138,7 +138,7 @@ export default function SearchPage() {
                           >
                             <input
                               type="checkbox"
-                             className="checkbox border-gray-500 [--chkbg:theme(colors.orange.500)] [--chkfg:while (condition) {
+                              className="checkbox border-gray-500 [--chkbg:theme(colors.orange.500)] [--chkfg:while (condition) {
                         }] checked:border-orange-500 hover:border-orange-500"
                               value={pet}
                               checked={selectedPets.includes(pet)}
@@ -178,8 +178,8 @@ export default function SearchPage() {
                           }`}
                           // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
                           onClick={() => {
-                            setSelectedRating(rating),
-                              handleRatingChange(rating);
+                            setSelectedRating(rating);
+                            handleRatingChange(rating);
                           }}
                         >
                           <div className="rating flex items-center">
@@ -474,8 +474,8 @@ export default function SearchPage() {
                           }`}
                           // กำหนดสไตล์ให้ div มีกรอบ (border), ขอบมน (rounded-xl) และเปลี่ยนสีพื้นหลังเมื่อ hover
                           onClick={() => {
-                            setSelectedRating(rating),
-                              handleRatingChange(rating);
+                            setSelectedRating(rating);
+                            handleRatingChange(rating);
                           }}
                         >
                           <div className="rating flex items-center">
