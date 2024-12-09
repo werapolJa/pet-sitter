@@ -246,11 +246,11 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   };
 
   if (loading) {
-    return <SkeletonLoader />; // Or use a spinner
+    return <SkeletonLoader />;
   }
 
   if (error) {
-    return <div>{error}</div>; // Display the error message if something goes wrong
+    return <div>{error}</div>;
   }
 
   return (
@@ -295,7 +295,7 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
         </div>
 
         <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+          <div className="mb-6 w-full md:w-1/2 md:mb-0">
             <IdCardInput
               label="ID Number"
               type="text"
@@ -317,10 +317,10 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end ">
           <button
             type="submit"
-            className="mt-8 w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
+            className="md:mb-10 md:mt-10 w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
           >
             Update Profile
           </button>
@@ -450,7 +450,7 @@ const ProfilePage = () => {
           <EditProfileForm inputimage={image} />
         </div>
 
-        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:flex md:flex-col">
+        <div className="w-full h-full ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 pt-10 px-10 bg-white rounded-2xl hidden md:flex md:flex-col">
           <span className="text-2xl font-bold text-black">Profile</span>
           {loading ? (
             <div className="loading loading-dots loading-lg"></div>

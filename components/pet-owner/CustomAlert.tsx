@@ -53,12 +53,12 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
             // Targeting the icon
             color:
               severity === "success"
-                ? "#fff" // Green for success
+                ? "#fff"
                 : severity === "error"
-                ? "#fff" // Red for error
+                ? "#fff"
                 : severity === "info"
-                ? "#fff" // Blue for info
-                : "#fff", // Yellow for warning
+                ? "#fff"
+                : "#fff",
           },
         }}
       >
