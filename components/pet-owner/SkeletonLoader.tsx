@@ -46,7 +46,7 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
       </div>
 
       {/* Skeleton for Submit Button */}
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end md:mt-12 md:mb-10">
         <div className="w-[159px] h-[48px] bg-gray-200 rounded-3xl dark:bg-gray-700"></div>
       </div>
     </div>
