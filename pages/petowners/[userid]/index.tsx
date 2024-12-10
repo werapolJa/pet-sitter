@@ -262,7 +262,7 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
             type="text"
             value={name}
             onChange={handleNameChange}
-            placeholder="Your Name"
+            placeholder="Your name"
             error={nameError}
             errorMsg={messageErrorName}
           />
@@ -275,7 +275,7 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
               type="email"
               value={email}
               onChange={handleEmailChange}
-              placeholder="Email"
+              placeholder="Your Email"
               error={emailError}
               errorMsg={messageErrorEmail}
             />
@@ -287,7 +287,7 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
               type="tel"
               value={phone}
               onChange={handlePhoneChange}
-              placeholder="Phone"
+              placeholder="Your phone"
               error={phoneError}
               errorMsg={messageErrorPhone}
             />
