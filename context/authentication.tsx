@@ -35,6 +35,7 @@ interface SupabaseJwtPayload {
 interface AuthContextType {
   user: SupabaseJwtPayload | null;
   login: (data: { [key: string]: string }) => Promise<void>;
+  loginAdmin: (data: { [key: string]: string }) => Promise<void>;
   register: (data: { [key: string]: string }) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -87,6 +88,25 @@ function AuthProvider({ children }: AuthProviderProps) {
     router.push("/");
   };
 
+  // Login for Admin
+  const loginAdmin = async (data: { [key: string]: string }) => {
+    try {
+      const result = await axios.post("/api/admin/login", data);
+      const token = result.data.access_token;
+      localStorage.setItem("adminToken", token);
+      const decoded = jwtDecode(token) as SupabaseJwtPayload;
+      setState({ ...state, user: decoded });
+      router.push("/admin/dashboard");
+    } catch (error) {
+      console.error("Admin login error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.error || "Login failed");
+      } else {
+        throw new Error("An unexpected error occurred");
+      }
+    }
+  };
+
   // Register method
   const register = async (data: { [key: string]: string }) => {
     await axios.post("/api/petowners/auth/register", data);
@@ -98,14 +118,20 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("token");
     setState({ ...state, user: null, error: null });
     router.push("/");
-  
   };
 
   const isAuthenticated = Boolean(state.user);
 
   return (
     <AuthContext.Provider
-      value={{ user: state.user, login, logout, register, isAuthenticated }}
+      value={{
+        user: state.user,
+        login,
+        logout,
+        register,
+        loginAdmin,
+        isAuthenticated,
+      }}
     >
       {children}
     </AuthContext.Provider>
