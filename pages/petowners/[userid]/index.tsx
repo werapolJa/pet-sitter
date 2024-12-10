@@ -11,7 +11,6 @@ import Image from "next/image";
 import profileDefaultIcon from "@/public/assets/profile-default-icon.svg";
 import plusIcon from "@/public/assets/plus-icon.svg";
 import Header from "@/components/home-page/Header";
-import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
