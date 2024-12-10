@@ -462,7 +462,6 @@ const ProfilePage = () => {
           <EditProfileForm inputimage={image} />
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
