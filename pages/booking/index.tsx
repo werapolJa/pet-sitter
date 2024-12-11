@@ -24,6 +24,7 @@ export default function BookingPage() {
   const { user } = useAuth();
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPets, setSelectedPets] = useState<Pet[]>([]);
+  const [btndisable, setBtnDisable] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -41,12 +42,17 @@ export default function BookingPage() {
     if (isSelected) {
       setSelectedPets((prev) => [...prev, pet]);
     } else {
-      setSelectedPets((prev) => prev.filter((p) => p.pet_name !== pet.pet_name));
+      setSelectedPets((prev) =>
+        prev.filter((p) => p.pet_name !== pet.pet_name)
+      );
     }
   };
 
-  console.log(selectedPets)
+  useEffect(() => {
+    setBtnDisable(selectedPets.length === 0);
+  }, [selectedPets]);
 
+  console.log(selectedPets);
 
   return (
     <div className="w-screen h-screen bg-[#FAFAFB]">
@@ -79,14 +85,30 @@ export default function BookingPage() {
               {/* card */}
               <div className="flex gap-4 flex-wrap">
                 {pets.map((pet, index) => (
-                  <Card key={index} pet={pet} isSelected={selectedPets.some(p => p.image === pet.image)} onSelect={handlePetSelect} />
+                  <Card
+                    key={index}
+                    pet={pet}
+                    isSelected={selectedPets.some((p) => p.image === pet.image)}
+                    onSelect={handlePetSelect}
+                  />
                 ))}
                 <CardAdd />
               </div>
             </div>
             <div className="flex justify-between">
-              <button className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500">Back</button>
-              <button className="btn px-10 py-3 font-bold text-[#AEB1C3] bg-gray-200 rounded-full">Next</button>
+              <button className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500">
+                Back
+              </button>
+              <button
+                className={`btn px-10 py-3 font-bold rounded-full ${
+                  btndisable
+                    ? "text-[#AEB1C3] bg-gray-200"
+                    : "text-white bg-orange-500 hover:bg-orange-500"
+                }`}
+                disabled={btndisable}
+              >
+                Next
+              </button>
             </div>
           </div>
 
@@ -125,7 +147,11 @@ export default function BookingPage() {
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
-              <p className="text-gray-600 font-medium">-</p>
+              <p className="text-gray-600 font-medium">
+                {selectedPets.length > 0
+                  ? selectedPets.map((pet) => pet.pet_name).join(", ")
+                  : "-"}
+              </p>
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
@@ -166,12 +192,16 @@ export function Card({ pet, isSelected, onSelect }: CardProps) {
     style =
       " badge bg-blue-100 badge-outline text-blue-500 py-4 px-4 font-medium text-base";
   } else if (pet.pet_type === "Rabbit") {
-    style = 
+    style =
       " badge bg-orange-100 badge-outline text-orange-500 py-4 px-4 font-medium text-base";
   }
 
   return (
-    <div className={`card w-60 h-60 border hover:border-orange-500 relative ${isSelected ? "border-orange-500" : "border-gray-200"}`}>
+    <div
+      className={`card w-60 h-60 border hover:border-orange-500 relative ${
+        isSelected ? "border-orange-500" : "border-gray-200"
+      }`}
+    >
       <label className="w-full h-full cursor-pointer justify-center items-center flex flex-col">
         <div className="avatar">
           <div className="rounded-full">
@@ -203,4 +233,3 @@ export function CardAdd() {
     </div>
   );
 }
-
