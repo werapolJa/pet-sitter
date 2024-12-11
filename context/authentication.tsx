@@ -94,9 +94,16 @@ function AuthProvider({ children }: AuthProviderProps) {
       const result = await axios.post("/api/admin/login", data);
       const token = result.data.access_token;
       localStorage.setItem("adminToken", token);
+
       const decoded = jwtDecode(token) as SupabaseJwtPayload;
-      setState({ ...state, user: decoded });
-      router.push("/admin/dashboard");
+
+      // Ensure the role is admin before redirecting to dashboard
+      if (decoded.role === "admin") {
+        setState({ ...state, user: decoded });
+        router.push("/admin/dashboard");
+      } else {
+        throw new Error("Unauthorized access. Admin only.");
+      }
     } catch (error) {
       console.error("Admin login error:", error);
       if (axios.isAxiosError(error) && error.response) {
