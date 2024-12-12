@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import logoWhite from "@/public/assets/landing-page/logoWhite.svg";
+import Image from "next/image";
+import { useAuth } from "@/context/authentication";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   const links = [
     {
@@ -23,7 +27,7 @@ export function Sidebar() {
             fill="currentColor"
           />
         </svg>
-      ), // Adjust path to match your project structure
+      ),
     },
     {
       path: "/admin/petsitter",
@@ -42,7 +46,7 @@ export function Sidebar() {
           <path d="M13.9387 8.37912C14.2117 8.46092 14.4904 8.5 14.7677 8.5C16.062 8.5 17.3233 7.64965 17.8046 6.34281C18.0818 5.59054 18.0635 4.79512 17.7533 4.10322C17.4286 3.37902 16.827 2.85327 16.059 2.62268C15.291 2.3924 14.46 2.48838 13.7196 2.89311C13.0123 3.27988 12.4703 3.90704 12.1936 4.65931C11.6094 6.24623 12.3922 7.91494 13.9387 8.37912ZM13.4125 5.02495C13.5932 4.53375 13.9386 4.12902 14.3851 3.88486C14.7982 3.65895 15.2489 3.60146 15.6539 3.72294C16.0588 3.84457 16.3815 4.134 16.5627 4.53813C16.7584 4.97485 16.7668 5.48581 16.5857 5.97701C16.2248 6.95729 15.2191 7.5413 14.344 7.27887C13.4695 7.0163 13.0515 6.00523 13.4125 5.02495Z" />
           <path d="M20.1082 8.98679C19.0511 8.08343 17.4697 8.47448 16.5833 9.85959C15.6978 11.2454 15.8362 13.1084 16.8917 14.0124C17.2767 14.3423 17.7315 14.5 18.197 14.5C19.0084 14.5 19.8525 14.0209 20.4166 13.1399C21.3022 11.7542 21.1639 9.89116 20.1082 8.98679ZM19.525 12.3764C19.0016 13.1937 18.1166 13.4648 17.5519 12.9809C16.9876 12.4977 16.9532 11.4396 17.4752 10.6228C17.8222 10.0806 18.329 9.77891 18.7961 9.77891C19.0324 9.77891 19.2585 9.85608 19.4485 10.0186C20.0123 10.5024 20.0466 11.5601 19.525 12.3764Z" />
         </svg>
-      ), // Adjust path to match your project structure
+      ),
     },
     {
       path: "/admin/report",
@@ -60,38 +64,78 @@ export function Sidebar() {
             fill="currentColor"
           />
         </svg>
-      ), // Adjust path to match your project structure
+      ),
     },
   ];
 
   return (
-    <div className="flex flex-col justify-center space-y-2">
-      {links.map((link) => (
-        <Link
-          key={link.path}
-          href={link.path}
-          className={`h-14 px-4 flex items-center space-x-2 text-base font-semibold leading-6 hover:bg-gray-800 ${
-            pathname === link.path ? "bg-gray-800 text-white" : "text-gray-400"
-          }`}
-        >
-          {/* Icon */}
-          <span
-            className={`w-5 h-5 transition-colors duration-200 ${
-              pathname === link.path ? "text-white" : "text-gray-400"
-            }`}
+    <>
+      <aside className="w-[240px] bg-black text-white flex flex-col">
+        <div className="pl-4 mt-4 h-36 flex flex-col justify-center">
+          {/* Logo */}
+          <Link href={`/`}>
+            <button className="w-20 md:w-32">
+              <Image src={logoWhite} alt="Logo" />
+            </button>
+          </Link>
+          <p className="font-medium italic text-sm leading-none text-gray-400">
+            Admin Panel
+          </p>
+        </div>
+        <nav className="flex flex-col gap-2 text-sm font-medium">
+          <div className="flex flex-col justify-center space-y-2">
+            {links.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path}
+                className={`h-14 px-4 flex items-center space-x-2 text-base font-medium leading-6 hover:bg-gray-800 ${
+                  pathname === link.path
+                    ? "bg-gray-800 text-white"
+                    : "text-gray-300"
+                }`}
+              >
+                <span
+                  className={`w-5 h-5 transition-colors duration-200 ${
+                    pathname === link.path ? "text-white" : "text-gray-300"
+                  }`}
+                >
+                  {link.icon}
+                </span>
+
+                <span
+                  className={`${
+                    pathname === link.path ? "text-white" : "text-gray-300"
+                  }`}
+                >
+                  {link.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </nav>
+        <div className="mt-auto pb-2">
+          <hr className="border-gray-500"></hr>
+          <button
+            onClick={() => logout()}
+            className="w-full h-14 px-4 flex items-center gap-1 text-base font-medium leading-6 hover:bg-gray-800 text-gray-300"
           >
-            {link.icon}
-          </span>
-          {/* Label */}
-          <span
-            className={`${
-              pathname === link.path ? "text-white" : "text-gray-400"
-            }`}
-          >
-            {link.label}
-          </span>
-        </Link>
-      ))}
-    </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                d="M4 12C4 12.2652 4.10536 12.5196 4.29289 12.7071C4.48043 12.8946 4.73478 13 5 13H12.59L10.29 15.29C10.1963 15.383 10.1219 15.4936 10.0711 15.6154C10.0203 15.7373 9.9942 15.868 9.9942 16C9.9942 16.132 10.0203 16.2627 10.0711 16.3846C10.1219 16.5064 10.1963 16.617 10.29 16.71C10.383 16.8037 10.4936 16.8781 10.6154 16.9289C10.7373 16.9797 10.868 17.0058 11 17.0058C11.132 17.0058 11.2627 16.9797 11.3846 16.9289C11.5064 16.8781 11.617 16.8037 11.71 16.71L15.71 12.71C15.801 12.6149 15.8724 12.5028 15.92 12.38C16.02 12.1365 16.02 11.8635 15.92 11.62C15.8724 11.4972 15.801 11.3851 15.71 11.29L11.71 7.29C11.6168 7.19676 11.5061 7.1228 11.3842 7.07234C11.2624 7.02188 11.1319 6.99591 11 6.99591C10.8681 6.99591 10.7376 7.02188 10.6158 7.07234C10.4939 7.1228 10.3832 7.19676 10.29 7.29C10.1968 7.38324 10.1228 7.49393 10.0723 7.61575C10.0219 7.73757 9.99591 7.86814 9.99591 8C9.99591 8.13186 10.0219 8.26243 10.0723 8.38425C10.1228 8.50607 10.1968 8.61676 10.29 8.71L12.59 11H5C4.73478 11 4.48043 11.1054 4.29289 11.2929C4.10536 11.4804 4 11.7348 4 12ZM17 2H7C6.20435 2 5.44129 2.31607 4.87868 2.87868C4.31607 3.44129 4 4.20435 4 5V8C4 8.26522 4.10536 8.51957 4.29289 8.70711C4.48043 8.89464 4.73478 9 5 9C5.26522 9 5.51957 8.89464 5.70711 8.70711C5.89464 8.51957 6 8.26522 6 8V5C6 4.73478 6.10536 4.48043 6.29289 4.29289C6.48043 4.10536 6.73478 4 7 4H17C17.2652 4 17.5196 4.10536 17.7071 4.29289C17.8946 4.48043 18 4.73478 18 5V19C18 19.2652 17.8946 19.5196 17.7071 19.7071C17.5196 19.8946 17.2652 20 17 20H7C6.73478 20 6.48043 19.8946 6.29289 19.7071C6.10536 19.5196 6 19.2652 6 19V16C6 15.7348 5.89464 15.4804 5.70711 15.2929C5.51957 15.1054 5.26522 15 5 15C4.73478 15 4.48043 15.1054 4.29289 15.2929C4.10536 15.4804 4 15.7348 4 16V19C4 19.7956 4.31607 20.5587 4.87868 21.1213C5.44129 21.6839 6.20435 22 7 22H17C17.7956 22 18.5587 21.6839 19.1213 21.1213C19.6839 20.5587 20 19.7956 20 19V5C20 4.20435 19.6839 3.44129 19.1213 2.87868C18.5587 2.31607 17.7956 2 17 2Z"
+                fill="#AEB1C3"
+              />
+            </svg>
+            Log Out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
