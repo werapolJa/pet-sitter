@@ -19,6 +19,29 @@ import arrowRight from "@/public/assets/pet-sitter-info-page/arrow-right.svg";
 import petSitterProfile from "@/public/assets/pet-sitter-info-page/pet-sitter-profile.svg";
 import pinAddress from "@/public/assets/pet-sitter-info-page/pin-address.svg";
 
+interface Address {
+  district: string;
+  province: string;
+}
+
+interface PetSitterInfo {
+  tradename: string;
+  fullname: string;
+  experience: string;
+  rating: number;
+  address: Address;
+  latitude: number;
+  longitude: number;
+  pet_type1?: string;
+  pet_type2?: string;
+  pet_type3?: string;
+  pet_type4?: string;
+  introduction: string;
+  service: string;
+  myplace: string;
+  image: string;
+}
+
 export default function PetSitterInfoPage() {
   return (
     <div className="w-full bg-custom-gray min-h-screen font-sans tracking-wide">
@@ -124,7 +147,9 @@ const PetSitterCarousel: React.FC = () => {
   );
 };
 
-const ProfileCard: React.FC<{ petSitterInfo: any }> = ({ petSitterInfo }) => {
+const ProfileCard: React.FC<{ petSitterInfo: PetSitterInfo }> = ({
+  petSitterInfo,
+}) => {
   const maxStars = 5;
   const petTypeStyles: { [key: string]: string } = {
     Dog: "flex h-8 items-center justify-center text-base leading-6 font-medium text-green-500 bg-green-100 border border-green-500 rounded-[99px] py-1 px-4",
@@ -193,10 +218,10 @@ const ProfileCard: React.FC<{ petSitterInfo: any }> = ({ petSitterInfo }) => {
             </span>
           </div>
           <div className="mt-4 flex flex-row items-center gap-2.5">
-            {renderPetType(petSitterInfo.pet_type1)}
-            {renderPetType(petSitterInfo.pet_type2)}
-            {renderPetType(petSitterInfo.pet_type3)}
-            {renderPetType(petSitterInfo.pet_type4)}
+            {renderPetType(petSitterInfo.pet_type1 ?? null)}
+            {renderPetType(petSitterInfo.pet_type2 ?? null)}
+            {renderPetType(petSitterInfo.pet_type3 ?? null)}
+            {renderPetType(petSitterInfo.pet_type4 ?? null)}
           </div>
           <div className="w-full h-[96px] border-t border-t-gray-200  flex items-center justify-center mt-10">
             <button className="text-base leading-6 font-bold w-full md:w-[368px] h-[48px] bg-orange-500 text-white rounded-[99px] m-6">
