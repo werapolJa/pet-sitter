@@ -2,29 +2,93 @@ import Header from "@/components/home-page/Header";
 import bgImg from "@/public/assets/bookingbg.svg";
 import Image from "next/image";
 import Input from "@/components/pet-owner/Input";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 
 export default function BookingPage() {
   const [fullname, setFullname] = useState<string>("");
-  const [Email, setEmail] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [additionalMsg, setAdditionalMsg] = useState<string | null>(null);
 
   const [fullnameError, setFullnameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
   const [phoneError, setPhoneError] = useState<boolean>(false);
+  const [btndisable, setBtndisable] = useState<boolean>(false);
+
+
+  const [messageErrorEmail, setMessageErrorEmail] = useState<string>("");
+  const [messageErrorPhone, setMessageErrorPhone] = useState<string>("");
+
+  useEffect(() => {
+    setBtndisable(!(fullname && email && phone && !fullnameError && !emailError && !phoneError));
+  }, [fullname, email, phone, fullnameError, emailError, phoneError]);
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    setEmailError(false);
   };
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPhone(e.target.value);
+    setPhoneError(false);
   };
   const handleFullnameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFullname(e.target.value);
+    setFullnameError(false);
   };
   const handleAdditionalMsgChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setAdditionalMsg(e.target.value);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    let hasError = false;
+
+    if (!fullname) {
+      setFullnameError(true);
+      hasError = true;
+    }
+
+    if (!email) {
+      setEmailError(true);
+      setMessageErrorEmail("Email is required.");
+      hasError = true;
+    } else if (!isValidEmail(email)) {
+      setEmailError(true);
+      setMessageErrorEmail("Please enter a valid email address.");
+      hasError = true;
+    }
+
+    if (!phone) {
+      setPhoneError(true);
+      setMessageErrorPhone("Phone number is required.");
+      hasError = true;
+    } else if (!isValidPhone(phone)) {
+      setPhoneError(true);
+      setMessageErrorPhone("Phone number must be exactly 10 digits.");
+      hasError = true;
+    }
+
+    if (!hasError) {
+      const data = {
+        fullname,
+        email,
+        phone,
+        additionalMsg,
+      };
+
+      console.log(data);
+    }
+  };
+
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
   };
 
   return (
@@ -54,13 +118,30 @@ export default function BookingPage() {
           </div>
           <div className="bg-white w-full h-[720px] rounded-2xl p-10 flex flex-col gap-14 justify-between">
             <div className="flex flex-col gap-10 w-full">
-              <Input label="Your Name*" placeholder="Full name" onChange={handleFullnameChange}/>
+              <Input
+                label="Your Name*"
+                placeholder="Full name"
+                onChange={handleFullnameChange}
+                error={fullnameError}
+              />
               <div className="flex justify-between w-full gap-10">
                 <div className="w-1/2">
-                  <Input label="Email*" placeholder="youremail@company.com" onChange={handleEmailChange}/>
+                  <Input
+                    label="Email*"
+                    placeholder="youremail@company.com"
+                    onChange={handleEmailChange}
+                    error={emailError}
+                    errorMsg={messageErrorEmail}
+                  />
                 </div>
                 <div className="w-1/2">
-                  <Input label="Phone*" placeholder="xxx-xxx-xxxx" onChange={handlePhoneChange}/>
+                  <Input
+                    label="Phone*"
+                    placeholder="xxx-xxx-xxxx"
+                    onChange={handlePhoneChange}
+                    error={phoneError}
+                    errorMsg={messageErrorPhone}
+                  />
                 </div>
               </div>
               <div>
@@ -84,11 +165,13 @@ export default function BookingPage() {
                 Back
               </button>
               <button
-              // className={`btn px-10 py-3 font-bold rounded-full ${
-              //   btndisable
-              //     ? "text-[#AEB1C3] bg-gray-200"
-              //     : "text-white bg-orange-500 hover:bg-orange-500"
-              // }`}
+                className={`btn px-10 py-3 font-bold rounded-full ${
+                  btndisable
+                    ? "text-[#AEB1C3] bg-gray-200 cursor-not-allowed"
+                    : "text-white bg-orange-500 hover:bg-orange-500"
+                }`}
+                onClick={handleSubmit}
+                disabled={btndisable}
               >
                 Next
               </button>
@@ -153,3 +236,4 @@ export default function BookingPage() {
     </div>
   );
 }
+
