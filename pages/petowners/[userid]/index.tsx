@@ -25,8 +25,6 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   const { user } = useAuth();
   const router = useRouter();
   const { userid } = router.query;
-  console.log(userid);
-  console.log("1");
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -72,7 +70,6 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
       setIdNumber(data.id_number);
       setBirthDate(data.birthdate);
       setLoading(false);
-      console.log("Fetched user data:", data);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to load user data");
