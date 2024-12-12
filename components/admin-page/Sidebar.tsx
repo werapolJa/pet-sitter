@@ -8,7 +8,7 @@ import { useAuth } from "@/context/authentication";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logoutAdmin } = useAuth();
 
   const links = [
     {
@@ -116,7 +116,7 @@ export function Sidebar() {
         <div className="mt-auto pb-2">
           <hr className="border-gray-500"></hr>
           <button
-            onClick={() => logout()}
+            onClick={() => logoutAdmin()}
             className="w-full h-14 px-4 flex items-center gap-1 text-base font-medium leading-6 hover:bg-gray-800 text-gray-300"
           >
             <svg

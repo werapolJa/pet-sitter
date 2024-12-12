@@ -38,6 +38,7 @@ interface AuthContextType {
   loginAdmin: (data: { [key: string]: string }) => Promise<void>;
   register: (data: { [key: string]: string }) => Promise<void>;
   logout: () => void;
+  logoutAdmin: () => void;
   isAuthenticated: boolean;
 }
 
@@ -131,6 +132,13 @@ function AuthProvider({ children }: AuthProviderProps) {
     router.push("/");
   };
 
+  // Logout for Admin method
+  const logoutAdmin = () => {
+    localStorage.removeItem("adminToken");
+    setState({ ...state, user: null, error: null });
+    router.push("/");
+  };
+
   const isAuthenticated = Boolean(state.user);
 
   return (
@@ -141,6 +149,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         logout,
         register,
         loginAdmin,
+        logoutAdmin,
         isAuthenticated,
       }}
     >
