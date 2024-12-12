@@ -158,6 +158,7 @@ export default function BookinginformPage() {
                     onChange={handlePhoneChange}
                     error={phoneError}
                     errorMsg={messageErrorPhone}
+                    maxLength={10}
                   />
                 </div>
               </div>
