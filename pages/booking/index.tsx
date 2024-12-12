@@ -26,6 +26,8 @@ export default function BookingPage() {
   const [selectedPets, setSelectedPets] = useState<Pet[]>([]);
   const [btndisable, setBtnDisable] = useState(false);
 
+  const router = useRouter();
+
   useEffect(() => {
     if (user) {
       async function FetchPets() {
@@ -55,33 +57,39 @@ export default function BookingPage() {
   console.log(selectedPets);
 
   return (
-    <div className="w-screen h-screen bg-[#FAFAFB]">
+    <div className="w-screen md:h-screen h-auto bg-[#FAFAFB]">
       <Header />
-      <main className="px-5 pt-10 flex gap-9 md:px-12 h-5/6">
-        <div className="w-2/3 flex flex-col gap-4">
-          <div className="bg-white w-full h-1/6 rounded-2xl flex justify-center items-center gap-12">
+      <main className="md:pt-10 flex gap-9 md:px-12 h-5/6 flex-col md:flex-row">
+        <div className="w-full md:w-2/3 flex flex-col gap-4">
+          <div className="bg-white w-full h-1/6 rounded-2xl flex justify-between md:justify-center items-center px-5 md:px-0 py-4 md:py-0 gap-0 md:gap-12">
             <div className="flex justify-center items-center gap-3">
-              <h3 className="font-bold text-2xl text-white w-12 h-12 bg-orange-500 flex justify-center items-center rounded-full">
+              <h3 className="font-bold text-2xl text-white w-7 h-7 md:w-12 md:h-12 bg-orange-500 flex justify-center items-center rounded-full">
                 1
               </h3>
-              <p className="text-orange-500 text-xl font-medium">Your Pet</p>
+              <p className="text-orange-500 text-sm md:text-xl font-medium">
+                Your Pet
+              </p>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <h3 className="font-bold text-2xl text-gray-400 w-12 h-12 bg-gray-100 flex justify-center items-center rounded-full">
+              <h3 className="font-bold text-2xl text-gray-400 w-7 h-7 md:w-12 md:h-12 bg-gray-100 flex justify-center items-center rounded-full">
                 2
               </h3>
-              <p className="text-gray-400 text-xl font-medium">Information</p>
+              <p className="text-gray-400 text-sm md:text-xl font-medium">
+                Information
+              </p>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <h3 className="font-bold text-2xl text-gray-400 w-12 h-12 bg-gray-100 flex justify-center items-center rounded-full">
+              <h3 className="font-bold text-2xl text-gray-400 w-7 h-7 md:w-12 md:h-12 bg-gray-100 flex justify-center items-center rounded-full">
                 3
               </h3>
-              <p className="text-gray-400 text-xl font-medium">Payment</p>
+              <p className="text-gray-400 text-sm md:text-xl font-medium">
+                Payment
+              </p>
             </div>
           </div>
-          <div className="bg-white w-full h-[720px] rounded-2xl p-10 flex flex-col gap-14 justify-between">
+          <div className="bg-white w-full h-auto md:h-[720px] rounded-2xl px-5 pt-10 md:p-10 flex flex-col gap-14 justify-between">
             <div className="flex flex-col gap-4">
-              <p>Choose your pet</p>
+              <p className="text-[18px] font-medium">Choose your pet</p>
               {/* card */}
               <div className="flex gap-4 flex-wrap">
                 {pets.map((pet, index) => (
@@ -95,7 +103,7 @@ export default function BookingPage() {
                 <CardAdd />
               </div>
             </div>
-            <div className="flex justify-between">
+            <div className="hidden md:flex md:justify-between ">
               <button className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500">
                 Back
               </button>
@@ -106,15 +114,15 @@ export default function BookingPage() {
                     : "text-white bg-orange-500 hover:bg-orange-500"
                 }`}
                 disabled={btndisable}
+                onClick={() => router.push("/booking/information")}
               >
                 Next
               </button>
             </div>
           </div>
-
-          {/* Booking Detail */}
         </div>
-        <div className="card bg-white w-1/3 h-4/6 rounded-2xl shadow-xl overflow-hidden">
+        {/* Booking Detail */}
+        <div className="card bg-white w-full md:w-1/3 h-4/6 rounded-none md:rounded-2xl shadow-xl overflow-hidden">
           <div className="h-5/6 flex flex-col gap-6">
             <h3 className="text-gray-600 font-bold text-2xl px-6 pt-6">
               Booking Detail
@@ -147,7 +155,7 @@ export default function BookingPage() {
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
-              <p className="text-gray-600 font-medium">
+              <p className="text-gray-600 font-medium mb-6">
                 {selectedPets.length > 0
                   ? selectedPets.map((pet) => pet.pet_name).join(", ")
                   : "-"}
@@ -155,9 +163,25 @@ export default function BookingPage() {
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
-            <p className="font-medium">Total</p>
+            <p className="font-medium py-4">Total</p>
             <p className="text-[18px] font-medium">600.00 THB</p>
           </div>
+        </div>
+        <div className="flex md:hidden justify-between mb-10">
+          <button className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500">
+            Back
+          </button>
+          <button
+            className={`btn px-10 py-3 font-bold rounded-full ${
+              btndisable
+                ? "text-[#AEB1C3] bg-gray-200"
+                : "text-white bg-orange-500 hover:bg-orange-500"
+            }`}
+            disabled={btndisable}
+            onClick={() => router.push("/booking/information")}
+          >
+            Next
+          </button>
         </div>
       </main>
       <Image
@@ -198,7 +222,7 @@ export function Card({ pet, isSelected, onSelect }: CardProps) {
 
   return (
     <div
-      className={`card w-60 h-60 border hover:border-orange-500 relative ${
+      className={`card w-full md:w-60 h-60 border hover:border-orange-500 relative ${
         isSelected ? "border-orange-500" : "border-gray-200"
       }`}
     >
@@ -225,7 +249,7 @@ export function CardAdd() {
   const router = useRouter();
   return (
     <div
-      className="card w-60 h-60 bg-[#FFF1EC] justify-center items-center gap-3 cursor-pointer"
+      className="card w-full md:w-60 h-60 bg-[#FFF1EC] justify-center items-center gap-3 cursor-pointer"
       onClick={() => router.push("/booking")}
     >
       <Image src={addPetImg} alt="Add Icon" loading="lazy" />
