@@ -298,7 +298,7 @@ const formatDate = (dateString: string) => {
 const PetSitterReview: React.FC = () => {
   const mockUpReview = {
     petsitterId: 1,
-    totalReviews: 7,
+    totalReviews: 6,
     averageRating: 4.1,
     reviews: [
       {
@@ -420,7 +420,7 @@ const PetSitterReview: React.FC = () => {
               <div className="flex flex-col flex-grow">
                 <span className="text-lg font-medium">{review.name}</span>
                 <div className="text-sm font-medium text-gray-400">
-                  {review.reviewDate}
+                  {formatDate(review.reviewDate)}
                 </div>
               </div>
               <div className="flex justify-end rating h-8 text-base p-2 gap-[2px]">
