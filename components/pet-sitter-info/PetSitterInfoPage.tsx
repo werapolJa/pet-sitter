@@ -32,10 +32,10 @@ interface PetSitterInfo {
   address: Address;
   latitude: number;
   longitude: number;
-  pet_type1?: string;
-  pet_type2?: string;
-  pet_type3?: string;
-  pet_type4?: string;
+  pet_type1?: string | null;
+  pet_type2?: string | null;
+  pet_type3?: string | null;
+  pet_type4?: string | null;
   introduction: string;
   service: string;
   myplace: string;
@@ -245,7 +245,7 @@ const PetSitterInformation: React.FC = () => {
     longitude: 100.571,
     pet_type1: "Dog",
     pet_type2: "Cat",
-    pet_type3: "Bird",
+    pet_type3: null,
     pet_type4: "Rabbit",
     introduction:
       "Hello there! My name is Jane Maison, and I'm your friendly and reliable pet sitter in Senanikom, Bangkok. I am passionate about animals and have dedicated myself to ensuring the well-being and happiness of your furry, feathery, and hoppy companions. With a big heart and a spacious house, I provide a safe and loving environment for cats, dogs, and rabbits while you're away. Let me introduce myself and tell you a bit more about the pet care services I offer.",
