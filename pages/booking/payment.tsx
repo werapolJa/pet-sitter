@@ -1,8 +1,37 @@
+import { useState, ChangeEvent } from "react";
 import Header from "@/components/home-page/Header";
 import bgImg from "@/public/assets/bookingbg.svg";
 import Image from "next/image";
+import creditcardgraySvg from "@/public/assets/creditcardgray.svg";
+import creditcardorangeSvg from "@/public/assets/creditcardorange.svg";
+import cashgraySvg from "@/public/assets/cashgray.svg";
+import cashorangeSvg from "@/public/assets/cashorange.svg";
+import cashbg from "@/public/assets/cashbg.svg";
+import { useRouter } from "next/router";
+import Input from "@/components/pet-owner/Input";
 
 export default function BookingPaymentPage() {
+  const [isCreditCardHovered, setIsCreditCardHovered] = useState(false);
+  const [isCashHovered, setIsCashHovered] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<"credit" | "cash">("credit");
+
+  const [cardNumber, setCardnumber] = useState<string>("");
+  const [cardOwner, setCardOwner] = useState<string>("");
+  const [expiryDate, setexpiryDate] = useState<string>("");
+  const [cvv, setCvv] = useState<string>("");
+
+  const router = useRouter();
+
+  const data = {
+    cardNumber,
+    cardOwner,
+    expiryDate,
+    cvv,
+    selectedPayment
+  };
+
+  console.log(data);
+
   return (
     <div className="w-screen md:h-screen h-auto bg-[#FAFAFB]">
       <Header />
@@ -16,46 +45,89 @@ export default function BookingPaymentPage() {
               <p className="text-sm md:text-xl font-medium">Your Pet</p>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <h3 className="font-bold text-2xl text-white w-7 h-7 md:w-12 md:h-12 bg-orange-500 flex justify-center items-center rounded-full">
+              <h3 className="font-bold text-2xl text-orange-500 w-7 h-7 md:w-12 md:h-12 bg-black flex justify-center items-center rounded-full">
                 2
               </h3>
-              <p className="text-orange-500 text-sm md:text-xl font-medium">
-                Information
-              </p>
+              <p className="text-sm md:text-xl font-medium">Information</p>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <h3 className="font-bold text-2xl text-gray-400 w-7 h-7 md:w-12 md:h-12 bg-gray-100 flex justify-center items-center rounded-full">
+              <h3 className="font-bold text-2xl text-white w-7 h-7 md:w-12 md:h-12 bg-orange-500 flex justify-center items-center rounded-full">
                 3
               </h3>
-              <p className="text-gray-400 text-sm md:text-xl font-medium">
+              <p className="text-orange-500 text-sm md:text-xl font-medium">
                 Payment
               </p>
             </div>
           </div>
           <div className="bg-white w-full h-auto md:h-5/6 px-5 rounded-2xl p-0 md:p-10 flex flex-col justify-between">
-           
+            <div>
+              <div className="flex justify-center gap-4">
+                <button
+                  className={`flex items-center justify-center gap-2 w-1/2 py-2 md:py-7 rounded-full border text-[18px] ${
+                    selectedPayment === "credit" || isCreditCardHovered
+                      ? "border-orange-500 text-orange-500"
+                      : "border-gray-200 text-[#7B7E8F]"
+                  } font-medium transition-colors duration-300`}
+                  onMouseEnter={() => setIsCreditCardHovered(true)}
+                  onMouseLeave={() => setIsCreditCardHovered(false)}
+                  onClick={() => setSelectedPayment("credit")}
+                >
+                  <Image
+                    src={
+                      selectedPayment === "credit" || isCreditCardHovered
+                        ? creditcardorangeSvg
+                        : creditcardgraySvg
+                    }
+                    alt="credit card icon"
+                    loading="lazy"
+                  />
+                  Credit Card
+                </button>
+                <button
+                  className={`flex items-center justify-center gap-2 w-1/2 py-2 md:py-7 rounded-full border text-[18px] ${
+                    selectedPayment === "cash" || isCashHovered
+                      ? "border-orange-500 text-orange-500"
+                      : "border-gray-200 text-[#7B7E8F]"
+                  } font-medium transition-colors duration-300`}
+                  onMouseEnter={() => setIsCashHovered(true)}
+                  onMouseLeave={() => setIsCashHovered(false)}
+                  onClick={() => setSelectedPayment(prev => prev === "cash" ? "credit" : "cash")}
+                >
+                  <Image
+                    src={
+                      selectedPayment === "cash" || isCashHovered
+                        ? cashorangeSvg
+                        : cashgraySvg
+                    }
+                    alt="cash icon"
+                    loading="lazy"
+                  />
+                  Cash
+                </button>
+              </div>
+              {selectedPayment === "credit" && (
+                <CreditCard
+                  setCardnumber={setCardnumber}
+                  setCardOwner={setCardOwner}
+                  setexpiryDate={setexpiryDate}
+                  setCvv={setCvv}
+                />
+              )}
+              {selectedPayment === "cash" && <Cash />}
+            </div>
 
-           
             <div className="hidden md:flex justify-between">
               <button
                 className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500"
+                onClick={() => router.push("/booking/information")}
               >
                 Back
               </button>
-              <button
-                // className={`btn px-10 py-3 font-bold rounded-full ${
-                //   btndisable
-                //     ? "text-[#AEB1C3] bg-gray-200 cursor-not-allowed"
-                //     : "text-white bg-orange-500 hover:bg-orange-500"
-                // }`}
-
-              >
-                Next
+              <button className="btn px-10 py-3 font-bold rounded-full text-white bg-orange-500 hover:bg-orange-500">
+                Confirm Booking
               </button>
             </div>
           </div>
-
-          {/* Booking Detail */}
         </div>
         <div className="card bg-white w-full md:w-1/3 h-4/6 rounded-none md:rounded-2xl shadow-xl overflow-hidden">
           <div className="h-5/6 flex flex-col gap-6">
@@ -90,12 +162,7 @@ export default function BookingPaymentPage() {
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
-              <p className="text-gray-600 font-medium">
-                -
-                {/* {selectedPets.length > 0
-                  ? selectedPets.map((pet) => pet.pet_name).join(", ")
-                  : "-"} */}
-              </p>
+              <p className="text-gray-600 font-medium">-</p>
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
@@ -103,29 +170,102 @@ export default function BookingPaymentPage() {
             <p className="text-[18px] font-medium">600.00 THB</p>
           </div>
         </div>
-        <div className="flex md:hidden justify-between mb-10">
+        <div className="flex md:hidden justify-between mb-10 px-5">
           <button
             className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500"
+            onClick={() => router.push("/booking/information")}
           >
             Back
           </button>
-          <button
-            // className={`btn px-10 py-3 font-bold rounded-full ${
-            //   btndisable
-            //     ? "text-[#AEB1C3] bg-gray-200 cursor-not-allowed"
-            //     : "text-white bg-orange-500 hover:bg-orange-500"
-            // }`}
-          >
-            Next
+          <button className="btn px-10 py-3 font-bold rounded-full text-white bg-orange-500 hover:bg-orange-500">
+            Confirm Booking
           </button>
         </div>
       </main>
       <Image
         src={bgImg}
-        alt="ิbackground"
+        alt="background"
         className="absolute right-0 bottom-0 hidden md:block "
         loading="lazy"
       />
     </div>
   );
 }
+
+interface CreditCardProps {
+  setCardnumber: (value: string) => void;
+  setCardOwner: (value: string) => void;
+  setexpiryDate: (value: string) => void;
+  setCvv: (value: string) => void;
+}
+
+function CreditCard({
+  setCardnumber,
+  setCardOwner,
+  setexpiryDate,
+  setCvv,
+}: CreditCardProps) {
+  const handleCardnumber = (e: ChangeEvent<HTMLInputElement>) => {
+    setCardnumber(e.target.value);
+  };
+  const handleCardOwner = (e: ChangeEvent<HTMLInputElement>) => {
+    setCardOwner(e.target.value);
+  };
+  const handleexpiryDate = (e: ChangeEvent<HTMLInputElement>) => {
+    setexpiryDate(e.target.value);
+  };
+  const handleCvv = (e: ChangeEvent<HTMLInputElement>) => {
+    setCvv(e.target.value);
+  };
+
+  return (
+    <div className="flex flex-col md:gap-10 gap-0">
+      <div className="flex flex-col md:flex-row justify-between w-full gap-0 md:gap-10 mt-10">
+        <div className="w-full md:w-1/2">
+          <Input
+            label="Card Number*"
+            placeholder="xxx-xxxx-x-xx-xx"
+            onChange={handleCardnumber}
+          />
+        </div>
+        <div className="w-full md:w-1/2">
+          <Input
+            label="Card Owner*"
+            placeholder="Card owner name"
+            onChange={handleCardOwner}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between w-full gap-0 md:gap-10">
+        <div className="w-full md:w-1/2">
+          <Input
+            label="Expiry Date*"
+            placeholder="MM/YY"
+            onChange={handleexpiryDate}
+          />
+        </div>
+        <div className="w-full md:w-1/2">
+          <Input label="CVC/CVV*" placeholder="xxx" onChange={handleCvv} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Cash() {
+  return (
+    <div className="bg-[#F6F6F9] w-full py-10 flex flex-col justify-center items-center gap-6 rounded-2xl mt-10">
+      <Image
+        src={cashbg}
+        alt="method cash background"
+        loading="lazy"
+      />
+      <div className="text-center text-gray-600 font-medium">
+        <p>If you want to pay by cash,</p>
+        <p>you are required to make a cash payment </p>
+        <p>upon arrival at the pet sitter&apos;s location.</p>
+      </div>
+    </div>
+  );
+}
+
