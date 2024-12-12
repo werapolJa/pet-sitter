@@ -286,6 +286,15 @@ const PetSitterInformation: React.FC = () => {
   );
 };
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
 const PetSitterReview: React.FC = () => {
   const mockUpReview = {
     petsitterId: 1,
@@ -310,7 +319,7 @@ const PetSitterReview: React.FC = () => {
         reviewDate: "2023-08-18",
         rating: 5,
         details:
-          "Jane took amazing care of my cat, Whiskers. She provided frequent updates, which I loved!",
+          "I cannot express how grateful I am to have found Jane Maison as a pet sitter for my cat, Whiskers. Jane took the time to understand Whiskers' routines, likes, and quirks. During my recent vacation, she provided regular updates, including photos of Whiskers playing, lounging, and even eating his favorite treats. It was evident that Whiskers was not only well-cared for but was also enjoying his time with Jane.",
       },
       {
         petOwnerId: 103,
@@ -320,7 +329,7 @@ const PetSitterReview: React.FC = () => {
         reviewDate: "2023-08-20",
         rating: 3,
         details:
-          "Jane was good, but I wish she had communicated more frequently.",
+          "Jane Maison did a great job looking after my energetic dog, Buddy. While I was away, she made sure Buddy got his exercise and kept up with his feeding schedule. I appreciated the updates she sent, although I would have liked a bit more frequent communication. Overall, I'm satisfied with her service and would consider using her again in the future.",
       },
       {
         petOwnerId: 104,
@@ -340,7 +349,7 @@ const PetSitterReview: React.FC = () => {
         reviewDate: "2023-08-23",
         rating: 4,
         details:
-          "Jane was fantastic with Flopsy, my rabbit. I recommend her services!",
+          "Jane Maison is a lifesaver! She took care of my rambunctious rabbit, Flopsy, while I was away on vacation. Flopsy can be quite picky, but Jane knew just how to keep her happy and entertained. I received adorable photos of Flopsy munching on her favorite greens and exploring new play areas. I'm so grateful to have found Jane, and I highly recommend her pet sitting services!",
       },
       {
         petOwnerId: 101,
@@ -349,7 +358,8 @@ const PetSitterReview: React.FC = () => {
         name: "Emily B.",
         reviewDate: "2023-08-24",
         rating: 4,
-        details: "Happy overall!",
+        details:
+          "Jane Maison took care of my cat, during my vacation. While my cat seemed fine when I returned, I wish there had been more communication and updates about his well-being.",
       },
     ],
   };
@@ -358,7 +368,7 @@ const PetSitterReview: React.FC = () => {
     <div>
       <div className="md:rounded-tl-[120px]  md:rounded-tr-[16px]  flex bg-gray-100 md:mt-10">
         <div className="md:m-6 flex flex-col md:flex-row w-full h-[374px] md:h-[194px] m-4 bg-white rounded-tl-[99px] md:rounded-bl-[99px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[12px]">
-          <div className="flex flex-col items-center justify-center mt-6 ml-6 md:w-2/5  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
+          <div className="flex flex-col items-center justify-center mt-6 ml-6 md:mr-6 md:w-[30%]  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
             <span className="text-white text-4xl font-bold leading-10">
               {mockUpReview.averageRating.toFixed(1)}
             </span>
@@ -373,7 +383,11 @@ const PetSitterReview: React.FC = () => {
               {["All Reviews", 5, 4, 3, 2, 1].map((rating, index) => (
                 <div
                   key={index}
-                  className="rating mr-2 h-8 items-center justify-center text-base border border-gray-200 rounded-lg p-2 gap-[2px]"
+                  className={`rating mr-2 h-8 items-center justify-center text-base border rounded-lg p-2 gap-[2px] ${
+                    rating === "All Reviews"
+                      ? "border-orange-500 text-orange-500"
+                      : "border-gray-200"
+                  }`}
                 >
                   <span>{rating === "All Reviews" ? rating : `${rating}`}</span>
                   {[...Array(rating === "All Reviews" ? 0 : rating)].map(
@@ -394,165 +408,39 @@ const PetSitterReview: React.FC = () => {
           </div>
         </div>
       </div>
-      <div>
-        <div className="flex flex-col bg-gray-100 px-4">
-          <div className="flex flex-row mb-4 pt-6">
-            <img
-              src="https://s3-alpha-sig.figma.com/img/43b1/5482/86c799b1fda22cdd2d9919fd41096aeb?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=idE~gw-MTTtBz1i~0cMDotT27hzVRjgORQ3wODfLBgRf5pKTM~u2gWSlx-B6edN14IsnQcaaf~ccBQ2bDRG1FLnKKSP0yr5pTC6nC9kgNPDUAlOyXulnf18pNj6VBLOFGvIAvTwCb5o-2~XIYxjTdNwhfnGvVBPSuLZmWtc5uLk9wMDBYBesaPoPO9-6dW02WuaS3FVokjZvpKpMKni-Shw9eNsnz71mfzcP8~eSXbnlKHOemS2-RXmO6Gpmyv-hWBhdugtwvXnbNBKUrWanbZpJYWrl9ryIwinZcLdU2GlWZCn38Ts7xlaA1S-Wb8nwHHWOX7qHfIH6oZht2ydOyA__"
-              alt="David M."
-              className="w-8 h-8  rounded-full mr-4 object-cover"
-            />
-            <div className="flex flex-col flex-grow">
-              <span className="text-lg font-medium">David M.</span>
-              <div className="text-sm font-medium text-gray-400">
-                Aug 16, 2023
+      <div className="review-section">
+        {mockUpReview.reviews.map((review, index) => (
+          <div key={index} className="flex flex-col bg-gray-100 px-4">
+            <div className="flex flex-row mb-4 pt-6">
+              <img
+                className="w-8 h-8  rounded-full mr-4 object-cover"
+                src={review.profileImage}
+                alt={review.name}
+              />
+              <div className="flex flex-col flex-grow">
+                <span className="text-lg font-medium">{review.name}</span>
+                <div className="text-sm font-medium text-gray-400">
+                  {review.reviewDate}
+                </div>
+              </div>
+              <div className="flex justify-end rating h-8 text-base p-2 gap-[2px]">
+                {[...Array(review.rating)].map((_, i) => (
+                  <input
+                    key={i}
+                    type="radio"
+                    name={`rating-${review.name}`}
+                    className="mask mask-star-2 bg-green-500 w-3 h-3"
+                    readOnly
+                    disabled
+                  />
+                ))}
               </div>
             </div>
-            <div className="flex justify-end rating h-8 text-base p-2 gap-[2px]">
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-            </div>
+            <p className="pb-6 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
+              {review.details}
+            </p>
           </div>
-          <p className="pb-6 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
-            I recently had the pleasure of entrusting Jane Maison with the care
-            of my two energetic Labrador Retrievers, Max and Bella, while I was
-            away on a business trip. I can confidently say that Jane exceeded
-            all my expectations as a pet sitter.
-          </p>
-        </div>
-        <div className="flex flex-col bg-gray-100 px-4 pt-6">
-          <div className="flex flex-row mb-4">
-            <img
-              src="https://s3-alpha-sig.figma.com/img/b31b/f20a/dfa1574f6c3afd42efaa1f5841395d90?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=ItAoaXyH3gLnNoJXAkikjuxT~b0ajvRtcf020Q~-MzTe11h8LUqA1lnP5lEF4ALrPzVsEgByrqq~wPA7NCTnDAphoALRitE5tZ4AtoyaF5CjBiZS~4OZpF~a~vbmjY4JaYi5IUuK8ChTHHpBsukV~S9R6AuiiIUbt4ja9xoNrqgMFO-Bm0IezzoS~HLeS2qP2CK1dp4-2tU6B2NFEQiFLApXZ1blCXtbe4VqYMtBlLpeHNZAlRmI~BauacKu73Hre2Lfekn3MT03vM6NzT4xihjR7hFq6g9gHfWkwiGV7f2dlkCNmZPauKTDnhlbzMQ~mUJfI9OCXUm0w5loRrkgFA__"
-              alt="Emily B."
-              className="w-8 h-8  rounded-full mr-4 object-cover"
-            />
-            <div className="flex flex-col flex-grow">
-              <span className="text-lg font-medium">Emily B.</span>
-              <div className="text-sm font-medium text-gray-400">
-                Aug 16, 2023
-              </div>
-            </div>
-            <div className="flex justify-end rating h-8 text-base p-2 gap-[2px]">
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-            </div>
-          </div>
-          <p className="pb-6 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
-            I cannot express how grateful I am to have found Jane Maison as a
-            pet sitter for my cat, Whiskers. Jane took the time to understand
-            Whiskers' routines, likes, and quirks. During my recent vacation,
-            she provided regular updates, including photos of Whiskers playing,
-            lounging, and even eating his favorite treats. It was evident that
-            Whiskers was not only well-cared for but was also enjoying his time
-            with Jane.
-          </p>
-        </div>
-        <div className="flex flex-col bg-gray-100 px-4 pt-6">
-          <div className="flex flex-row mb-4">
-            <img
-              src="https://s3-alpha-sig.figma.com/img/3f2d/cb19/644ab4c80deba63f323d10a6a1628ba5?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pKRLRUXmZDF9o2VJD~de9y1GpJaYYlktkQCpVr4qlNbeDPWuD4rQdTND7Hgz311v6dKhROk4lyEeGFn251CQrUfJnVpAcHsE3TJpMIBIqrOYrWmF~6bKFrsR5RmDHd6uP7jmQU1oyrP10~3ulVB7Z03PA6dGMbfF0SFgi~xj3zRyAlu9VCEMDjbMINgVENsjya4Rc9wlNLBIh5UMJruf5OzO-n16T7SJmRNdKPhAsSrnnEMrp4p7tyC9rGUsR5FtTyywsC9WhhruOip26tKkwSFfb1~J0fjJ79cggw4EgmgsXILhFmrPbnNPRnNZ28YTlBbLWCZSLGpaUso15nwxjQ__"
-              alt="Sarah K."
-              className="w-8 h-8  rounded-full mr-4 object-cover"
-            />
-            <div className="flex flex-col flex-grow">
-              <span className="text-lg font-medium">Sarah K.</span>
-              <div className="text-sm font-medium text-gray-400">
-                Aug 16, 2023
-              </div>
-            </div>
-            <div className="flex justify-end rating h-8 text-base p-2 gap-[2px]">
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-              <input
-                type="radio"
-                name="rating-5"
-                className="mask mask-star-2 bg-green-500 w-3 h-3"
-                readOnly
-                disabled
-              />
-            </div>
-          </div>
-          <p className="pb-6 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
-            Jane Maison did a great job looking after my energetic dog, Buddy.
-            While I was away, she made sure Buddy got his exercise and kept up
-            with his feeding schedule. I appreciated the updates she sent,
-            although I would have liked a bit more frequent communication.
-            Overall, I'm satisfied with her service and would consider using her
-            again in the future.
-          </p>
-        </div>
+        ))}
       </div>
     </div>
   );
