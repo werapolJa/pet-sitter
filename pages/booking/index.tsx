@@ -87,7 +87,7 @@ export default function BookingPage() {
               </p>
             </div>
           </div>
-          <div className="bg-white w-full h-auto md:h-[720px] rounded-2xl px-5 pt-10 md:p-10 flex flex-col gap-14 justify-between">
+          <div className="bg-white w-full h-auto md:h-5/6 rounded-2xl px-5 pt-10 md:p-10 flex flex-col gap-14 justify-between">
             <div className="flex flex-col gap-4">
               <p className="text-[18px] font-medium">Choose your pet</p>
               {/* card */}
