@@ -94,22 +94,26 @@ function AuthProvider({ children }: AuthProviderProps) {
       const result = await axios.post("/api/admin/login", data);
       const token = result.data.access_token;
       localStorage.setItem("adminToken", token);
-
+      // Redirect or set login state here
       const decoded = jwtDecode(token) as SupabaseJwtPayload;
-
-      // Ensure the role is admin before redirecting to dashboard
       if (decoded.role === "admin") {
         setState({ ...state, user: decoded });
         router.push("/admin/dashboard");
-      } else {
-        throw new Error("Unauthorized access. Admin only.");
       }
-    } catch (error) {
-      console.error("Admin login error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.error || "Login failed");
+    } catch (error: any) {
+      // Check if the error is an AxiosError
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          // Handle 401 Unauthorized error
+          alert("Unauthorized: Invalid username or password.");
+        } else {
+          alert(
+            `Error: ${error.response?.status || "Unknown error occurred."}`
+          );
+        }
       } else {
-        throw new Error("An unexpected error occurred");
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred. Please try again.");
       }
     }
   };

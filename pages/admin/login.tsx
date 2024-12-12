@@ -87,39 +87,41 @@ export default function Login() {
 
       <div className="absolute top-0 left-0 z-10 w-full h-full flex justify-center items-center px-4 md:px-0">
         <form
-          className="w-[440px] flex flex-col gap-14 text-center"
+          className="w-[440px] flex flex-col gap-14 text-center mb-20"
           onSubmit={handleSubmit}
         >
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Admin Panel Login
-            </h1>
-          </div>
-          <div className="w-full flex flex-col gap-6">
-            <Input
-              label="Email"
-              type="text"
-              value={email}
-              onChange={handleEmailChange}
-              placeholder="email@company.com"
-              error={emailError}
-              errorMsg={messageErrorEmail}
-            />
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-              placeholder="*********"
-              error={passwordError}
-              errorMsg={messageErrorPassword}
-            />
-            <button
-              type="submit"
-              className="btn bg-orange-500 active:bg-orange-500 hover:bg-orange-500 text-white text-[16px] font-bold rounded-full"
-            >
-              Login
-            </button>
+          <div className="flex flex-col justify-between gap-14">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold">
+                Admin Panel Login
+              </h1>
+            </div>
+            <div className="w-full flex flex-col gap-6">
+              <Input
+                label="Email"
+                type="text"
+                value={email}
+                onChange={handleEmailChange}
+                placeholder="email@company.com"
+                error={emailError}
+                errorMsg={messageErrorEmail}
+              />
+              <Input
+                label="Password"
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+                placeholder="*********"
+                error={passwordError}
+                errorMsg={messageErrorPassword}
+              />
+              <button
+                type="submit"
+                className="btn bg-orange-500 active:bg-orange-500 hover:bg-orange-500 text-white text-[16px] font-bold rounded-full"
+              >
+                Login
+              </button>
+            </div>
           </div>
         </form>
       </div>
