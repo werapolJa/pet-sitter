@@ -1,8 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import withAdminAuth from "@/utils/withAdminAuth";
 import { Sidebar } from "@/components/admin-page/Sidebar";
+import Image from "next/image"; // Import Image component from Next.js
+import imagebgicon from "@/public/assets/imagebg-default-icon.svg";
 
 const AdminDashboard = () => {
+  // State to store data from the API
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1); // Track the current page
+  const [rowsPerPage, setRowsPerPage] = useState<number>(8); // Limit to 8 rows per page
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/admin/petowner"); // Assuming your API endpoint is `/api/getPetOwners`
+        const result = await response.json();
+        if (result.data) {
+          setData(result.data);
+        } else {
+          setError("No data available");
+        }
+      } catch (err) {
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Calculate the data to display based on the current page and rows per page
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentData = data.slice(indexOfFirstRow, indexOfLastRow);
+
+  const totalPages = Math.ceil(data.length / rowsPerPage); // Total number of pages
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -49,21 +98,35 @@ const AdminDashboard = () => {
             </thead>
             {/* Table Body */}
             <tbody>
-              {[...Array(8)].map((_, index) => (
+              {currentData.map((user, index) => (
                 <tr key={index}>
                   <td className="flex items-center gap-2">
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Owner"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    John Wick
+                    {user.image ? (
+                      <Image
+                        src={user.image} // This is the image URL
+                        alt={user.full_name} // The alt text for the image
+                        className="w-10 h-10 rounded-full"
+                        width={10} // Specify width
+                        height={10} // Specify height
+                      />
+                    ) : (
+                      <div>
+                        <Image
+                          src={imagebgicon} // This is the image URL
+                          alt="imagebgicon" // The alt text for the image
+                          className="w-10 h-10 rounded-full"
+                          width={10} // Specify width
+                          height={10} // Specify height
+                        />
+                      </div>
+                    )}
+                    {user.full_name}
                   </td>
-                  <td>099 996 6734</td>
-                  <td>johnwicklovedogs@dogorg.com</td>
-                  <td>2</td>
+                  <td>{user.phone}</td>
+                  <td>{user.email}</td>
+                  <td>{user.Pet}</td>
                   <td>
-                    {index === 3 ? (
+                    {user.Status === "Banned" ? (
                       <span className="text-red-500 font-medium">Banned</span>
                     ) : (
                       <span className="text-green-500 font-medium">Normal</span>
@@ -77,11 +140,36 @@ const AdminDashboard = () => {
 
         {/* Pagination */}
         <div className="flex justify-center items-center mt-6 gap-2">
-          <button className="btn btn-sm btn-outline">1</button>
-          <button className="btn btn-sm btn-outline">2</button>
-          <span className="text-gray-500">...</span>
-          <button className="btn btn-sm btn-outline">44</button>
-          <button className="btn btn-sm btn-outline">45</button>
+          {/* Previous Button */}
+          <button
+            className="btn btn-sm btn-outline"
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Previous
+          </button>
+
+          {/* Page Numbers */}
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              className={`btn btn-sm btn-outline ${
+                currentPage === index + 1 ? "bg-gray-300" : ""
+              }`}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          {/* Next Button */}
+          <button
+            className="btn btn-sm btn-outline"
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

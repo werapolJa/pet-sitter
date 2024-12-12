@@ -45,9 +45,7 @@ export default async function handler(
 
     // Prepare the response data to match the desired format
     const formattedData = result.rows.map((user) => ({
-      image: user.image
-        ? `<img src="${user.image}" alt="${user.full_name}" width="50" height="50" />`
-        : null,
+      image: user.image ? `${user.image}` : null,
       full_name: user.full_name,
       phone: user.phone,
       email: user.email,
