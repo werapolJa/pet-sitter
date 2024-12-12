@@ -9,7 +9,7 @@ const AdminDashboard = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 px-10 pt-12">
+      <div className="flex-1 p-6">
         {/* Search and Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">Pet Owner</h1>
