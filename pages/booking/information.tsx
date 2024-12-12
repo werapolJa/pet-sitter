@@ -89,6 +89,8 @@ export default function BookinginformPage() {
       };
 
       console.log(data);
+
+      router.push("/booking/payment")
     }
   };
 
@@ -244,7 +246,7 @@ export default function BookinginformPage() {
             <p className="text-[18px] font-medium">600.00 THB</p>
           </div>
         </div>
-        <div className="flex md:hidden justify-between mb-10">
+        <div className="flex md:hidden justify-between mb-10 px-5">
           <button
             className="btn px-10 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500"
             onClick={() => router.push("/booking")}
