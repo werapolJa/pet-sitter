@@ -131,8 +131,8 @@ export default function BookinginformPage() {
               </p>
             </div>
           </div>
-          <div className="bg-white w-full h-auto md:h-[720px] px-5 rounded-2xl p-0 md:p-10 flex flex-col gap-14 justify-between">
-            <div className="flex flex-col gap-0 md:gap-10 w-full">
+          <div className="bg-white w-full h-auto md:h-5/6 px-5 rounded-2xl p-0 md:p-10 flex flex-col justify-between">
+            <div className="flex flex-col gap-0 md:gap-6 w-full">
               <Input
                 label="Your Name*"
                 placeholder="Full name"
