@@ -457,28 +457,30 @@ const PetSitterReview: React.FC = () => {
                 src={review.profileImage}
                 alt={review.name}
               />
-              <div className="flex flex-col flex-grow">
+              <div className="flex flex-col flex-grow md:flex-grow-0">
                 <span className="text-lg font-medium">{review.name}</span>
                 <div className="text-sm font-medium text-gray-400">
                   {formatDate(review.reviewDate)}
                 </div>
               </div>
-              <div className="flex justify-end rating h-8 text-base p-2 gap-[2px]">
+              <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-14">
                 {[...Array(review.rating)].map((_, i) => (
                   <input
                     key={i}
                     type="radio"
                     name={`rating-${review.name}`}
-                    className="mask mask-star-2 bg-green-500 w-3 h-3"
+                    className="mask mask-star-2 bg-green-500 w-3 h-3 md:w-5 md:h-5"
                     readOnly
                     disabled
                   />
                 ))}
               </div>
             </div>
-            <p className="pb-6 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
-              {review.details}
-            </p>
+            <div className="w-full md:flex md:justify-end">
+              <p className="pb-6 md:w-2/3 md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
+                {review.details}
+              </p>
+            </div>
           </div>
         ))}
       </div>
