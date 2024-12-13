@@ -4,14 +4,16 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
 // Fix for default marker icon
-import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import pinPetSitter from "@/public/assets/pet-sitter-info-page/pin-petsitter.svg";
 
 const DefaultIcon = L.icon({
-  iconUrl: icon.src,
+  iconUrl: pinPetSitter.src,
   shadowUrl: iconShadow.src,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+  iconSize: [88, 88],
+  iconAnchor: [40, 40],
+  popupAnchor: [0, -40], // Adjusted popup anchor
+  shadowSize: [40, 40],
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -31,7 +33,7 @@ const PetSitterMap: React.FC<PetSitterMapProps> = ({
     <div className="w-full h-[300px] md:h-[400px] mt-6 md:mt-10">
       <MapContainer
         center={[latitude, longitude]}
-        zoom={13}
+        zoom={16}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%" }}
       >
