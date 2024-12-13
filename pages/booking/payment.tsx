@@ -10,6 +10,7 @@ import cashbg from "@/public/assets/cashbg.svg";
 import { useRouter } from "next/router";
 import Input from "@/components/pet-owner/Input";
 import { useBookingContext, BookingData } from '@/context/BookingContext';
+import Modal from '@/components/Modal';
 
 export default function BookingPaymentPage() {
   const { bookingData, updateBookingData } = useBookingContext();
@@ -27,6 +28,7 @@ export default function BookingPaymentPage() {
   const [expiryDateError, setexpiryDateError] = useState<boolean>(false);
   const [cvvError, setCvvError] = useState<boolean>(false);
   const [btndisable, setBtndisable] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (paymentMethod === "credit") {
@@ -74,43 +76,55 @@ export default function BookingPaymentPage() {
   };
 
   function handleSubmit() {
-
     setCardNumberError(false);
     setCardOwnerError(false);
     setexpiryDateError(false);
     setCvvError(false);
 
     if (paymentMethod === "credit") {
+      let hasError = false;
+
       if (!cardNumber || cardNumber.length < 10) {
         setCardNumberError(true);
-        setMessageErrorCardNumber(
-          "Please enter a complete credit card number."
-        );
+        setMessageErrorCardNumber("Please enter a complete credit card number.");
+        hasError = true;
       }
       if (!cardOwner) {
         setCardOwnerError(true);
+        hasError = true;
       }
       if (!expiryDate || expiryDate.length < 4) {
         setexpiryDateError(true);
         setMessageErrorexpiryDate("Please enter a valid expiry date.");
+        hasError = true;
       }
       if (!cvv || cvv.length < 3) {
         setCvvError(true);
         setMessageErrorCvv("Please enter the CVV code.");
+        hasError = true;
       }
 
       if (isNaN(Number(cardNumber))) {
         setCardNumberError(true);
         setMessageErrorCardNumber("The credit card number must be a number.");
+        hasError = true;
       }
       if (isNaN(Number(expiryDate))) {
         setexpiryDateError(true);
         setMessageErrorexpiryDate("The expiry date must be a valid number.");
+        hasError = true;
       }
       if (isNaN(Number(cvv))) {
         setCvvError(true);
         setMessageErrorCvv("The CVV must be a valid number.");
+        hasError = true;
       }
+
+      if (!hasError) {
+        setIsModalOpen(true);
+      }
+    } else {
+      setIsModalOpen(true);
     }
   }
 
@@ -295,6 +309,7 @@ export default function BookingPaymentPage() {
         className="absolute right-0 bottom-0 hidden md:block "
         loading="lazy"
       />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }
