@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 interface ModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     if (isOpen) {
@@ -71,6 +73,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           </button>
           <button
             className={`btn px-10 py-3 font-bold rounded-full text-white bg-orange-500 hover:bg-orange-500`}
+            onClick={()=> router.push("/booking/success")}
           >
             Yes, I’m sure
           </button>
