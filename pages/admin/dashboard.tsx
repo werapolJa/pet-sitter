@@ -99,31 +99,27 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {currentData.map((user, index) => (
-                <tr
-                  key={index}
-                  className="border-y border-y-gray-200 h-[92px] font-medium text-base leading-7"
-                >
+                <tr key={index} className="border-y border-y-gray-200 h-[92px]">
                   <td className="pl-4 w-[240px] max-w-[240px]">
                     <div className="flex items-center gap-2 h-full">
                       {user.image ? (
                         <Image
                           src={user.image}
                           alt={user.full_name}
-                          className="w-11 h-11 rounded-full"
-                          width={10}
-                          height={10}
+                          className="w-10 h-10 rounded-full"
+                          width={40}
+                          height={40}
                         />
                       ) : (
                         <Image
                           src={imagebgicon}
                           alt="Default profile"
-                          className="w-11 h-11 rounded-full"
-                          width={10}
-                          height={10}
+                          className="w-10 h-10 rounded-full"
+                          width={40}
+                          height={40}
                         />
                       )}
-                      {/*long text is truncated with an ellipsis (...)*/}
-                      <span className="truncate">{user.full_name}</span>{" "}
+                      <span className="truncate">{user.full_name}</span>
                     </div>
                   </td>
                   <td className="w-[207px] max-w-[207px] truncate">
@@ -137,9 +133,17 @@ const AdminDashboard = () => {
                   </td>
                   <td className="w-[120px] max-w-[120px]">
                     {user.Status === "Banned" ? (
-                      <span className="text-red-500 font-medium">Banned</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                        <span className="text-red-500 font-medium">Banned</span>
+                      </div>
                     ) : (
-                      <span className="text-green-500 font-medium">Normal</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span className="text-green-500 font-medium">
+                          Normal
+                        </span>
+                      </div>
                     )}
                   </td>
                 </tr>
