@@ -30,7 +30,7 @@ const PetSitterMap: React.FC<PetSitterMapProps> = ({
   tradename,
 }) => {
   return (
-    <div className="w-full h-[300px] md:h-[400px] mt-6 md:mt-10">
+    <div className="w-full h-[219px] mt-6 md:mt-10">
       <MapContainer
         center={[latitude, longitude]}
         zoom={16}
