@@ -476,8 +476,8 @@ const PetSitterReview: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="w-full md:flex md:justify-end">
-              <p className="pb-6 md:w-2/3 md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 border-b border-b-gray-200">
+            <div className="w-full md:flex md:justify-end border-b border-b-gray-200">
+              <p className="pb-6 md:w-2/3 md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 ">
                 {review.details}
               </p>
             </div>
