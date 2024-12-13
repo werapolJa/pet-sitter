@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
+import dynamic from "next/dynamic";
 
 // Import Swiper styles
 import "swiper/css";
@@ -259,6 +260,15 @@ const PetSitterInformation: React.FC = () => {
     image: petSitterProfile,
   };
 
+  const Map = useMemo(
+    () =>
+      dynamic(() => import("@/components/pet-sitter-info/PetSitterMap"), {
+        loading: () => <p>A map is loading</p>,
+        ssr: false,
+      }),
+    []
+  );
+
   const servicesArray = petSitterInfo.service.split(/\n\s*\n/); // Split based on double line breaks
 
   return (
@@ -291,6 +301,11 @@ const PetSitterInformation: React.FC = () => {
           <p className="text-justify leading-6 md:leading-7 text-sm md:text-base text-gray-500">
             {petSitterInfo.myplace}
           </p>
+          <Map
+            latitude={petSitterInfo.latitude}
+            longitude={petSitterInfo.longitude}
+            tradename={petSitterInfo.tradename}
+          />
           <div className="hidden md:block">
             <PetSitterReview />
           </div>
