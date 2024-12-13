@@ -11,8 +11,8 @@ const DefaultIcon = L.icon({
   iconUrl: pinPetSitter.src,
   shadowUrl: iconShadow.src,
   iconSize: [88, 88],
-  iconAnchor: [40, 40],
-  popupAnchor: [0, -40], // Adjusted popup anchor
+  iconAnchor: [50, 40],
+  popupAnchor: [-5, -40], // Adjusted popup anchor
   shadowSize: [40, 40],
 });
 
