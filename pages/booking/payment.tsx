@@ -9,18 +9,13 @@ import cashorangeSvg from "@/public/assets/cashorange.svg";
 import cashbg from "@/public/assets/cashbg.svg";
 import { useRouter } from "next/router";
 import Input from "@/components/pet-owner/Input";
+import { useBookingContext, BookingData } from '@/context/BookingContext';
 
 export default function BookingPaymentPage() {
+  const { bookingData, updateBookingData } = useBookingContext();
+  const { paymentMethod, cardNumber, cardOwner, expiryDate, cvv, bookingDetail } = bookingData;
   const [isCreditCardHovered, setIsCreditCardHovered] = useState(false);
   const [isCashHovered, setIsCashHovered] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<"credit" | "cash">(
-    "credit"
-  );
-
-  const [cardNumber, setCardnumber] = useState<string>("");
-  const [cardOwner, setCardOwner] = useState<string>("");
-  const [expiryDate, setexpiryDate] = useState<string>("");
-  const [cvv, setCvv] = useState<string>("");
 
   const [messageCardNumber, setMessageErrorCardNumber] = useState<string>("");
   const [messageErrorexpiryDate, setMessageErrorexpiryDate] =
@@ -34,7 +29,7 @@ export default function BookingPaymentPage() {
   const [btndisable, setBtndisable] = useState<boolean>(false);
 
   useEffect(() => {
-    if (selectedPayment === "credit") {
+    if (paymentMethod === "credit") {
       setBtndisable(
         !(
           cardNumber &&
@@ -48,11 +43,11 @@ export default function BookingPaymentPage() {
         )
       );
     }
-    if (selectedPayment === "cash") {
+    if (paymentMethod === "cash") {
       setBtndisable(false);
     }
   }, [
-    selectedPayment,
+    paymentMethod,
     cardNumber,
     cardOwner,
     expiryDate,
@@ -64,36 +59,29 @@ export default function BookingPaymentPage() {
   ]);
 
   useEffect(() => {
-    if (selectedPayment === "cash") {
-      setCardnumber("");
-      setCardOwner("");
-      setexpiryDate("");
-      setCvv("");
+    if (paymentMethod === "cash") {
       setCardNumberError(false);
       setCardOwnerError(false);
       setexpiryDateError(false);
       setCvvError(false);
     }
-  }, [selectedPayment]);
+  }, [paymentMethod]);
 
   const router = useRouter();
 
+  const setSelectedPayment = (method: 'credit' | 'cash') => {
+    updateBookingData({ paymentMethod: method });
+  };
+
   function handleSubmit() {
-    const data = {
-      cardNumber,
-      cardOwner,
-      expiryDate,
-      cvv,
-      selectedPayment,
-    };
 
     setCardNumberError(false);
     setCardOwnerError(false);
     setexpiryDateError(false);
     setCvvError(false);
 
-    if (selectedPayment === "credit") {
-      if (!cardNumber || cardNumber.length <= 10) {
+    if (paymentMethod === "credit") {
+      if (!cardNumber || cardNumber.length < 10) {
         setCardNumberError(true);
         setMessageErrorCardNumber(
           "Please enter a complete credit card number."
@@ -102,11 +90,11 @@ export default function BookingPaymentPage() {
       if (!cardOwner) {
         setCardOwnerError(true);
       }
-      if (!expiryDate || expiryDate.length <= 4) {
+      if (!expiryDate || expiryDate.length < 4) {
         setexpiryDateError(true);
         setMessageErrorexpiryDate("Please enter a valid expiry date.");
       }
-      if (!cvv || cvv.length <= 3) {
+      if (!cvv || cvv.length < 3) {
         setCvvError(true);
         setMessageErrorCvv("Please enter the CVV code.");
       }
@@ -124,8 +112,6 @@ export default function BookingPaymentPage() {
         setMessageErrorCvv("The CVV must be a valid number.");
       }
     }
-
-    console.log(data);
   }
 
   return (
@@ -160,7 +146,7 @@ export default function BookingPaymentPage() {
               <div className="flex justify-center gap-4">
                 <button
                   className={`flex items-center justify-center gap-2 w-1/2 py-2 md:py-7 rounded-full border text-[18px] ${
-                    selectedPayment === "credit" || isCreditCardHovered
+                    paymentMethod === "credit" || isCreditCardHovered
                       ? "border-orange-500 text-orange-500"
                       : "border-gray-200 text-[#7B7E8F]"
                   } font-medium transition-colors duration-300`}
@@ -170,7 +156,7 @@ export default function BookingPaymentPage() {
                 >
                   <Image
                     src={
-                      selectedPayment === "credit" || isCreditCardHovered
+                      paymentMethod === "credit" || isCreditCardHovered
                         ? creditcardorangeSvg
                         : creditcardgraySvg
                     }
@@ -181,21 +167,17 @@ export default function BookingPaymentPage() {
                 </button>
                 <button
                   className={`flex items-center justify-center gap-2 w-1/2 py-2 md:py-7 rounded-full border text-[18px] ${
-                    selectedPayment === "cash" || isCashHovered
+                    paymentMethod === "cash" || isCashHovered
                       ? "border-orange-500 text-orange-500"
                       : "border-gray-200 text-[#7B7E8F]"
                   } font-medium transition-colors duration-300`}
                   onMouseEnter={() => setIsCashHovered(true)}
                   onMouseLeave={() => setIsCashHovered(false)}
-                  onClick={() =>
-                    setSelectedPayment((prev) =>
-                      prev === "cash" ? "credit" : "cash"
-                    )
-                  }
+                  onClick={() => setSelectedPayment("cash")}
                 >
                   <Image
                     src={
-                      selectedPayment === "cash" || isCashHovered
+                      paymentMethod === "cash" || isCashHovered
                         ? cashorangeSvg
                         : cashgraySvg
                     }
@@ -205,12 +187,9 @@ export default function BookingPaymentPage() {
                   Cash
                 </button>
               </div>
-              {selectedPayment === "credit" && (
+              {paymentMethod === "credit" && (
                 <CreditCard
-                  setCardnumber={setCardnumber}
-                  setCardOwner={setCardOwner}
-                  setexpiryDate={setexpiryDate}
-                  setCvv={setCvv}
+                  updateBookingData={updateBookingData}
                   cardNumberError={cardNumberError}
                   cardOwnerError={cardOwnerError}
                   expiryDateError={expiryDateError}
@@ -223,7 +202,7 @@ export default function BookingPaymentPage() {
                   setexpiryDateError={setexpiryDateError}
                 />
               )}
-              {selectedPayment === "cash" && <Cash />}
+              {paymentMethod === "cash" && <Cash />}
             </div>
 
             <div className="hidden md:flex justify-between">
@@ -258,8 +237,8 @@ export default function BookingPaymentPage() {
                 Pet Sitter:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">Happy House!</span>
-                <span>By Jane Maison</span>
+                <span className="mr-3">{bookingDetail.petSitter ?? '-'}</span>
+                <span>{bookingDetail.petSitterName ?? '-'}</span>
               </p>
             </div>
             <div className="px-6">
@@ -267,25 +246,27 @@ export default function BookingPaymentPage() {
                 Date & Time:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">25 Aug, 2023</span>
-                <span className="mr-3 text-gray-400">|</span>
-                <span>7 AM - 10 AM</span>
+                {bookingDetail.dateTime ?? '-'}
               </p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">
                 Duration:
               </span>
-              <p className="text-gray-600 font-medium">3 hours</p>
+              <p className="text-gray-600 font-medium">{bookingDetail.duration ?? '-'}</p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
-              <p className="text-gray-600 font-medium">-</p>
+              <p className="text-gray-600 font-medium mb-3 md:mb-0">
+                {bookingData.selectedPets.length > 0
+                  ? bookingData.selectedPets.map((pet) => pet.pet_name).join(", ")
+                  : "-"}
+              </p>
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
             <p className="font-medium py-4">Total</p>
-            <p className="text-[18px] font-medium">600.00 THB</p>
+            <p className="text-[18px] font-medium">{bookingDetail.total ?? '-'}</p>
           </div>
         </div>
         <div className="flex md:hidden justify-between mb-10 px-5">
@@ -318,12 +299,8 @@ export default function BookingPaymentPage() {
   );
 }
 
-
 interface CreditCardProps {
-  setCardnumber: (value: string) => void;
-  setCardOwner: (value: string) => void;
-  setexpiryDate: (value: string) => void;
-  setCvv: (value: string) => void;
+  updateBookingData: (data: Partial<BookingData>) => void;
   cardNumberError: boolean;
   cardOwnerError: boolean;
   expiryDateError: boolean;
@@ -331,16 +308,13 @@ interface CreditCardProps {
   messageCardNumber: string;
   messageErrorexpiryDate: string;
   messageErrorcvv: string;
-  setCardNumberError: (value: boolean) => void
-  setCvvError: (value: boolean) => void
-  setexpiryDateError: (value: boolean) => void
+  setCardNumberError: (value: boolean) => void;
+  setCvvError: (value: boolean) => void;
+  setexpiryDateError: (value: boolean) => void;
 }
 
 function CreditCard({
-  setCardnumber,
-  setCardOwner,
-  setexpiryDate,
-  setCvv,
+  updateBookingData,
   cardNumberError,
   cardOwnerError,
   expiryDateError,
@@ -353,19 +327,19 @@ function CreditCard({
   setexpiryDateError
 }: CreditCardProps) {
   const handleCardnumber = (e: ChangeEvent<HTMLInputElement>) => {
-    setCardnumber(e.target.value);
-    setCardNumberError(false)
+    updateBookingData({ cardNumber: e.target.value });
+    setCardNumberError(false);
   };
   const handleCardOwner = (e: ChangeEvent<HTMLInputElement>) => {
-    setCardOwner(e.target.value);
+    updateBookingData({ cardOwner: e.target.value });
   };
   const handleexpiryDate = (e: ChangeEvent<HTMLInputElement>) => {
-    setexpiryDate(e.target.value);
-    setexpiryDateError(false)
+    updateBookingData({ expiryDate: e.target.value });
+    setexpiryDateError(false);
   };
   const handleCvv = (e: ChangeEvent<HTMLInputElement>) => {
-    setCvv(e.target.value);
-    setCvvError(false)
+    updateBookingData({ cvv: e.target.value });
+    setCvvError(false);
   };
 
   return (
@@ -428,3 +402,4 @@ export function Cash() {
     </div>
   );
 }
+

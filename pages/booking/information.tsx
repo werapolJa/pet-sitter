@@ -4,12 +4,11 @@ import Image from "next/image";
 import Input from "@/components/pet-owner/Input";
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useBookingContext } from '@/context/BookingContext';
 
 export default function BookinginformPage() {
-  const [fullname, setFullname] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-  const [additionalMsg, setAdditionalMsg] = useState<string | null>(null);
+  const { bookingData, updateBookingData } = useBookingContext();
+  const { fullname, email, phone, additionalMsg, bookingDetail } = bookingData;
 
   const [fullnameError, setFullnameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
@@ -35,19 +34,19 @@ export default function BookinginformPage() {
   }, [fullname, email, phone, fullnameError, emailError, phoneError]);
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    updateBookingData({ email: e.target.value });
     setEmailError(false);
   };
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
+    updateBookingData({ phone: e.target.value });
     setPhoneError(false);
   };
   const handleFullnameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFullname(e.target.value);
+    updateBookingData({ fullname: e.target.value });
     setFullnameError(false);
   };
   const handleAdditionalMsgChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setAdditionalMsg(e.target.value);
+    updateBookingData({ additionalMsg: e.target.value });
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -81,15 +80,6 @@ export default function BookinginformPage() {
     }
 
     if (!hasError) {
-      const data = {
-        fullname,
-        email,
-        phone,
-        additionalMsg,
-      };
-
-      console.log(data);
-
       router.push("/booking/payment")
     }
   };
@@ -140,6 +130,7 @@ export default function BookinginformPage() {
                 placeholder="Full name"
                 onChange={handleFullnameChange}
                 error={fullnameError}
+                value={fullname}
               />
               <div className="flex flex-col md:flex-row justify-between w-full gap-0 md:gap-10">
                 <div className="w-full md:w-1/2">
@@ -149,6 +140,7 @@ export default function BookinginformPage() {
                     onChange={handleEmailChange}
                     error={emailError}
                     errorMsg={messageErrorEmail}
+                    value={email}
                   />
                 </div>
                 <div className="w-full md:w-1/2">
@@ -159,6 +151,7 @@ export default function BookinginformPage() {
                     error={phoneError}
                     errorMsg={messageErrorPhone}
                     maxLength={10}
+                    value={phone}
                   />
                 </div>
               </div>
@@ -174,6 +167,7 @@ export default function BookinginformPage() {
                     id="my-textarea"
                     onChange={handleAdditionalMsgChange}
                     className="h-[140px] textarea textarea-bordered textarea-lg w-full resize-none focus-within:outline-none focus-within:border-orange-500"
+                    value={additionalMsg || ''}
                   />
                 </div>
               </div>
@@ -212,8 +206,8 @@ export default function BookinginformPage() {
                 Pet Sitter:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">Happy House!</span>
-                <span>By Jane Maison</span>
+                <span className="mr-3">{bookingDetail.petSitter ?? '-'}</span>
+                <span>{bookingDetail.petSitterName ?? '-'}</span>
               </p>
             </div>
             <div className="px-6">
@@ -221,30 +215,27 @@ export default function BookinginformPage() {
                 Date & Time:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">25 Aug, 2023</span>
-                <span className="mr-3 text-gray-400">|</span>
-                <span>7 AM - 10 AM</span>
+                {bookingDetail.dateTime ?? '-'}
               </p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">
                 Duration:
               </span>
-              <p className="text-gray-600 font-medium">3 hours</p>
+              <p className="text-gray-600 font-medium">{bookingDetail.duration ?? '-'}</p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
-              <p className="text-gray-600 font-medium">
-                -
-                {/* {selectedPets.length > 0
-                  ? selectedPets.map((pet) => pet.pet_name).join(", ")
-                  : "-"} */}
+              <p className="text-gray-600 font-medium mb-3 md:mb-0">
+                {bookingData.selectedPets.length > 0
+                  ? bookingData.selectedPets.map((pet) => pet.pet_name).join(", ")
+                  : "-"}
               </p>
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
             <p className="font-medium py-4">Total</p>
-            <p className="text-[18px] font-medium">600.00 THB</p>
+            <p className="text-[18px] font-medium">{bookingDetail.total ?? '-'}</p>
           </div>
         </div>
         <div className="flex md:hidden justify-between mb-10 px-5">
@@ -276,3 +267,4 @@ export default function BookinginformPage() {
     </div>
   );
 }
+
