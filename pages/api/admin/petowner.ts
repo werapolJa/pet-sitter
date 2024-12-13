@@ -20,7 +20,9 @@ export default async function handler(
   }
 
   try {
-    // Query to join `users` and `pets` tables without any filters
+    const searchQuery = req.query.search as string;
+
+    // Base query with search conditions if search parameter exists
     const query = `
       select 
         u.user_id,
@@ -36,14 +38,26 @@ export default async function handler(
         pets p on u.user_id = p.user_id
       left join 
         auth.users on u.user_id = auth.users.id
+      ${
+        searchQuery
+          ? `
+      where 
+        lower(u.full_name) like lower($1) or
+        lower(u.phone) like lower($1) or
+        lower(auth.users.email) like lower($1)
+      `
+          : ""
+      }
       group by 
         u.user_id, u.full_name, u.phone, u.image, auth.users.email, u.status
     `;
 
-    // Execute the query
-    const result = await connectionPool.query<UserWithPets>(query);
+    // Execute the query with or without search parameter
+    const result = searchQuery
+      ? await connectionPool.query<UserWithPets>(query, [`%${searchQuery}%`])
+      : await connectionPool.query<UserWithPets>(query);
 
-    // Prepare the response data to match the desired format
+    // Format the response data
     const formattedData = result.rows.map((user) => ({
       image: user.image ? `${user.image}` : null,
       full_name: user.full_name,
@@ -53,7 +67,6 @@ export default async function handler(
       Status: user.status,
     }));
 
-    // Send the formatted data in the response
     return res.status(200).json({ data: formattedData });
   } catch (error) {
     console.error("Error in search API:", error);
