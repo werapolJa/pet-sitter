@@ -153,37 +153,86 @@ const AdminDashboard = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mt-6 gap-2">
-          {/* Previous Button */}
-          <button
-            className="btn btn-sm btn-outline"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            Previous
-          </button>
-
-          {/* Page Numbers */}
-          {[...Array(totalPages)].map((_, index) => (
+        <div className="flex justify-center items-center mt-6">
+          <nav className="flex items-center gap-3 px-2 py-1 rounded-lg">
             <button
-              key={index}
-              className={`btn btn-sm btn-outline ${
-                currentPage === index + 1 ? "bg-gray-300" : ""
-              }`}
-              onClick={() => handlePageChange(index + 1)}
+              className="p-2 hover:bg-white rounded-md transition-colors"
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
             >
-              {index + 1}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-gray-300"
+              >
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
             </button>
-          ))}
 
-          {/* Next Button */}
-          <button
-            className="btn btn-sm btn-outline"
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            Next
-          </button>
+            {[...Array(totalPages)].map((_, index) => {
+              const pageNumber = index + 1;
+
+              // Show first two pages, last two pages, and current page
+              if (
+                pageNumber <= 2 ||
+                pageNumber === currentPage ||
+                pageNumber >= totalPages - 1
+              ) {
+                return (
+                  <button
+                    key={pageNumber}
+                    onClick={() => handlePageChange(pageNumber)}
+                    className={`w-10 h-10 rounded-full text-base font-bold transition-colors ${
+                      currentPage === pageNumber
+                        ? "bg-orange-100 text-orange-500"
+                        : "text-gray-300 hover:bg-white bg-white"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              }
+
+              // Show ellipsis after page 2 and before last two pages
+              if (pageNumber === 3 || pageNumber === totalPages - 2) {
+                return (
+                  <span key={pageNumber} className="text-gray-300 font-bold">
+                    ...
+                  </span>
+                );
+              }
+
+              return null;
+            })}
+
+            <button
+              className="p-2 hover:bg-white rounded-md transition-colors"
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-gray-300"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          </nav>
         </div>
       </div>
     </div>
