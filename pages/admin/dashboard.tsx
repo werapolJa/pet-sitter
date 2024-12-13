@@ -5,41 +5,45 @@ import Image from "next/image"; // Import Image component from Next.js
 import imagebgicon from "@/public/assets/imagebg-default-icon.svg";
 
 const AdminDashboard = () => {
-  // State to store data from the API
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1); // Track the current page
-  const [rowsPerPage, setRowsPerPage] = useState<number>(8); // Limit to 8 rows per page
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(8);
+  const [searchQuery, setSearchQuery] = useState<string>(""); // Search query state
 
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/admin/petowner"); // Assuming your API endpoint is `/api/getPetOwners`
-        const result = await response.json();
-        if (result.data) {
-          setData(result.data);
-        } else {
-          setError("No data available");
-        }
-      } catch (err) {
-        setError("Failed to fetch data");
-      } finally {
-        setLoading(false);
+  // Fetch data based on the search query
+  const fetchData = async (query: string = "") => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/admin/petowner?search=${query}`);
+      const result = await response.json();
+      if (result.data) {
+        setData(result.data);
+      } else {
+        setError("No data available");
       }
-    };
-    fetchData();
+    } catch (err) {
+      setError("Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); // Initial fetch without a search query
   }, []);
 
-  // Calculate the data to display based on the current page and rows per page
+  const handleSearch = () => {
+    fetchData(searchQuery); // Trigger fetch when the search button is clicked
+  };
+
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentData = data.slice(indexOfFirstRow, indexOfLastRow);
 
-  const totalPages = Math.ceil(data.length / rowsPerPage); // Total number of pages
+  const totalPages = Math.ceil(data.length / rowsPerPage);
 
-  // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -54,25 +58,25 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
+      {/*Sidebar and Search box*/}
       <Sidebar />
-
-      {/* Main Content */}
       <div className="flex-1 px-10 pt-12">
-        {/* Search and Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">Pet Owner</h1>
-          <label className="input input-bordered flex items-center h-12 w-60 gap-2 max-w-[240px] focus-within:outline-none">
+          <div className="input input-bordered flex items-center h-12 w-60 gap-2 max-w-[240px] focus-within:outline-none">
             <input
               type="text"
               className="grow border-none focus:outline-none text-gray-400"
               placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
+              viewBox="2.25 1 10 10" // Adjusted viewBox to match path size
               fill="currentColor"
-              className="h-6 w-6 opacity-70 text-gray-400"
+              className="w-5 h-5 opacity-70 text-gray-400 cursor-pointer"
+              onClick={handleSearch}
             >
               <path
                 fillRule="evenodd"
@@ -80,10 +84,10 @@ const AdminDashboard = () => {
                 clipRule="evenodd"
               />
             </svg>
-          </label>
+          </div>
         </div>
 
-        {/* Table */}
+        {/*Table*/}
         <div className="overflow-x-auto bg-white rounded-lg">
           <table className="w-full">
             <thead>
@@ -152,7 +156,7 @@ const AdminDashboard = () => {
           </table>
         </div>
 
-        {/* Pagination */}
+        {/*Pagination*/}
         <div className="flex justify-center items-center mt-6">
           <nav className="flex items-center gap-3 px-2 py-1 rounded-lg">
             <button
@@ -175,11 +179,8 @@ const AdminDashboard = () => {
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
-
             {[...Array(totalPages)].map((_, index) => {
               const pageNumber = index + 1;
-
-              // Show first two pages, last two pages, and current page
               if (
                 pageNumber <= 2 ||
                 pageNumber === currentPage ||
@@ -199,8 +200,6 @@ const AdminDashboard = () => {
                   </button>
                 );
               }
-
-              // Show ellipsis after page 2 and before last two pages
               if (pageNumber === 3 || pageNumber === totalPages - 2) {
                 return (
                   <span key={pageNumber} className="text-gray-300 font-bold">
@@ -208,10 +207,8 @@ const AdminDashboard = () => {
                   </span>
                 );
               }
-
               return null;
             })}
-
             <button
               className="p-2 hover:bg-white rounded-md transition-colors"
               disabled={currentPage === totalPages}
