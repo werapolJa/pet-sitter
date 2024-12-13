@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useAuth } from "@/context/authentication";
 import { useEffect, useState } from "react";
+import { useBookingContext } from '@/context/BookingContext';
 
 interface Pet {
   pet_name: string;
@@ -22,8 +23,8 @@ interface Pet {
 
 export default function BookingPage() {
   const { user } = useAuth();
-  const [pets, setPets] = useState<Pet[]>([]);
-  const [selectedPets, setSelectedPets] = useState<Pet[]>([]);
+  const { bookingData, updateBookingData } = useBookingContext();
+  const { selectedPets } = bookingData;
   const [btndisable, setBtnDisable] = useState(false);
 
   const router = useRouter();
@@ -42,19 +43,20 @@ export default function BookingPage() {
 
   const handlePetSelect = (pet: Pet, isSelected: boolean) => {
     if (isSelected) {
-      setSelectedPets((prev) => [...prev, pet]);
+      updateBookingData({ selectedPets: [...selectedPets, pet] });
     } else {
-      setSelectedPets((prev) =>
-        prev.filter((p) => p.pet_name !== pet.pet_name)
-      );
+      updateBookingData({
+        selectedPets: selectedPets.filter((p) => p.pet_name !== pet.pet_name)
+      });
     }
   };
 
   useEffect(() => {
-    setBtnDisable(selectedPets.length === 0);
-  }, [selectedPets]);
+    setBtnDisable(bookingData.selectedPets.length === 0);
+  }, [bookingData.selectedPets]);
 
-  console.log(selectedPets);
+  const [pets, setPets] = useState<Pet[]>([]);
+
 
   return (
     <div className="w-screen md:h-screen h-auto bg-[#FAFAFB]">
@@ -96,7 +98,7 @@ export default function BookingPage() {
                   <Card
                     key={index}
                     pet={pet}
-                    isSelected={selectedPets.some((p) => p.image === pet.image)}
+                    isSelected={bookingData.selectedPets.some((p) => p.image === pet.image)}
                     onSelect={handlePetSelect}
                   />
                 ))}
@@ -133,8 +135,8 @@ export default function BookingPage() {
                 Pet Sitter:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">Happy House!</span>
-                <span>By Jane Maison</span>
+                <span className="mr-3">{bookingData.bookingDetail.petSitter ?? '-'}</span>
+                <span>{bookingData.bookingDetail.petSitterName ?? '-'}</span>
               </p>
             </div>
             <div className="px-6">
@@ -142,29 +144,27 @@ export default function BookingPage() {
                 Date & Time:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">25 Aug, 2023</span>
-                <span className="mr-3 text-gray-400">|</span>
-                <span>7 AM - 10 AM</span>
+                {bookingData.bookingDetail.dateTime ?? '-'}
               </p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">
                 Duration:
               </span>
-              <p className="text-gray-600 font-medium">3 hours</p>
+              <p className="text-gray-600 font-medium">{bookingData.bookingDetail.duration ?? '-'}</p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
-              <p className="text-gray-600 font-medium mb-6">
-                {selectedPets.length > 0
-                  ? selectedPets.map((pet) => pet.pet_name).join(", ")
+              <p className="text-gray-600 font-medium mb-3 md:mb-0">
+                {bookingData.selectedPets.length > 0
+                  ? bookingData.selectedPets.map((pet) => pet.pet_name).join(", ")
                   : "-"}
               </p>
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
             <p className="font-medium py-4">Total</p>
-            <p className="text-[18px] font-medium">600.00 THB</p>
+            <p className="text-[18px] font-medium">{bookingData.bookingDetail.total ?? '-'}</p>
           </div>
         </div>
         <div className="flex md:hidden justify-between mb-10 px-5">
@@ -257,3 +257,4 @@ export function CardAdd() {
     </div>
   );
 }
+
