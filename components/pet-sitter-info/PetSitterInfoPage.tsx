@@ -360,7 +360,7 @@ const PetSitterReview: React.FC = () => {
         petOwnerId: 104,
         profileImage:
           "https://s3-alpha-sig.figma.com/img/de64/da3c/945cf7048edb6a29cc0657c051082f75?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=IdlcRpFKVaET9fAAsw5J3EyBL735N4IpoaFWpTFkQRBxrEXyUh63K4GOZ63ck9FF5ys-3FSQv4XRjuUaVYL8azG~ajSVHmvjyQQo0T6HKRGEvGmVBmysQ-mFLeAChNocZcDbTLqDLegbZEC1ydac9BTV4y67QD10VgAVHtDdBaw8Q6vroj8cnO3ixQZTtANEHhICMLeBjQoJtiRT07a05baQ377DU4vQXr~4IpkvOuRQ~bgQHqRYFrxaN2HhuDacuEqYh7DnIF19TpqM0kHd~tMeZSkZZXKHu779XpTU-yhw3u-5jb3v4gz6uZfSD5aElZ-B4ajfxlTy49mCwPyGbQ__",
-        name: "Mike L.",
+        name: "Lora H.",
         reviewDate: "2023-08-22",
         rating: 2,
         details:
@@ -370,7 +370,7 @@ const PetSitterReview: React.FC = () => {
         petOwnerId: 105,
         profileImage:
           "https://s3-alpha-sig.figma.com/img/8199/e155/d24115af988a09e5528de928a7f7d058?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=VO0IFBw684H5B8p4Mi7LE-mQZo6pMX1~iZCiDQTz8bmj8WlK1IgsfqkOLflWbywTcsivLKWNl3K9UEdCFJ8cBOweNeMFlnk9laBX0F~LSkjaPYeEWcGAKqpToYMXRpz0Mgfjr~2dQatZU8~Ql7rqyIlT978-LKtQFFl7SpAVsM7KOwRQqImzA1r4SsMHdMvASFGHvdari3N1PF1nM7xP9LpJxNVCXSBPGKoE26RLsL1TJIoxQA7-UdwnhTH0w4M0~79RJK71Unm7MZ2OyQRoe-J3UDtvFNtzhgcMp~CpcB8P7qgstGhlFvHSFsAPKp1db6jrFLhptwCn7SbGNu74Lw__",
-        name: "Emily B.",
+        name: "John C.",
         reviewDate: "2023-08-23",
         rating: 4,
         details:
@@ -380,11 +380,11 @@ const PetSitterReview: React.FC = () => {
         petOwnerId: 101,
         profileImage:
           "https://s3-alpha-sig.figma.com/img/43b1/5482/86c799b1fda22cdd2d9919fd41096aeb?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=idE~gw-MTTtBz1i~0cMDotT27hzVRjgORQ3wODfLBgRf5pKTM~u2gWSlx-B6edN14IsnQcaaf~ccBQ2bDRG1FLnKKSP0yr5pTC6nC9kgNPDUAlOyXulnf18pNj6VBLOFGvIAvTwCb5o-2~XIYxjTdNwhfnGvVBPSuLZmWtc5uLk9wMDBYBesaPoPO9-6dW02WuaS3FVokjZvpKpMKni-Shw9eNsnz71mfzcP8~eSXbnlKHOemS2-RXmO6Gpmyv-hWBhdugtwvXnbNBKUrWanbZpJYWrl9ryIwinZcLdU2GlWZCn38Ts7xlaA1S-Wb8nwHHWOX7qHfIH6oZht2ydOyA__",
-        name: "Emily B.",
+        name: "David M.",
         reviewDate: "2023-08-24",
         rating: 4,
         details:
-          "Jane Maison took care of my cat, during my vacation. While my cat seemed fine when I returned, I wish there had been more communication and updates about his well-being.",
+          "Jane Maison took care of my dog, during my vacation. While my dog seemed fine when I returned, I wish there had been more communication and updates about his well-being.",
       },
     ],
   };
