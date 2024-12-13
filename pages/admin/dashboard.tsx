@@ -84,48 +84,58 @@ const AdminDashboard = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-          <table className="table w-full">
-            {/* Table Head */}
+        <div className="overflow-x-auto bg-white rounded-lg">
+          <table className="w-full">
             <thead>
-              <tr className="bg-black text-white">
-                <th>Pet Owner</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Pet(s)</th>
-                <th>Status</th>
+              <tr className="bg-black text-white h-12">
+                <th className="text-left pl-4 w-[240px] max-w-[240px]">
+                  Pet Owner
+                </th>
+                <th className="text-left w-[207px] max-w-[207px]">Phone</th>
+                <th className="text-left w-[324px] max-w-[324px]">Email</th>
+                <th className="text-left w-[224px] max-w-[224px]">Pet(s)</th>
+                <th className="text-left w-[120px] max-w-[120px]">Status</th>
               </tr>
             </thead>
-            {/* Table Body */}
             <tbody>
               {currentData.map((user, index) => (
-                <tr key={index}>
-                  <td className="flex items-center gap-2">
-                    {user.image ? (
-                      <Image
-                        src={user.image} // This is the image URL
-                        alt={user.full_name} // The alt text for the image
-                        className="w-10 h-10 rounded-full"
-                        width={10} // Specify width
-                        height={10} // Specify height
-                      />
-                    ) : (
-                      <div>
+                <tr
+                  key={index}
+                  className="border-y border-y-gray-200 h-[92px] font-medium text-base leading-7"
+                >
+                  <td className="pl-4 w-[240px] max-w-[240px]">
+                    <div className="flex items-center gap-2 h-full">
+                      {user.image ? (
                         <Image
-                          src={imagebgicon} // This is the image URL
-                          alt="imagebgicon" // The alt text for the image
-                          className="w-10 h-10 rounded-full"
-                          width={10} // Specify width
-                          height={10} // Specify height
+                          src={user.image}
+                          alt={user.full_name}
+                          className="w-11 h-11 rounded-full"
+                          width={10}
+                          height={10}
                         />
-                      </div>
-                    )}
-                    {user.full_name}
+                      ) : (
+                        <Image
+                          src={imagebgicon}
+                          alt="Default profile"
+                          className="w-11 h-11 rounded-full"
+                          width={10}
+                          height={10}
+                        />
+                      )}
+                      {/*long text is truncated with an ellipsis (...)*/}
+                      <span className="truncate">{user.full_name}</span>{" "}
+                    </div>
                   </td>
-                  <td>{user.phone}</td>
-                  <td>{user.email}</td>
-                  <td>{user.Pet}</td>
-                  <td>
+                  <td className="w-[207px] max-w-[207px] truncate">
+                    {user.phone}
+                  </td>
+                  <td className="w-[324px] max-w-[324px] truncate">
+                    {user.email}
+                  </td>
+                  <td className="w-[224px] max-w-[224px] truncate">
+                    {user.Pet}
+                  </td>
+                  <td className="w-[120px] max-w-[120px]">
                     {user.Status === "Banned" ? (
                       <span className="text-red-500 font-medium">Banned</span>
                     ) : (
