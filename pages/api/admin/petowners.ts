@@ -10,6 +10,7 @@ type UserWithPets = {
   status: string;
   pet_count: number;
   birthdate: string;
+  id_number: string;
 };
 
 export default async function handler(
@@ -34,6 +35,7 @@ export default async function handler(
         auth.users.email,
         u.status,
         u.birthdate,
+        u.id_number,
         count(p.pet_id) as pet_count
       from 
         users u
@@ -79,6 +81,7 @@ export default async function handler(
       pet: user.pet_count,
       status: user.status,
       birthdate: user.birthdate,
+      idnumber: user.id_number,
     }));
 
     return res.status(200).json({ data: formattedData });
