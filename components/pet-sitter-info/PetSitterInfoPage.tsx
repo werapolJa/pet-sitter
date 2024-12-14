@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import dynamic from "next/dynamic";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 // Import Swiper styles
 import "swiper/css";
@@ -12,9 +14,6 @@ import "swiper/css/free-mode";
 // Import required modules
 import { FreeMode, Pagination, Navigation } from "swiper/modules";
 
-import petSitter1 from "@/public/assets/pet-sitter-info-page/petsitter-1.svg";
-import petSitter2 from "@/public/assets/pet-sitter-info-page/petsitter-2.svg";
-import petSitter3 from "@/public/assets/pet-sitter-info-page/petsitter-3.svg";
 import arrowLeft from "@/public/assets/pet-sitter-info-page/arrow-left.svg";
 import arrowRight from "@/public/assets/pet-sitter-info-page/arrow-right.svg";
 import petSitterProfile from "@/public/assets/pet-sitter-info-page/pet-sitter-profile.svg";
@@ -43,51 +42,103 @@ interface PetSitterInfo {
   image: string;
 }
 
+interface PetSitterData {
+  image: string;
+  images: [];
+  tradename: string;
+  fullname: string;
+  experience: string;
+  rating: number;
+  address: Address;
+  latitude: number;
+  longitude: number;
+  pet_type1?: string | null;
+  pet_type2?: string | null;
+  pet_type3?: string | null;
+  pet_type4?: string | null;
+  introduction: string;
+  service: string;
+  myplace: string;
+}
+
 export default function PetSitterInfoPage() {
+  const [image, setImage] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+  const { petsitterid } = router.query;
+
+  useEffect(() => {
+    if (!router.isReady || !petsitterid) {
+      setError("Petsitter ID is missing or invalid.");
+      return;
+    }
+
+    const fetchProfile = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get(
+          `/api/petsitters/petsitterprofile/${petsitterid}?status=Approved`
+        );
+
+        if (response.status === 200) {
+          const data: PetSitterData = response.data.data;
+
+          const validImages = data.images.filter(
+            (image: string) => image.trim() !== ""
+          );
+
+          setImage(validImages);
+        } else {
+          setError("No images available for this petsitter.");
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching user data:", error);
+        setError("Failed to load user data.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [router.isReady, petsitterid]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <div className="w-full bg-custom-gray min-h-screen font-sans tracking-wide">
-      <PetSitterCarousel />
+      <PetSitterCarousel images={image} />
       <PetSitterInformation />
     </div>
   );
 }
 
-const PetSitterCarousel: React.FC = () => {
-  // State for controlling the number of slides per view
-  const [slidesPerView, setSlidesPerView] = useState(1);
-
-  // Detect screen size and adjust slidesPerView
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setSlidesPerView(1); // For mobile screens
-      } else {
-        setSlidesPerView(2.25); // For desktop screens
-      }
-    };
-
-    handleResize(); // Set initial value
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const petImages = [
-    { image: petSitter1, title: "Pet Sitter 1" },
-    { image: petSitter2, title: "Pet Sitter 2" },
-    { image: petSitter3, title: "Pet Sitter 3" },
-    { image: petSitter1, title: "Pet Sitter 1" },
-    { image: petSitter2, title: "Pet Sitter 2" },
-    { image: petSitter3, title: "Pet Sitter 3" },
-  ];
+const PetSitterCarousel: React.FC<{ images: string[] }> = ({ images }) => {
+  const adjustedImages =
+    images.length < 6
+      ? [
+          ...images,
+          ...new Array(6 - images.length).fill(
+            "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png"
+          ),
+        ]
+      : images;
 
   return (
     <div className="relative w-full md:py-10">
       <Swiper
-        slidesPerView={slidesPerView}
+        slidesPerView={1}
         spaceBetween={16}
+        breakpoints={{
+          768: {
+            // Media query for `md`
+            slidesPerView: 2.25,
+          },
+        }}
         loop={true}
         centeredSlides={true}
         navigation={{
@@ -97,12 +148,12 @@ const PetSitterCarousel: React.FC = () => {
         modules={[FreeMode, Pagination, Navigation]}
         className="mySwiper"
       >
-        {petImages.map((slide, index) => (
+        {adjustedImages.map((image, index) => (
           <SwiperSlide key={index}>
             <div className="relative w-full md:h-[413px] h-[281px] z-10">
-              <Image
-                src={slide.image}
-                alt={slide.title}
+              <img
+                src={image} // Use a correct relative path
+                alt={`Pet Sitter Image ${index + 1}`}
                 className="object-cover w-full h-full"
               />
             </div>
