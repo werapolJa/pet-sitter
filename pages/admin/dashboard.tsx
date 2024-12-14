@@ -72,24 +72,28 @@ const AdminDashboard = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
             />
+
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="2.25 1 10 10" // Adjusted viewBox to match path size
-              fill="currentColor"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
               className="w-5 h-5 opacity-70 text-gray-400 cursor-pointer"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
               onClick={handleSearch}
             >
               <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C10.8844 16 12.5949 15.2554 13.8533 14.0443C13.8806 14.0085 13.9106 13.9741 13.9433 13.9413C13.9759 13.9087 14.0103 13.8788 14.046 13.8516C15.2561 12.5934 16 10.8836 16 9C16 5.13401 12.866 2 9 2ZM16.0328 14.6166C17.2639 13.0771 18 11.1245 18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9C0 13.9706 4.02944 18 9 18C11.1255 18 13.0789 17.2632 14.6188 16.031L18.2933 19.7055C18.6838 20.0961 19.317 20.0961 19.7075 19.7055C20.098 19.315 20.098 18.6819 19.7075 18.2913L16.0328 14.6166Z"
+                fill="#AEB1C3"
               />
             </svg>
           </div>
         </div>
 
         {/*Table*/}
-        <div className="overflow-x-auto bg-white rounded-lg">
+        <div className="overflow-x-auto bg-white rounded-xl">
           <table className="w-full">
             <thead>
               <tr className="bg-black text-white h-12">
@@ -164,7 +168,7 @@ const AdminDashboard = () => {
         </div>
 
         {/*Pagination*/}
-        <div className="flex justify-center items-center mt-6">
+        <div className="flex justify-center items-center mt-6 pb-2">
           <nav className="flex items-center gap-3 px-2 py-1 rounded-lg">
             <button
               className="p-2 hover:bg-white rounded-md transition-colors"
