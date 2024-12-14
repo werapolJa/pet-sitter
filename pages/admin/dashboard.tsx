@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import withAdminAuth from "@/utils/withAdminAuth";
 import { Sidebar } from "@/components/admin-page/Sidebar";
 import Image from "next/image"; // Import Image component from Next.js
@@ -16,7 +17,7 @@ const AdminDashboard = () => {
   const fetchData = async (query: string = "") => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/petowner?search=${query}`);
+      const response = await fetch(`/api/admin/petowners?search=${query}`);
       const result = await response.json();
       if (result.data) {
         setData(result.data);
@@ -108,7 +109,13 @@ const AdminDashboard = () => {
               {currentData.map((user, index) => (
                 <tr key={index} className="border-y border-y-gray-200 h-[92px]">
                   <td className="pl-4 w-[240px] max-w-[240px]">
-                    <div className="flex items-center gap-2 h-full">
+                    <Link
+                      href={{
+                        pathname: "/admin/petowners/profile",
+                        query: { uid: `${user.uid}` },
+                      }}
+                      className="flex items-center gap-2 h-full cursor-pointer"
+                    >
                       {user.image ? (
                         <Image
                           src={user.image}
@@ -127,7 +134,7 @@ const AdminDashboard = () => {
                         />
                       )}
                       <span className="truncate">{user.full_name}</span>
-                    </div>
+                    </Link>
                   </td>
                   <td className="w-[207px] max-w-[207px] truncate">
                     {user.phone}
@@ -136,10 +143,10 @@ const AdminDashboard = () => {
                     {user.email}
                   </td>
                   <td className="w-[224px] max-w-[224px] truncate">
-                    {user.Pet}
+                    {user.pet}
                   </td>
                   <td className="w-[120px] max-w-[120px]">
-                    {user.Status === "Banned" ? (
+                    {user.status === "Banned" ? (
                       <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
                         <span className="text-red-500 font-medium">Banned</span>

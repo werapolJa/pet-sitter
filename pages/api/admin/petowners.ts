@@ -59,12 +59,13 @@ export default async function handler(
 
     // Format the response data
     const formattedData = result.rows.map((user) => ({
+      uid: user.user_id,
       image: user.image ? `${user.image}` : null,
       full_name: user.full_name,
       phone: user.phone,
       email: user.email,
-      Pet: user.pet_count,
-      Status: user.status,
+      pet: user.pet_count,
+      status: user.status,
     }));
 
     return res.status(200).json({ data: formattedData });
