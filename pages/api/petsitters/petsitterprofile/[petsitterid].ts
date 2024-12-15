@@ -16,9 +16,10 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       let query = `
-        SELECT pet_sitters.*, images.*
+        SELECT pet_sitters.*, images.* , addresses.*
         FROM pet_sitters
         LEFT JOIN images ON pet_sitters.petsitter_id = images.petsitter_id
+        LEFT JOIN addresses ON pet_sitters.petsitter_id = addresses.petsitter_id
         WHERE pet_sitters.petsitter_id = $1
       `;
 
