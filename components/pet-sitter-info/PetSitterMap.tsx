@@ -19,8 +19,8 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 interface PetSitterMapProps {
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   tradename: string;
 }
 
@@ -29,6 +29,21 @@ const PetSitterMap: React.FC<PetSitterMapProps> = ({
   longitude,
   tradename,
 }) => {
+  const fallbackImage =
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png"; // Path to your fallback image
+
+  // If latitude or longitude is null, show the fallback image
+  if (latitude === null || longitude === null) {
+    return (
+      <div className="w-full h-[219px] mt-6 md:mt-10">
+        <img
+          src={fallbackImage}
+          alt="Fallback Map"
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
   return (
     <div className="w-full h-[219px] mt-6 md:mt-10">
       <MapContainer
