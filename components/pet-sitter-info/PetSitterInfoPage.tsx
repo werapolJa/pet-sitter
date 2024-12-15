@@ -16,31 +16,7 @@ import { FreeMode, Pagination, Navigation } from "swiper/modules";
 
 import arrowLeft from "@/public/assets/pet-sitter-info-page/arrow-left.svg";
 import arrowRight from "@/public/assets/pet-sitter-info-page/arrow-right.svg";
-import petSitterProfile from "@/public/assets/pet-sitter-info-page/pet-sitter-profile.svg";
 import pinAddress from "@/public/assets/pet-sitter-info-page/pin-address.svg";
-
-interface Address {
-  district: string;
-  province: string;
-}
-
-interface PetSitterInfo {
-  tradename: string;
-  fullname: string;
-  experience: string;
-  rating: number;
-  address: Address;
-  latitude: number;
-  longitude: number;
-  pet_type1?: string | null;
-  pet_type2?: string | null;
-  pet_type3?: string | null;
-  pet_type4?: string | null;
-  introduction: string;
-  service: string;
-  myplace: string;
-  image: string;
-}
 
 export default function PetSitterInfoPage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -55,6 +31,10 @@ export default function PetSitterInfoPage() {
   const [petTypeCat, setPetTypeCat] = useState<string>("");
   const [petTypeBird, setPetTypeBird] = useState<string>("");
   const [petTypeRabbit, setPetTypeRabbit] = useState<string>("");
+  const [province, setProvince] = useState<string>("");
+  const [district, setDistrict] = useState<string>("");
+  const [latitude, setLatitude] = useState<number>(0); // Set initial value to 0 (Not null)
+  const [longitude, setLongitude] = useState<number>(0); // Set initial value to 0 (Not null)
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -90,6 +70,10 @@ export default function PetSitterInfoPage() {
           setPetTypeCat(data.pet_type_cat);
           setPetTypeBird(data.pet_type_bird);
           setPetTypeRabbit(data.pet_type_rabbit);
+          setProvince(data.province);
+          setDistrict(data.district);
+          setLatitude(data.latitude);
+          setLongitude(data.longitude);
 
           const validImages = data.images.filter(
             (image: string) => image.trim() !== ""
@@ -129,6 +113,10 @@ export default function PetSitterInfoPage() {
         petTypeCat={petTypeCat}
         petTypeBird={petTypeBird}
         petTypeRabbit={petTypeRabbit}
+        province={province}
+        district={district}
+        latitude={latitude}
+        longitude={longitude}
       />
     </div>
   );
@@ -243,6 +231,10 @@ const PetSitterInformation: React.FC<{
   petTypeCat: string;
   petTypeBird: string;
   petTypeRabbit: string;
+  province: string;
+  district: string;
+  latitude: number;
+  longitude: number;
 }> = ({
   image,
   tradename,
@@ -255,31 +247,11 @@ const PetSitterInformation: React.FC<{
   petTypeCat,
   petTypeBird,
   petTypeRabbit,
+  province,
+  district,
+  latitude,
+  longitude,
 }) => {
-  const petSitterInfo = {
-    tradename: "Happy House!",
-    fullname: "Jane Maison",
-    experience: "1.5",
-    rating: 4.1,
-    address: { district: "Senanikom", province: "Bangkok" },
-    latitude: 13.815,
-    longitude: 100.571,
-    pet_type1: "Dog",
-    pet_type2: "Cat",
-    pet_type3: null,
-    pet_type4: "Rabbit",
-    introduction:
-      "Hello there! My name is Jane Maison, and I'm your friendly and reliable pet sitter in Senanikom, Bangkok. I am passionate about animals and have dedicated myself to ensuring the well-being and happiness of your furry, feathery, and hoppy companions. With a big heart and a spacious house, I provide a safe and loving environment for cats, dogs, and rabbits while you're away. Let me introduce myself and tell you a bit more about the pet care services I offer.",
-    service: `🐱 Cat Sitting: Cats are fascinating creatures, and I take joy in catering to their independent yet affectionate nature. Whether your feline friend needs playtime, cuddles, or just a cozy spot to relax, I ensure they feel right at home.
-
-🐶 Dog Sitting: Dogs are not just pets; they're family. From energetic walks and engaging playtime to soothing belly rubs, I provide a balanced and fun experience for dogs of all sizes and breeds. Safety and happiness are my top priorities.
-
-🐇 Rabbit Sitting: With their adorable antics and gentle personalities, rabbits require a special kind of care. I am well-versed in providing them with a comfortable environment, appropriate diet, and ample playtime to keep them content and hopping with joy.`,
-    myplace:
-      "My residence is a spacious house nestled in the serene neighborhood of Senanikom. Your beloved pets will have plenty of room to roam and explore while enjoying a safe and secure environment. I have designated areas for play, relaxation, and sleep, ensuring your pets feel comfortable and at ease throughout their stay.",
-    image: petSitterProfile,
-  };
-
   const Map = useMemo(
     () =>
       dynamic(() => import("@/components/pet-sitter-info/PetSitterMap"), {
@@ -301,8 +273,8 @@ const PetSitterInformation: React.FC<{
 
   return (
     <div className="flex flex-col md:flex-row">
-      <div className="px-4 py-10 md:pt-6 md:px-20 md:w-[58%] md:ml-20">
-        <div>
+      <div className="px-4 py-10 md:pt-6 md:pl-20 md:w-[848px] md:ml-20">
+        <div className="md:w-[688px]">
           <h1 className="text-4xl md:text-[3.5rem] font-bold">{tradename}</h1>
           <h3 className="mt-6 mb-3 md:mb-3 text-xl md:text-2xl font-bold  md:mt-12">
             Introduction
@@ -323,18 +295,17 @@ const PetSitterInformation: React.FC<{
             {place}
           </p>
           <Map
-            latitude={petSitterInfo.latitude}
-            longitude={petSitterInfo.longitude}
-            tradename={petSitterInfo.tradename}
+            latitude={latitude}
+            longitude={longitude}
+            tradename={tradename}
           />
-          <div className="hidden md:block">
+          <div className="hidden md:block md:relative md:w-[calc(100% + 80px)] md:-mx-10">
             <PetSitterReview />
           </div>
         </div>
       </div>
       <div className="md:hidden">
         <ProfileCard
-          petSitterInfo={petSitterInfo}
           image={image}
           tradename={tradename}
           name={name}
@@ -343,15 +314,16 @@ const PetSitterInformation: React.FC<{
           petTypeCat={petTypeCat}
           petTypeBird={petTypeBird}
           petTypeRabbit={petTypeRabbit}
+          province={province}
+          district={district}
         />
       </div>
       <div className="md:hidden">
         <PetSitterReview />
       </div>
-      <div className="hidden md:block md:w-1/4 md:mb-20">
+      <div className="hidden md:block md:mb-10 md:ml-[50px]">
         <div className="sticky top-4">
           <ProfileCard
-            petSitterInfo={petSitterInfo}
             image={image}
             tradename={tradename}
             name={name}
@@ -360,6 +332,8 @@ const PetSitterInformation: React.FC<{
             petTypeCat={petTypeCat}
             petTypeBird={petTypeBird}
             petTypeRabbit={petTypeRabbit}
+            province={province}
+            district={district}
           />
         </div>
       </div>
@@ -368,7 +342,6 @@ const PetSitterInformation: React.FC<{
 };
 
 const ProfileCard: React.FC<{
-  petSitterInfo: PetSitterInfo;
   image: string | null;
   tradename: string;
   name: string;
@@ -377,8 +350,9 @@ const ProfileCard: React.FC<{
   petTypeCat: string;
   petTypeBird: string;
   petTypeRabbit: string;
+  province: string;
+  district: string;
 }> = ({
-  petSitterInfo,
   image,
   tradename,
   name,
@@ -387,6 +361,8 @@ const ProfileCard: React.FC<{
   petTypeCat,
   petTypeBird,
   petTypeRabbit,
+  province,
+  district,
 }) => {
   const fallbackImage =
     "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
@@ -418,7 +394,7 @@ const ProfileCard: React.FC<{
             alt="Pet Sitter Image"
             width={120}
             height={120}
-            className="w-30 h-30 md:w-[160px] md:h-[160px] rounded-full object-cover"
+            className="w-30 h-30 md:w-[160px] md:h-[160px] rounded-full object-cover h-[120px]"
           />
           <h3 className="mt-6 text-2xl md:text-4xl leading-8 font-bold md:leading-10">
             {tradename}
@@ -438,7 +414,7 @@ const ProfileCard: React.FC<{
                 type="radio"
                 name="rating"
                 className={`mask mask-star-2 ${
-                  index < petSitterInfo.rating ? "bg-green-500" : "hidden"
+                  index < 5 ? "bg-green-500" : "hidden" // add rating here
                 } w-[16px] h-4 md:h-5 md:w-5 p-[6px] mx-[2px] my-[6px] md:mt-[6px] md:mb-3 md:gap-[2px]`}
                 readOnly
                 disabled
@@ -454,7 +430,7 @@ const ProfileCard: React.FC<{
               className="w-[11px] h-[14px] md:w-4 md:h-5"
             />
             <span className="text-gray-400 text-sm leading-6 font-medium md:text-base md:font-medium">
-              {petSitterInfo.address.district}, {petSitterInfo.address.province}
+              {district}, {province}
             </span>
           </div>
           <div className="mt-4 flex flex-row items-center gap-2.5">
@@ -556,7 +532,7 @@ const PetSitterReview: React.FC = () => {
     <div>
       <div className="md:rounded-tl-[120px]  md:rounded-tr-[16px]  flex bg-gray-100 md:mt-10">
         <div className="md:m-6 flex flex-col md:flex-row w-full h-[374px] md:h-[194px] m-4 bg-white rounded-tl-[99px] md:rounded-bl-[99px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[12px]">
-          <div className="flex flex-col items-center justify-center mt-6 ml-6 md:mr-6 md:w-[30%]  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
+          <div className="flex flex-col items-center justify-center mt-6 ml-6 md:mr-6 md:w-[25%]  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
             <span className="text-white text-4xl font-bold leading-10">
               {mockUpReview.averageRating.toFixed(1)}
             </span>
