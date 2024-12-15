@@ -42,27 +42,19 @@ interface PetSitterInfo {
   image: string;
 }
 
-interface PetSitterData {
-  image: string;
-  images: [];
-  tradename: string;
-  fullname: string;
-  experience: string;
-  rating: number;
-  address: Address;
-  latitude: number;
-  longitude: number;
-  pet_type1?: string | null;
-  pet_type2?: string | null;
-  pet_type3?: string | null;
-  pet_type4?: string | null;
-  introduction: string;
-  service: string;
-  myplace: string;
-}
-
 export default function PetSitterInfoPage() {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [image, setImage] = useState<string[]>([]);
+  const [tradename, setTradname] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [experience, setExperience] = useState<string>("");
+  const [introduction, setIntroduction] = useState<string>("");
+  const [service, setService] = useState<string>("");
+  const [place, setPlace] = useState<string>("");
+  const [petTypeDog, setPetTypeDog] = useState<string>("");
+  const [petTypeCat, setPetTypeCat] = useState<string>("");
+  const [petTypeBird, setPetTypeBird] = useState<string>("");
+  const [petTypeRabbit, setPetTypeRabbit] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,7 +77,19 @@ export default function PetSitterInfoPage() {
         );
 
         if (response.status === 200) {
-          const data: PetSitterData = response.data.data;
+          const data = response.data.data;
+
+          setProfileImage(data.image);
+          setTradname(data.trade_name);
+          setName(data.full_name);
+          setExperience(data.experience);
+          setIntroduction(data.intro);
+          setService(data.service);
+          setPlace(data.place);
+          setPetTypeDog(data.pet_type_dog);
+          setPetTypeCat(data.pet_type_cat);
+          setPetTypeBird(data.pet_type_bird);
+          setPetTypeRabbit(data.pet_type_rabbit);
 
           const validImages = data.images.filter(
             (image: string) => image.trim() !== ""
@@ -98,6 +102,7 @@ export default function PetSitterInfoPage() {
       } catch (error: unknown) {
         console.error("Error fetching user data:", error);
         setError("Failed to load user data.");
+        setProfileImage(null);
       } finally {
         setIsLoading(false);
       }
@@ -112,21 +117,48 @@ export default function PetSitterInfoPage() {
   return (
     <div className="w-full bg-custom-gray min-h-screen font-sans tracking-wide">
       <PetSitterCarousel images={image} />
-      <PetSitterInformation />
+      <PetSitterInformation
+        image={profileImage}
+        tradename={tradename}
+        name={name}
+        experience={experience}
+        introduction={introduction}
+        service={service}
+        place={place}
+        petTypeDog={petTypeDog}
+        petTypeCat={petTypeCat}
+        petTypeBird={petTypeBird}
+        petTypeRabbit={petTypeRabbit}
+      />
     </div>
   );
 }
 
 const PetSitterCarousel: React.FC<{ images: string[] }> = ({ images }) => {
-  const adjustedImages =
-    images.length < 6
-      ? [
-          ...images,
-          ...new Array(6 - images.length).fill(
-            "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png"
-          ),
-        ]
-      : images;
+  const fallbackImage =
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
+
+  let adjustedImages: string[];
+
+  if (images.length === 0) {
+    // No images: Use 6 fallback images
+    adjustedImages = new Array(6).fill(fallbackImage);
+  } else if (images.length === 5) {
+    // Exactly 5 images: Duplicate the middle image
+    const middleImage = images[Math.floor(images.length / 2)];
+    adjustedImages = [...images, middleImage];
+  } else if (images.length < 6) {
+    // Fewer than 6 images (excluding 5): Duplicate images until length is 6
+    adjustedImages = [...images];
+    let index = 0;
+    while (adjustedImages.length < 6) {
+      adjustedImages.push(images[index % images.length]); // Duplicate images cyclically
+      index++;
+    }
+  } else {
+    // 6 or more images: Use the images as they are
+    adjustedImages = images;
+  }
 
   return (
     <div className="relative w-full md:py-10">
@@ -199,94 +231,31 @@ const PetSitterCarousel: React.FC<{ images: string[] }> = ({ images }) => {
   );
 };
 
-const ProfileCard: React.FC<{ petSitterInfo: PetSitterInfo }> = ({
-  petSitterInfo,
+const PetSitterInformation: React.FC<{
+  image: string | null;
+  tradename: string;
+  name: string;
+  experience: string;
+  introduction: string;
+  place: string;
+  service: string;
+  petTypeDog: string;
+  petTypeCat: string;
+  petTypeBird: string;
+  petTypeRabbit: string;
+}> = ({
+  image,
+  tradename,
+  name,
+  experience,
+  introduction,
+  service,
+  place,
+  petTypeDog,
+  petTypeCat,
+  petTypeBird,
+  petTypeRabbit,
 }) => {
-  const maxStars = 5;
-  const petTypeStyles: { [key: string]: string } = {
-    Dog: "flex h-8 items-center justify-center text-base leading-6 font-medium text-green-500 bg-green-100 border border-green-500 rounded-[99px] py-1 px-4",
-    Cat: "flex h-8 items-center justify-center text-base leading-6 font-medium text-pink-500 bg-pink-100 border border-pink-500 rounded-[99px] py-1 px-4",
-    Bird: "flex h-8 items-center justify-center text-base leading-6 font-medium text-blue-500 bg-blue-100 border border-blue-500 rounded-[99px] py-1 px-4",
-    Rabbit:
-      "flex h-8 items-center justify-center text-base leading-6 font-medium text-orange-400 bg-orange-100 border border-orange-400 rounded-[99px] py-1 px-4",
-  };
-
-  const renderPetType = (petType: string | null) => {
-    if (!petType) return null;
-    return (
-      <div key={petType} className={`${petTypeStyles[petType]}`}>
-        {petType}
-      </div>
-    );
-  };
-
-  return (
-    <div>
-      {/* Profile Card */}
-      <div className="md:sticky md: top-10 md:mb-12  w-[full] h-[500px] md:h-[562px] bg-white flex flex-col md:w-[416px] md:mr-20 md:rounded-2xl md:ml-auto md:shadow-lg">
-        <div className="flex flex-col items-center justify-center mt-10">
-          <Image
-            src={petSitterProfile}
-            alt="Pet Sitter Image"
-            width={120}
-            height={120}
-            className="w-30 h-30 md:w-[160px] md:h-[160px] rounded-full "
-          />
-          <h3 className="mt-6 text-2xl md:text-4xl leading-8 font-bold md:leading-10">
-            {petSitterInfo.tradename}
-          </h3>
-          <div className="flex items-center gap-2 mt-[2px] md:mt-[4px]">
-            <span className="text-lg md:text-xl leading-6 md:leading-7 font-medium md:font-bold">
-              {petSitterInfo.fullname}
-            </span>
-            <span className="text-base leading-7 font-medium text-green-500">
-              {petSitterInfo.experience} Years Exp.
-            </span>
-          </div>
-          <div className="rating">
-            {Array.from({ length: maxStars }, (_, index) => (
-              <input
-                key={index}
-                type="radio"
-                name="rating"
-                className={`mask mask-star-2 ${
-                  index < petSitterInfo.rating ? "bg-green-500" : "hidden"
-                } w-[16px] h-4 md:h-5 md:w-5 p-[6px] mx-[2px] my-[6px] md:mt-[6px] md:mb-3 md:gap-[2px]`}
-                readOnly
-                disabled
-              />
-            ))}
-          </div>
-          <div className="mt-3 flex flex-row items-center gap-2">
-            <Image
-              src={pinAddress}
-              alt="Pin Address"
-              width={11}
-              height={14}
-              className="w-[11px] h-[14px] md:w-4 md:h-5"
-            />
-            <span className="text-gray-400 text-sm leading-6 font-medium md:text-base md:font-medium">
-              {petSitterInfo.address.district}, {petSitterInfo.address.province}
-            </span>
-          </div>
-          <div className="mt-4 flex flex-row items-center gap-2.5">
-            {renderPetType(petSitterInfo.pet_type1 ?? null)}
-            {renderPetType(petSitterInfo.pet_type2 ?? null)}
-            {renderPetType(petSitterInfo.pet_type3 ?? null)}
-            {renderPetType(petSitterInfo.pet_type4 ?? null)}
-          </div>
-          <div className="w-full h-[96px] border-t border-t-gray-200  flex items-center justify-center mt-10">
-            <button className="text-base leading-6 font-bold w-full md:w-[368px] h-[48px] bg-orange-500 text-white rounded-[99px] m-6">
-              Book Now
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const PetSitterInformation: React.FC = () => {
   const petSitterInfo = {
     tradename: "Happy House!",
     fullname: "Jane Maison",
@@ -320,37 +289,38 @@ const PetSitterInformation: React.FC = () => {
     []
   );
 
-  const servicesArray = petSitterInfo.service.split(/\n\s*\n/); // Split based on double line breaks
+  const formatServiceDescription = (text: string) => {
+    const safeText = text || "";
+    return safeText.split("\n").map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+  };
 
   return (
     <div className="flex flex-col md:flex-row">
       <div className="px-4 py-10 md:pt-6 md:px-20 md:w-[58%] md:ml-20">
         <div>
-          <h1 className="text-4xl md:text-[3.5rem] font-bold">
-            {petSitterInfo.tradename}
-          </h1>
+          <h1 className="text-4xl md:text-[3.5rem] font-bold">{tradename}</h1>
           <h3 className="mt-6 mb-3 md:mb-3 text-xl md:text-2xl font-bold  md:mt-12">
             Introduction
           </h3>
           <p className="text-justify leading-6 md:leading-7 text-sm md:text-base text-gray-500">
-            {petSitterInfo.introduction}
+            {introduction}
           </p>
           <h3 className="mt-6 mb-3 md:mb-3 text-xl md:text-2xl font-bold  md:mt-12">
             Services
           </h3>
-          {servicesArray.map((service, index) => (
-            <p
-              key={index}
-              className="text-justify leading-6 md:leading-7 mb-6 md:mb-7 text-sm md:text-base text-gray-500"
-            >
-              {service}
-            </p> // Render each service item in a new paragraph
-          ))}
+          <div className="service-description text-justify leading-6 md:leading-7 mb-6 md:mb-7 text-sm md:text-base text-gray-500">
+            {formatServiceDescription(service)}
+          </div>
           <h3 className="mt-6 mb-3 md:mb-3 text-xl md:text-2xl font-bold md:mt-12">
             My Place
           </h3>
           <p className="text-justify leading-6 md:leading-7 text-sm md:text-base text-gray-500">
-            {petSitterInfo.myplace}
+            {place}
           </p>
           <Map
             latitude={petSitterInfo.latitude}
@@ -363,14 +333,141 @@ const PetSitterInformation: React.FC = () => {
         </div>
       </div>
       <div className="md:hidden">
-        <ProfileCard petSitterInfo={petSitterInfo} />
+        <ProfileCard
+          petSitterInfo={petSitterInfo}
+          image={image}
+          tradename={tradename}
+          name={name}
+          experience={experience}
+          petTypeDog={petTypeDog}
+          petTypeCat={petTypeCat}
+          petTypeBird={petTypeBird}
+          petTypeRabbit={petTypeRabbit}
+        />
       </div>
       <div className="md:hidden">
         <PetSitterReview />
       </div>
       <div className="hidden md:block md:w-1/4 md:mb-20">
         <div className="sticky top-4">
-          <ProfileCard petSitterInfo={petSitterInfo} />
+          <ProfileCard
+            petSitterInfo={petSitterInfo}
+            image={image}
+            tradename={tradename}
+            name={name}
+            experience={experience}
+            petTypeDog={petTypeDog}
+            petTypeCat={petTypeCat}
+            petTypeBird={petTypeBird}
+            petTypeRabbit={petTypeRabbit}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProfileCard: React.FC<{
+  petSitterInfo: PetSitterInfo;
+  image: string | null;
+  tradename: string;
+  name: string;
+  experience: string;
+  petTypeDog: string;
+  petTypeCat: string;
+  petTypeBird: string;
+  petTypeRabbit: string;
+}> = ({
+  petSitterInfo,
+  image,
+  tradename,
+  name,
+  experience,
+  petTypeDog,
+  petTypeCat,
+  petTypeBird,
+  petTypeRabbit,
+}) => {
+  const fallbackImage =
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
+  const maxStars = 5;
+  const petTypeStyles: { [key: string]: string } = {
+    Dog: "flex h-8 items-center justify-center text-base leading-6 font-medium text-green-500 bg-green-100 border border-green-500 rounded-[99px] py-1 px-4",
+    Cat: "flex h-8 items-center justify-center text-base leading-6 font-medium text-pink-500 bg-pink-100 border border-pink-500 rounded-[99px] py-1 px-4",
+    Bird: "flex h-8 items-center justify-center text-base leading-6 font-medium text-blue-500 bg-blue-100 border border-blue-500 rounded-[99px] py-1 px-4",
+    Rabbit:
+      "flex h-8 items-center justify-center text-base leading-6 font-medium text-orange-400 bg-orange-100 border border-orange-400 rounded-[99px] py-1 px-4",
+  };
+
+  const renderPetType = (petType: string | null) => {
+    if (!petType) return null;
+    return (
+      <div key={petType} className={`${petTypeStyles[petType]}`}>
+        {petType}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* Profile Card */}
+      <div className="md:sticky md: top-10 md:mb-12  w-[full] h-[500px] md:h-[562px] bg-white flex flex-col md:w-[416px] md:mr-20 md:rounded-2xl md:ml-auto md:shadow-lg">
+        <div className="flex flex-col items-center justify-center mt-10">
+          <img
+            src={image || fallbackImage}
+            alt="Pet Sitter Image"
+            width={120}
+            height={120}
+            className="w-30 h-30 md:w-[160px] md:h-[160px] rounded-full object-cover"
+          />
+          <h3 className="mt-6 text-2xl md:text-4xl leading-8 font-bold md:leading-10">
+            {tradename}
+          </h3>
+          <div className="flex items-center gap-2 mt-[2px] md:mt-[4px]">
+            <span className="text-lg md:text-xl leading-6 md:leading-7 font-medium md:font-bold">
+              {name}
+            </span>
+            <span className="text-base leading-7 font-medium text-green-500">
+              {experience}
+            </span>
+          </div>
+          <div className="rating">
+            {Array.from({ length: maxStars }, (_, index) => (
+              <input
+                key={index}
+                type="radio"
+                name="rating"
+                className={`mask mask-star-2 ${
+                  index < petSitterInfo.rating ? "bg-green-500" : "hidden"
+                } w-[16px] h-4 md:h-5 md:w-5 p-[6px] mx-[2px] my-[6px] md:mt-[6px] md:mb-3 md:gap-[2px]`}
+                readOnly
+                disabled
+              />
+            ))}
+          </div>
+          <div className="mt-3 flex flex-row items-center gap-2">
+            <Image
+              src={pinAddress}
+              alt="Pin Address"
+              width={11}
+              height={14}
+              className="w-[11px] h-[14px] md:w-4 md:h-5"
+            />
+            <span className="text-gray-400 text-sm leading-6 font-medium md:text-base md:font-medium">
+              {petSitterInfo.address.district}, {petSitterInfo.address.province}
+            </span>
+          </div>
+          <div className="mt-4 flex flex-row items-center gap-2.5">
+            {renderPetType(petTypeDog ?? null)}
+            {renderPetType(petTypeCat ?? null)}
+            {renderPetType(petTypeBird ?? null)}
+            {renderPetType(petTypeRabbit ?? null)}
+          </div>
+          <div className="w-full h-[96px] border-t border-t-gray-200  flex items-center justify-center mt-10">
+            <button className="text-base leading-6 font-bold w-full md:w-[368px] h-[48px] bg-orange-500 text-white rounded-[99px] m-6">
+              Book Now
+            </button>
+          </div>
         </div>
       </div>
     </div>
