@@ -58,7 +58,6 @@ export default async function handler(
         data: {
           ...result.rows[0], // Spread the other pet sitter details
           images, // Include the filtered images array
-          image: result.rows[0].image_1 || images[0], // Example of setting a default image if needed
         },
       });
     } catch (error) {
