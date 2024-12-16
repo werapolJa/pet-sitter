@@ -6,17 +6,44 @@ import { useSearchParams } from "next/navigation";
 import withAdminAuth from "@/utils/withAdminAuth";
 import { Sidebar } from "@/components/admin-page/Sidebar";
 
+interface Review {
+  petsitter_id: string;
+  petsitter_name: string;
+  petsitter_image: string | null;
+  rating: number;
+  review_message: string;
+  review_date: string;
+}
+
+interface Pet {
+  pet_name: string;
+  pet_type: string;
+}
+
+interface UserData {
+  user_id: string;
+  full_name: string;
+  phone: string;
+  id_number: string;
+  image: string | null;
+  birthdate: string;
+  status: string;
+  email: string;
+  pets: Pet[];
+  reviews: Review[];
+}
+
 const AdminPetownerProfile = () => {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
 
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
   const [activeTab, setActiveTab] = useState<"profile" | "pets" | "reviews">(
     "profile"
   );
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -28,31 +55,61 @@ const AdminPetownerProfile = () => {
     return date.toLocaleDateString("en-GB", options);
   };
 
+  const fetchUserData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/admin/petownerinfo?uid=${uid}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Failed to fetch data: ${errorData.error || response.statusText}`
+        );
+      }
+
+      const result = await response.json();
+      setUserData(result.data);
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (uid) {
-      const fetchData = async () => {
-        setLoading(true);
-        setError(null);
-
-        try {
-          const response = await fetch(`/api/admin/petownerinfo?uid=${uid}`);
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch data");
-          }
-
-          const result = await response.json();
-          setUserData(result.data);
-        } catch (err) {
-          setError((err as Error).message);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
+      fetchUserData();
     }
   }, [uid]);
+
+  const handleBanUnban = async () => {
+    if (!userData) return;
+
+    const newStatus = userData.status === "Normal" ? "Banned" : "Normal";
+
+    try {
+      const response = await fetch(`/api/admin/petownerinfo?uid=${uid}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update user status");
+      }
+
+      await fetchUserData();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setShowConfirmDialog(false);
+    }
+  };
 
   const renderTabContent = () => {
     if (loading) {
@@ -73,11 +130,7 @@ const AdminPetownerProfile = () => {
           <div className="flex p-10">
             <div className="w-60 h-60 rounded-full overflow-hidden flex-shrink-0 relative">
               <Image
-                src={
-                  userData.image
-                    ? userData.image
-                    : "https://via.placeholder.com/240"
-                }
+                src={userData.image || "https://via.placeholder.com/240"}
                 alt="Profile"
                 layout="fill"
                 objectFit="cover"
@@ -118,17 +171,12 @@ const AdminPetownerProfile = () => {
           <div className="p-6">
             <h2 className="text-lg font-bold mb-4">Pets</h2>
             {userData.pets && userData.pets.length > 0 ? (
-              userData.pets.map(
-                (
-                  pet: { pet_name: string; pet_type: string },
-                  index: number
-                ) => (
-                  <div key={index} className="mb-4">
-                    <p className="font-semibold">{pet.pet_name}</p>
-                    <p className="text-gray-600">{pet.pet_type}</p>
-                  </div>
-                )
-              )
+              userData.pets.map((pet: Pet, index: number) => (
+                <div key={index} className="mb-4">
+                  <p className="font-semibold">{pet.pet_name}</p>
+                  <p className="text-gray-600">{pet.pet_type}</p>
+                </div>
+              ))
             ) : (
               <p>No pets found for this user.</p>
             )}
@@ -139,7 +187,34 @@ const AdminPetownerProfile = () => {
         return (
           <div className="p-6">
             <h2 className="text-lg font-bold mb-4">Reviews</h2>
-            <p>Reviews section will go here.</p>
+            {userData.reviews && userData.reviews.length > 0 ? (
+              userData.reviews.map((review: Review, index: number) => (
+                <div key={index} className="mb-6 border-b pb-4">
+                  <div className="flex items-center mb-2">
+                    <Image
+                      src={
+                        review.petsitter_image ||
+                        "https://via.placeholder.com/50"
+                      }
+                      alt={review.petsitter_name}
+                      width={50}
+                      height={50}
+                      className="rounded-full mr-4"
+                    />
+                    <div>
+                      <p className="font-semibold">{review.petsitter_name}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(review.review_date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mb-2">Rating: {review.rating} / 5</p>
+                  <p>{review.review_message}</p>
+                </div>
+              ))
+            ) : (
+              <p>No reviews found for this user.</p>
+            )}
           </div>
         );
     }
@@ -187,16 +262,45 @@ const AdminPetownerProfile = () => {
               </button>
             </div>
             <div>{renderTabContent()}</div>
-            {activeTab === "profile" && (
+            {activeTab === "profile" && userData && (
               <div className="flex justify-end p-6">
-                <button className="text-orange-500 font-semibold hover:underline">
-                  Ban This User
+                <button
+                  onClick={() => setShowConfirmDialog(true)}
+                  className="text-orange-500 font-semibold hover:underline"
+                >
+                  {userData.status === "Normal"
+                    ? "Ban This User"
+                    : "Unban This User"}
                 </button>
               </div>
             )}
           </div>
         </div>
       </div>
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg">
+            <p className="mb-4">
+              Are you sure you want to{" "}
+              {userData?.status === "Normal" ? "ban" : "unban"} this user?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowConfirmDialog(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBanUnban}
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
