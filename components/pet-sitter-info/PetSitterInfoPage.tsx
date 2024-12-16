@@ -587,7 +587,7 @@ const PetSitterReview: React.FC = () => {
                   {formatDate(review.reviewDate)}
                 </div>
               </div>
-              <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-14">
+              <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-[68px]">
                 {[...Array(review.rating)].map((_, i) => (
                   <input
                     key={i}
