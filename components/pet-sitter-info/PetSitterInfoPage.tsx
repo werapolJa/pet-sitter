@@ -563,6 +563,24 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
   totalReviews,
   reviews,
 }) => {
+  const [filteredReviews, setFilteredReviews] = useState(reviews);
+  const [selectedRating, setSelectedRating] = useState<number | string>(
+    "All Reviews"
+  );
+
+  useEffect(() => {
+    filterReviews();
+  }, [selectedRating, reviews]);
+
+  const filterReviews = () => {
+    if (selectedRating === "All Reviews") {
+      setFilteredReviews(reviews);
+    } else {
+      setFilteredReviews(
+        reviews.filter((review) => review.rating === selectedRating)
+      );
+    }
+  };
   const fallbackImage =
     "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
   return (
@@ -580,12 +598,13 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
           <div className="md:flex-col">
             <h4 className="text-xl font-bold ml-6 mt-4">Rating & Reviews</h4>
 
-            <div className="items-center justify-start mx-6 space-y-2">
+            <div className="items-center justify-start mx-6 space-y-2 cursor-pointer">
               {["All Reviews", 5, 4, 3, 2, 1].map((rating, index) => (
                 <div
                   key={index}
+                  onClick={() => setSelectedRating(rating)}
                   className={`rating mr-2 h-8 items-center justify-center text-base border rounded-lg p-2 gap-[2px] ${
-                    rating === "All Reviews"
+                    rating === selectedRating
                       ? "border-orange-500 text-orange-500"
                       : "border-gray-200"
                   }`}
@@ -597,7 +616,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
                         key={i}
                         type="radio"
                         name={`rating-${rating}`}
-                        className="mask mask-star-2 bg-green-500 w-5 h-5"
+                        className="mask mask-star-2 bg-green-500 w-5 h-5 pointer-events-none"
                         readOnly
                         disabled
                       />
@@ -610,7 +629,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
         </div>
       </div>
       <div className="review-section">
-        {reviews.map((review, index) => (
+        {filteredReviews.map((review, index) => (
           <div key={index} className="flex flex-col bg-gray-100 px-4">
             <div className="flex flex-row mb-4 md:mb-0 pt-6">
               <img
