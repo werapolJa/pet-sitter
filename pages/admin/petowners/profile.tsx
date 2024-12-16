@@ -15,6 +15,7 @@ interface Review {
 }
 
 interface Pet {
+  pet_image: string;
   pet_name: string;
   pet_type: string;
 }
@@ -176,6 +177,13 @@ const AdminPetownerProfile = () => {
             {userData.pets && userData.pets.length > 0 ? (
               userData.pets.map((pet: Pet, index: number) => (
                 <div key={index} className="mb-4">
+                  <Image
+                    src={pet.pet_image || "https://via.placeholder.com/50"}
+                    alt={pet.pet_image}
+                    width={50}
+                    height={50}
+                    className="rounded-full mr-4"
+                  ></Image>
                   <p className="font-semibold">{pet.pet_name}</p>
                   <p className="text-gray-600">{pet.pet_type}</p>
                 </div>
