@@ -9,8 +9,6 @@ type UserWithPets = {
   email: string;
   status: string;
   pet_count: number;
-  birthdate: string;
-  id_number: string;
 };
 
 export default async function handler(
@@ -23,7 +21,6 @@ export default async function handler(
 
   try {
     const searchQuery = req.query.search as string;
-    const uidQuery = req.query.uid as string;
 
     // Base query with search conditions if search parameter exists
     const query = `
@@ -40,9 +37,9 @@ export default async function handler(
       from 
         users u
       left join 
-        pets p on u.user_id = p.user_id
-      left join 
         auth.users on u.user_id = auth.users.id
+      left join 
+        pets p on u.user_id = p.user_id
       ${
         searchQuery
           ? `
@@ -53,13 +50,7 @@ export default async function handler(
       `
           : ""
       }
-      ${
-        uidQuery
-          ? `
-      where 
-        u.user_id = $1`
-          : ""
-      }
+
       group by 
         u.user_id, u.full_name, u.phone, u.image, auth.users.email, u.status
     `;
@@ -67,8 +58,6 @@ export default async function handler(
     // Execute the query with or without search parameter
     const result = searchQuery
       ? await connectionPool.query<UserWithPets>(query, [`%${searchQuery}%`])
-      : uidQuery
-      ? await connectionPool.query<UserWithPets>(query, [`${uidQuery}`])
       : await connectionPool.query<UserWithPets>(query);
 
     // Format the response data
@@ -80,8 +69,6 @@ export default async function handler(
       email: user.email,
       pet: user.pet_count,
       status: user.status,
-      birthdate: user.birthdate,
-      idnumber: user.id_number,
     }));
 
     return res.status(200).json({ data: formattedData });

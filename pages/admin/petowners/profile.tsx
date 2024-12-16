@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -9,7 +10,7 @@ const AdminPetownerProfile = () => {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
 
-  const [userData, setUserData] = useState<any>(null); // State to store API data
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,20 +18,16 @@ const AdminPetownerProfile = () => {
     "profile"
   );
 
-  // Format the date to "20 Feb 2001"
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-
     const options: Intl.DateTimeFormatOptions = {
       day: "2-digit",
       month: "short",
       year: "numeric",
     };
-
     return date.toLocaleDateString("en-GB", options);
   };
 
-  // Fetch user data based on uid
   useEffect(() => {
     if (uid) {
       const fetchData = async () => {
@@ -38,16 +35,14 @@ const AdminPetownerProfile = () => {
         setError(null);
 
         try {
-          const response = await fetch(
-            `http://localhost:3000/api/admin/petowners?uid=${uid}`
-          );
+          const response = await fetch(`/api/admin/petownerinfo?uid=${uid}`);
 
           if (!response.ok) {
             throw new Error("Failed to fetch data");
           }
 
           const result = await response.json();
-          setUserData(result.data[0]); // Assuming the API returns an array and we take the first object
+          setUserData(result.data);
         } catch (err) {
           setError((err as Error).message);
         } finally {
@@ -59,7 +54,6 @@ const AdminPetownerProfile = () => {
     }
   }, [uid]);
 
-  // Render tab content
   const renderTabContent = () => {
     if (loading) {
       return <div className="p-10">Loading...</div>;
@@ -77,7 +71,6 @@ const AdminPetownerProfile = () => {
       case "profile":
         return (
           <div className="flex p-10">
-            {/* Profile Image */}
             <div className="w-60 h-60 rounded-full overflow-hidden flex-shrink-0 relative">
               <Image
                 src={
@@ -86,13 +79,11 @@ const AdminPetownerProfile = () => {
                     : "https://via.placeholder.com/240"
                 }
                 alt="Profile"
-                layout="fill" // Ensure the image fills the container
-                objectFit="cover" // Crop and fit the image properly
-                objectPosition="center" // Center the image
+                layout="fill"
+                objectFit="cover"
+                objectPosition="center"
               />
             </div>
-
-            {/* Profile Info */}
             <div className="ml-8 space-y-4 h-[488px] bg-gray-50 w-full rounded-lg p-4">
               <div>
                 <p className="text-gray-500 font-semibold">Pet Owner Name</p>
@@ -112,12 +103,11 @@ const AdminPetownerProfile = () => {
               </div>
               <div>
                 <p className="text-gray-500 font-semibold">ID Number</p>
-                <p>{userData.idnumber}</p>
+                <p>{userData.id_number}</p>
               </div>
               <div>
                 <p className="text-gray-500 font-semibold">Date of Birth</p>
-                <p>{formatDate(userData.birthdate)}</p>{" "}
-                {/* Format the birthdate */}
+                <p>{formatDate(userData.birthdate)}</p>
               </div>
             </div>
           </div>
@@ -127,7 +117,21 @@ const AdminPetownerProfile = () => {
         return (
           <div className="p-6">
             <h2 className="text-lg font-bold mb-4">Pets</h2>
-            <p>Total Pets: {userData.pet}</p>
+            {userData.pets && userData.pets.length > 0 ? (
+              userData.pets.map(
+                (
+                  pet: { pet_name: string; pet_type: string },
+                  index: number
+                ) => (
+                  <div key={index} className="mb-4">
+                    <p className="font-semibold">{pet.pet_name}</p>
+                    <p className="text-gray-600">{pet.pet_type}</p>
+                  </div>
+                )
+              )
+            ) : (
+              <p>No pets found for this user.</p>
+            )}
           </div>
         );
 
@@ -143,17 +147,13 @@ const AdminPetownerProfile = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main Content */}
       <div className="flex-1 px-10 pt-[56px] pb-52">
         <div className="flex flex-col gap-8">
           <h1 className="text-2xl font-bold">
             {loading ? "Loading..." : userData?.full_name || "Profile"}
           </h1>
           <div className="w-full h-[700px] bg-white rounded-lg">
-            {/* Tabs */}
             <div className="flex space-x-4 bg-gray-100 rounded-lg">
               <button
                 onClick={() => setActiveTab("profile")}
@@ -165,7 +165,6 @@ const AdminPetownerProfile = () => {
               >
                 Profile
               </button>
-
               <button
                 onClick={() => setActiveTab("pets")}
                 className={`py-2 px-6 w-32 font-semibold rounded-t-lg ${
@@ -176,7 +175,6 @@ const AdminPetownerProfile = () => {
               >
                 Pets
               </button>
-
               <button
                 onClick={() => setActiveTab("reviews")}
                 className={`py-2 px-6 w-32 font-semibold rounded-t-lg ${
@@ -188,11 +186,7 @@ const AdminPetownerProfile = () => {
                 Reviews
               </button>
             </div>
-
-            {/* Tab Content */}
             <div>{renderTabContent()}</div>
-
-            {/* Ban Button */}
             {activeTab === "profile" && (
               <div className="flex justify-end p-6">
                 <button className="text-orange-500 font-semibold hover:underline">
