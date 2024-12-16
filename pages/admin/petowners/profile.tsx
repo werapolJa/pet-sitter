@@ -1,10 +1,9 @@
-"use client";
-
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import withAdminAuth from "@/utils/withAdminAuth";
 import { Sidebar } from "@/components/admin-page/Sidebar";
+import Link from "next/link";
 
 interface Review {
   petsitter_id: string;
@@ -137,30 +136,34 @@ const AdminPetownerProfile = () => {
                 objectPosition="center"
               />
             </div>
-            <div className="ml-8 space-y-4 h-[488px] bg-gray-50 w-full rounded-lg p-4">
+            <div className="ml-8 space-y-6 h-[488px] bg-gray-50 w-full rounded-lg p-8">
               <div>
-                <p className="text-gray-500 font-semibold">Pet Owner Name</p>
-                <p className="text-lg font-bold">{userData.full_name}</p>
+                <p className="text-gray-400 font-bold text-xl">
+                  Pet Owner Name
+                </p>
+                <p className="text-base font-normal">{userData.full_name}</p>
               </div>
               <div>
-                <p className="text-gray-500 font-semibold">Email</p>
-                <p>{userData.email}</p>
+                <p className="text-gray-400 font-bold text-xl">Email</p>
+                <p className="text-base font-normal">{userData.email}</p>
               </div>
               <div>
-                <p className="text-gray-500 font-semibold">Phone</p>
-                <p>{userData.phone}</p>
+                <p className="text-gray-400 font-bold text-xl">Phone</p>
+                <p className="text-base font-normal">{userData.phone}</p>
               </div>
               <div>
-                <p className="text-gray-500 font-semibold">Status</p>
-                <p>{userData.status}</p>
+                <p className="text-gray-400 font-bold text-xl">Status</p>
+                <p className="text-base font-normal">{userData.status}</p>
               </div>
               <div>
-                <p className="text-gray-500 font-semibold">ID Number</p>
-                <p>{userData.id_number}</p>
+                <p className="text-gray-400 font-bold text-xl">ID Number</p>
+                <p className="text-base font-normal">{userData.id_number}</p>
               </div>
               <div>
-                <p className="text-gray-500 font-semibold">Date of Birth</p>
-                <p>{formatDate(userData.birthdate)}</p>
+                <p className="text-gray-400 font-bold text-xl">Date of Birth</p>
+                <p className="text-base font-normal">
+                  {formatDate(userData.birthdate)}
+                </p>
               </div>
             </div>
           </div>
@@ -225,9 +228,29 @@ const AdminPetownerProfile = () => {
       <Sidebar />
       <div className="flex-1 px-10 pt-[56px] pb-52">
         <div className="flex flex-col gap-8">
-          <h1 className="text-2xl font-bold">
-            {loading ? "Loading..." : userData?.full_name || "Profile"}
-          </h1>
+          <div className="flex items-center mb-4">
+            <Link href="/admin/dashboard">
+              <div className="mr-4 text-gray-400 cursor-pointer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </div>
+            </Link>
+            <h1 className="text-2xl font-bold">
+              {loading ? "Loading..." : userData?.full_name || "Profile"}
+            </h1>
+          </div>
           <div className="w-full h-[700px] bg-white rounded-lg">
             <div className="flex space-x-4 bg-gray-100 rounded-lg">
               <button
@@ -263,10 +286,10 @@ const AdminPetownerProfile = () => {
             </div>
             <div>{renderTabContent()}</div>
             {activeTab === "profile" && userData && (
-              <div className="flex justify-end p-6">
+              <div className="flex justify-end pr-10">
                 <button
                   onClick={() => setShowConfirmDialog(true)}
-                  className="text-orange-500 font-semibold hover:underline"
+                  className="text-orange-500 text-base font-bold hover:underline"
                 >
                   {userData.status === "Normal"
                     ? "Ban This User"
