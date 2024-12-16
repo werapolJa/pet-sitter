@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       "images.unsplash.com",
       "boeraqxraijbxhlrtdnn.supabase.co",
       "via.placeholder.com",
+      "s3-alpha-sig.figma.com",
     ],
   },
 };

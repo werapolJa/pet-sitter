@@ -1,10 +1,12 @@
+// Import necessary libraries and components
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import withAdminAuth from "@/utils/withAdminAuth";
-import { Sidebar } from "@/components/admin-page/Sidebar";
+import withAdminAuth from "@/utils/withAdminAuth"; // HOC for admin authentication
+import { Sidebar } from "@/components/admin-page/Sidebar"; // Sidebar component for admin page
 import Link from "next/link";
 
+// Define interfaces for the data types
 interface Review {
   petsitter_id: string;
   petsitter_name: string;
@@ -15,6 +17,7 @@ interface Review {
 }
 
 interface Pet {
+  pet_id: string;
   pet_image: string;
   pet_name: string;
   pet_type: string;
@@ -29,14 +32,15 @@ interface UserData {
   birthdate: string;
   status: string;
   email: string;
-  pets: Pet[];
-  reviews: Review[];
+  pets: Pet[]; // Array of pets owned by the user
+  reviews: Review[]; // Array of reviews given by the user
 }
 
 const AdminPetownerProfile = () => {
-  const searchParams = useSearchParams();
-  const uid = searchParams.get("uid");
+  const searchParams = useSearchParams(); // Get query parameters from the URL
+  const uid = searchParams.get("uid"); // Extract user ID from the URL parameter
 
+  // State variables for managing user data, loading state, errors, etc.
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +48,9 @@ const AdminPetownerProfile = () => {
     "profile"
   );
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
+  // Helper function to format date into a readable string
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
@@ -55,13 +61,13 @@ const AdminPetownerProfile = () => {
     return date.toLocaleDateString("en-GB", options);
   };
 
+  // Function to fetch user data from the API
   const fetchUserData = async () => {
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(`/api/admin/petownerinfo?uid=${uid}`);
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
@@ -79,16 +85,41 @@ const AdminPetownerProfile = () => {
     }
   };
 
+  // Function to delete a pet
+  function deletePet(petId: string) {
+    fetch(`/api/admin/petownerinfo?uid=${uid}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ petId }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Failed to delete pet");
+        }
+        alert("Pet removed successfully!");
+        location.reload(); // Reload the page to refresh the pet list
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Failed to remove the pet. Please try again.");
+      });
+  }
+
+  // Fetch user data when the component is mounted or when UID changes
   useEffect(() => {
     if (uid) {
       fetchUserData();
     }
   }, [uid]);
 
+  // Function to handle banning or unbanning a user
   const handleBanUnban = async () => {
     if (!userData) return;
 
-    const newStatus = userData.status === "Normal" ? "Banned" : "Normal";
+    const newStatus = userData.status === "Normal" ? "Banned" : "Normal"; // Toggle the user status
 
     try {
       const response = await fetch(`/api/admin/petownerinfo?uid=${uid}`, {
@@ -103,7 +134,7 @@ const AdminPetownerProfile = () => {
         throw new Error("Failed to update user status");
       }
 
-      await fetchUserData();
+      await fetchUserData(); // Refresh user data after updating status
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -111,6 +142,7 @@ const AdminPetownerProfile = () => {
     }
   };
 
+  // Function to render the content based on the active tab (profile, pets, or reviews)
   const renderTabContent = () => {
     if (loading) {
       return <div className="p-10">Loading...</div>;
@@ -139,6 +171,7 @@ const AdminPetownerProfile = () => {
                 />
               </div>
               <div className="ml-8 space-y-6 h-[488px] bg-gray-50 w-full rounded-lg p-8">
+                {/* Displaying user profile information */}
                 <div>
                   <p className="text-gray-400 font-bold text-xl">
                     Pet Owner Name
@@ -171,6 +204,7 @@ const AdminPetownerProfile = () => {
                 </div>
               </div>
             </div>
+            {/* Display Ban/Unban button */}
             {activeTab === "profile" && userData && (
               <div className="flex justify-end pr-10">
                 <button
@@ -190,45 +224,62 @@ const AdminPetownerProfile = () => {
         return (
           <div className="bg-white h-[824px] rounded-b-lg rounded-tr-lg">
             <div className="p-10">
+              {/* Displaying pet list */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                {userData.pets.map((pet: Pet, index: number) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-center justify-center w-full h-56 p-4 gap-3 bg-white rounded-lg border border-gray-300 hover:shadow-xl transition duration-300"
-                  >
-                    <div className="w-[104px] h-[104px] rounded-full overflow-hidden flex-shrink-0 relative">
-                      <Image
-                        src={pet.pet_image || "https://via.placeholder.com/104"}
-                        alt="Pet"
-                        layout="fill"
-                        objectFit="cover"
-                        objectPosition="center"
-                      />
+                {userData.pets.map((pet: Pet, index: number) => {
+                  // Check if pet data is empty or null
+                  const isPetEmpty = !pet.pet_name;
+
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        if (!isPetEmpty) {
+                          setSelectedPetId(pet.pet_id);
+                          setShowConfirmDialog(true);
+                        }
+                      }}
+                      className={`flex flex-col items-center justify-center w-full h-56 p-4 gap-3 bg-white rounded-lg border border-gray-300 hover:shadow-xl transition duration-300 cursor-pointer ${
+                        isPetEmpty ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                    >
+                      <div className="w-[104px] h-[104px] rounded-full overflow-hidden flex-shrink-0 relative">
+                        <Image
+                          src={
+                            pet.pet_image || "https://via.placeholder.com/104"
+                          }
+                          alt="Pet"
+                          layout="fill"
+                          objectFit="cover"
+                          objectPosition="center"
+                        />
+                      </div>
+                      <p className="font-bold text-xl text-gray-600">
+                        {pet.pet_name || "Don't have pet"}
+                      </p>
+                      {/* Displaying pet type (Dog, Cat, etc.) */}
+                      {pet.pet_type === "Dog" ? (
+                        <div className="flex flex-col justify-center w-16 h-8 bg-green-100 rounded-3xl border border-green-500">
+                          <p className="text-base text-center text-green-500 font-medium">
+                            {pet.pet_type}
+                          </p>
+                        </div>
+                      ) : pet.pet_type === "Cat" ? (
+                        <div className="flex flex-col justify-center w-16 h-8 bg-pink-100 rounded-3xl border border-pink-500">
+                          <p className="text-base text-center text-pink-500 font-medium">
+                            {pet.pet_type}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col justify-center w-16 h-8 bg-blue-100 rounded-3xl border border-blue-500">
+                          <p className="text-base text-center text-blue-500 font-medium">
+                            {pet.pet_type}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    <p className="font-bold text-xl text-gray-600">
-                      {pet.pet_name}
-                    </p>
-                    {pet.pet_type === "Dog" ? (
-                      <div className="flex flex-col justify-center w-16 h-8 bg-green-100 rounded-3xl border border-green-500">
-                        <p className="text-base text-center text-green-500 font-medium">
-                          {pet.pet_type}
-                        </p>
-                      </div>
-                    ) : pet.pet_type === "Cat" ? (
-                      <div className="flex flex-col justify-center w-16 h-8 bg-pink-100 rounded-3xl border border-pink-500">
-                        <p className="text-base text-center text-pink-500 font-medium">
-                          {pet.pet_type}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col justify-center w-16 h-8 bg-blue-100 rounded-3xl border border-blue-500">
-                        <p className="text-base text-center text-blue-500 font-medium">
-                          {pet.pet_type}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -237,6 +288,7 @@ const AdminPetownerProfile = () => {
       case "reviews":
         return (
           <div className="p-6 bg-white rounded-b-lg rounded-tr-lg pt-10">
+            {/* Displaying reviews */}
             {userData.reviews && userData.reviews.length > 0 ? (
               userData.reviews.map((review: Review, index: number) => (
                 <div key={index} className="mb-6 border-b pb-4 flex gap-10">
@@ -270,6 +322,7 @@ const AdminPetownerProfile = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-4">
+                    {/* Displaying star ratings */}
                     <div className="rating">
                       {Array.from({ length: 5 }, (_, i) => (
                         <input
@@ -294,6 +347,16 @@ const AdminPetownerProfile = () => {
             )}
           </div>
         );
+    }
+  };
+
+  // Function to handle tab changes (Profile, Pets, Reviews)
+  const handleTabChange = (tab: "profile" | "pets" | "reviews") => {
+    setActiveTab(tab);
+
+    // Reset selectedPetId when switching to the "profile" tab to show user-related actions
+    if (tab === "profile") {
+      setSelectedPetId(null);
     }
   };
 
@@ -328,60 +391,74 @@ const AdminPetownerProfile = () => {
           <div className="w-full h-[700px]">
             <div className="flex space-x-4 bg-gray-100">
               <button
-                onClick={() => setActiveTab("profile")}
+                onClick={() => handleTabChange("profile")}
                 className={`py-2 px-6 w-32 h-14 font-semibold rounded-t-lg ${
                   activeTab === "profile"
-                    ? "bg-white text-orange-500 "
+                    ? "bg-white text-orange-500"
                     : "bg-gray-200 text-gray-500"
                 }`}
               >
                 Profile
               </button>
               <button
-                onClick={() => setActiveTab("pets")}
+                onClick={() => handleTabChange("pets")}
                 className={`py-2 px-6 w-32 font-semibold rounded-t-lg ${
                   activeTab === "pets"
-                    ? "bg-white text-orange-500 "
+                    ? "bg-white text-orange-500"
                     : "bg-gray-200 text-gray-500"
                 }`}
               >
                 Pets
               </button>
               <button
-                onClick={() => setActiveTab("reviews")}
+                onClick={() => handleTabChange("reviews")}
                 className={`py-2 px-6 w-32 font-semibold rounded-t-lg ${
                   activeTab === "reviews"
-                    ? "bg-white text-orange-500 "
+                    ? "bg-white text-orange-500"
                     : "bg-gray-200 text-gray-500"
                 }`}
               >
                 Reviews
               </button>
             </div>
-            <div>{renderTabContent()}</div>
+
+            {renderTabContent()}
           </div>
         </div>
       </div>
+
       {showConfirmDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg">
-            <p className="mb-4">
-              Are you sure you want to{" "}
-              {userData?.status === "Normal" ? "ban" : "unban"} this user?
-            </p>
-            <div className="flex justify-end space-x-4">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-bold mb-4 text-center">
+              {selectedPetId
+                ? "Are you sure you want to suspend this pet?"
+                : "Are you sure you want to change the user's status?"}
+            </h2>
+            <div className="flex justify-center gap-4">
               <button
                 onClick={() => setShowConfirmDialog(false)}
-                className="px-4 py-2 bg-gray-200 rounded-lg"
+                className="py-2 px-6 bg-gray-500 text-white rounded-md"
               >
                 Cancel
               </button>
-              <button
-                onClick={handleBanUnban}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg"
-              >
-                Confirm
-              </button>
+              {selectedPetId ? (
+                <button
+                  onClick={() => {
+                    if (selectedPetId) deletePet(selectedPetId);
+                  }}
+                  className="py-2 px-6 bg-orange-500 text-white rounded-md"
+                >
+                  Confirm
+                </button>
+              ) : (
+                <button
+                  onClick={handleBanUnban}
+                  className="py-2 px-6 bg-orange-500 text-white rounded-md"
+                >
+                  Confirm
+                </button>
+              )}
             </div>
           </div>
         </div>
