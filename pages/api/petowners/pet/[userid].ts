@@ -25,6 +25,9 @@ export default async function handler(
 
       // ถ้ามี pet_id ให้เพิ่มเงื่อนไข
       if (pet_id) {
+        if (isNaN(Number(pet_id))) {
+          return res.status(400).json({ error: "Invalid pet ID." });
+        }
         query += ` AND pet_id = $2`;
         params.push(Number(pet_id)); // เปลี่ยน pet_id เป็น number ถ้ามี
       }
