@@ -65,9 +65,6 @@ export default async function handler(
 
       query += ` group by ratings.petsitter_id`;
 
-      console.log("Final query:", query);
-      console.log("Query params:", queryParams);
-
       const result = await connectionPool.query(query, queryParams);
 
       if (result.rows.length === 0) {
