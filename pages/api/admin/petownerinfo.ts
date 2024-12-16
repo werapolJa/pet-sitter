@@ -29,7 +29,7 @@ export default async function handler(
           u.birthdate, 
           u.status,
           au.email,
-          json_agg(json_build_object('pet_name', p.pet_name, 'pet_type', p.pet_type)) as pets
+          json_agg(json_build_object('pet_image', p.image,'pet_name', p.pet_name, 'pet_type', p.pet_type)) as pets
         from
           users u
         left join 
