@@ -10,12 +10,11 @@ export default async function handler(
   // Get user ID from query parameters
   const uid = req.query.uid as string;
 
-  // Return error if user ID is missing
+  // Validate that user ID is provided
   if (!uid) {
     return res.status(400).json({ error: "User ID is required" });
   }
 
-  // Handle GET requests (fetch user and review data)
   if (req.method === "GET") {
     try {
       // Query to fetch user details and their pets
@@ -29,13 +28,13 @@ export default async function handler(
           u.birthdate, 
           u.status,
           au.email,
-          json_agg(json_build_object('pet_image', p.image,'pet_name', p.pet_name, 'pet_type', p.pet_type)) as pets
+          json_agg(json_build_object('pet_id', p.pet_id, 'pet_image', p.image, 'pet_name', p.pet_name, 'pet_type', p.pet_type)) as pets
         from
           users u
         left join 
-          auth.users au ON u.user_id = au.id
+          auth.users au on u.user_id = au.id
         left join
-          pets p ON u.user_id = p.user_id
+          pets p on u.user_id = p.user_id
         where
           u.user_id = $1
         group by 
@@ -46,26 +45,26 @@ export default async function handler(
       const reviewsQuery = `
         select 
           ps.petsitter_id,
-          ps.full_name AS petsitter_name,
-          ps.image AS petsitter_image,
+          ps.full_name as petsitter_name,
+          ps.image as petsitter_image,
           r.rating,
           r.review_message,
-          r.create_at AS review_date
+          r.create_at as review_date
         from
           ratings r
         join 
-          pet_sitters ps ON r.petsitter_id = ps.petsitter_id
+          pet_sitters ps on r.petsitter_id = ps.petsitter_id
         where 
-          r.user_id = $1 AND r.status = 'Approved'
+          r.user_id = $1 and r.status = 'Approved'
         order by 
-          r.create_at DESC
+          r.create_at desc
       `;
 
-      // Run both queries with the user ID
+      // Execute queries
       const userResult = await connectionPool.query(userQuery, [uid]);
       const reviewsResult = await connectionPool.query(reviewsQuery, [uid]);
 
-      // Return error if no user is found
+      // Check if user exists
       if (userResult.rows.length === 0) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -86,25 +85,20 @@ export default async function handler(
       // Return data with success status
       return res.status(200).json({ data: responseData });
     } catch (error) {
-      // Handle server errors
       console.error("Error fetching data:", error);
       return res
         .status(500)
         .json({ error: "An error occurred while fetching data" });
     }
-  }
-  // Handle PUT requests (update user status)
-  else if (req.method === "PUT") {
+  } else if (req.method === "PUT") {
     try {
-      // Get new status from the request body
       const { status } = req.body;
 
-      // Allow only "Normal" or "Banned" status values
       if (status !== "Normal" && status !== "Banned") {
         return res.status(400).json({ error: "Invalid status" });
       }
 
-      // Query to update user status
+      // Update query
       const updateQuery = `
         update users
         set status = $1
@@ -112,26 +106,52 @@ export default async function handler(
         returning status
       `;
 
-      // Run update query
       const result = await connectionPool.query(updateQuery, [status, uid]);
 
-      // Return error if no user is updated
       if (result.rows.length === 0) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Return updated status with success status
       return res.status(200).json({ data: result.rows[0] });
     } catch (error) {
-      // Handle server errors
       console.error("Error updating user status:", error);
       return res
         .status(500)
         .json({ error: "An error occurred while updating user status" });
     }
-  }
-  // Handle unsupported HTTP methods
-  else {
+  } else if (req.method === "DELETE") {
+    try {
+      const { petId } = req.body;
+
+      // Validate that petId is provided
+      if (!petId) {
+        return res.status(400).json({ error: "Pet ID is required" });
+      }
+
+      // Query to delete the pet by ID and user ID
+      const deleteQuery = `
+        delete from pets
+        where pet_id = $1 and user_id = $2
+        returning *
+      `;
+
+      const result = await connectionPool.query(deleteQuery, [petId, uid]);
+
+      // Check if a pet was deleted
+      if (result.rows.length === 0) {
+        return res
+          .status(404)
+          .json({ error: "Pet not found or not owned by user" });
+      }
+
+      return res.status(200).json({ data: result.rows[0] });
+    } catch (error) {
+      console.error("Error deleting pet:", error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while deleting the pet" });
+    }
+  } else {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 }
