@@ -127,76 +127,116 @@ const AdminPetownerProfile = () => {
     switch (activeTab) {
       case "profile":
         return (
-          <div className="flex p-10">
-            <div className="w-60 h-60 rounded-full overflow-hidden flex-shrink-0 relative">
-              <Image
-                src={userData.image || "https://via.placeholder.com/240"}
-                alt="Profile"
-                layout="fill"
-                objectFit="cover"
-                objectPosition="center"
-              />
+          <div className="bg-white h-[640px] rounded-b-lg rounded-tr-lg">
+            <div className="flex p-10">
+              <div className="w-60 h-60 rounded-full overflow-hidden flex-shrink-0 relative">
+                <Image
+                  src={userData.image || "https://via.placeholder.com/240"}
+                  alt="Profile"
+                  layout="fill"
+                  objectFit="cover"
+                  objectPosition="center"
+                />
+              </div>
+              <div className="ml-8 space-y-6 h-[488px] bg-gray-50 w-full rounded-lg p-8">
+                <div>
+                  <p className="text-gray-400 font-bold text-xl">
+                    Pet Owner Name
+                  </p>
+                  <p className="text-base font-normal">{userData.full_name}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 font-bold text-xl">Email</p>
+                  <p className="text-base font-normal">{userData.email}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 font-bold text-xl">Phone</p>
+                  <p className="text-base font-normal">{userData.phone}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 font-bold text-xl">Status</p>
+                  <p className="text-base font-normal">{userData.status}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 font-bold text-xl">ID Number</p>
+                  <p className="text-base font-normal">{userData.id_number}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 font-bold text-xl">
+                    Date of Birth
+                  </p>
+                  <p className="text-base font-normal">
+                    {formatDate(userData.birthdate)}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="ml-8 space-y-6 h-[488px] bg-gray-50 w-full rounded-lg p-8">
-              <div>
-                <p className="text-gray-400 font-bold text-xl">
-                  Pet Owner Name
-                </p>
-                <p className="text-base font-normal">{userData.full_name}</p>
+            {activeTab === "profile" && userData && (
+              <div className="flex justify-end pr-10">
+                <button
+                  onClick={() => setShowConfirmDialog(true)}
+                  className="text-orange-500 text-base font-bold hover:underline"
+                >
+                  {userData.status === "Normal"
+                    ? "Ban This User"
+                    : "Unban This User"}
+                </button>
               </div>
-              <div>
-                <p className="text-gray-400 font-bold text-xl">Email</p>
-                <p className="text-base font-normal">{userData.email}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 font-bold text-xl">Phone</p>
-                <p className="text-base font-normal">{userData.phone}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 font-bold text-xl">Status</p>
-                <p className="text-base font-normal">{userData.status}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 font-bold text-xl">ID Number</p>
-                <p className="text-base font-normal">{userData.id_number}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 font-bold text-xl">Date of Birth</p>
-                <p className="text-base font-normal">
-                  {formatDate(userData.birthdate)}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         );
 
       case "pets":
         return (
-          <div className="p-6">
-            <h2 className="text-lg font-bold mb-4">Pets</h2>
-            {userData.pets && userData.pets.length > 0 ? (
-              userData.pets.map((pet: Pet, index: number) => (
-                <div key={index} className="mb-4">
-                  <Image
-                    src={pet.pet_image || "https://via.placeholder.com/50"}
-                    alt={pet.pet_image}
-                    width={50}
-                    height={50}
-                    className="rounded-full mr-4"
-                  ></Image>
-                  <p className="font-semibold">{pet.pet_name}</p>
-                  <p className="text-gray-600">{pet.pet_type}</p>
-                </div>
-              ))
-            ) : (
-              <p>No pets found for this user.</p>
-            )}
+          <div className="bg-white h-[824px] rounded-b-lg rounded-tr-lg">
+            <div className="p-10">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                {userData.pets.map((pet: Pet, index: number) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center justify-center w-full h-56 p-4 gap-3 bg-white rounded-lg border border-gray-300 hover:shadow-xl transition duration-300"
+                  >
+                    <div className="w-[104px] h-[104px] rounded-full overflow-hidden flex-shrink-0 relative">
+                      <Image
+                        src={pet.pet_image || "https://via.placeholder.com/104"}
+                        alt="Pet"
+                        layout="fill"
+                        objectFit="cover"
+                        objectPosition="center"
+                      />
+                    </div>
+                    <p className="font-bold text-xl text-gray-600">
+                      {pet.pet_name}
+                    </p>
+                    {pet.pet_type === "Dog" ? (
+                      <div className="flex flex-col justify-center w-16 h-8 bg-green-100 rounded-3xl border border-green-500">
+                        <p className="text-base text-center text-green-500 font-medium">
+                          {pet.pet_type}
+                        </p>
+                      </div>
+                    ) : pet.pet_type === "Cat" ? (
+                      <div className="flex flex-col justify-center w-16 h-8 bg-pink-100 rounded-3xl border border-pink-500">
+                        <p className="text-base text-center text-pink-500 font-medium">
+                          {pet.pet_type}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col justify-center w-16 h-8 bg-blue-100 rounded-3xl border border-blue-500">
+                        <p className="text-base text-center text-blue-500 font-medium">
+                          {pet.pet_type}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         );
 
       case "reviews":
         return (
-          <div className="p-6">
+          <div className="p-6 bg-white rounded-b-lg rounded-tr-lg">
             <h2 className="text-lg font-bold mb-4">Reviews</h2>
             {userData.reviews && userData.reviews.length > 0 ? (
               userData.reviews.map((review: Review, index: number) => (
@@ -207,7 +247,7 @@ const AdminPetownerProfile = () => {
                         review.petsitter_image ||
                         "https://via.placeholder.com/50"
                       }
-                      alt={review.petsitter_name}
+                      alt="{review.petsitter_name}"
                       width={50}
                       height={50}
                       className="rounded-full mr-4"
@@ -259,8 +299,8 @@ const AdminPetownerProfile = () => {
               {loading ? "Loading..." : userData?.full_name || "Profile"}
             </h1>
           </div>
-          <div className="w-full h-[700px] bg-white rounded-lg">
-            <div className="flex space-x-4 bg-gray-100 rounded-lg">
+          <div className="w-full h-[700px]">
+            <div className="flex space-x-4 bg-gray-100">
               <button
                 onClick={() => setActiveTab("profile")}
                 className={`py-2 px-6 w-32 h-14 font-semibold rounded-t-lg ${
@@ -293,18 +333,6 @@ const AdminPetownerProfile = () => {
               </button>
             </div>
             <div>{renderTabContent()}</div>
-            {activeTab === "profile" && userData && (
-              <div className="flex justify-end pr-10">
-                <button
-                  onClick={() => setShowConfirmDialog(true)}
-                  className="text-orange-500 text-base font-bold hover:underline"
-                >
-                  {userData.status === "Normal"
-                    ? "Ban This User"
-                    : "Unban This User"}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
