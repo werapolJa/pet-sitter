@@ -26,7 +26,7 @@ export default async function handler(
       const queryParams: string[] = [petsitterid];
 
       if (status) {
-        query += ` AND pet_sitters.status = $2`;
+        query += ` and pet_sitters.status = $2`;
         if (typeof status === "string") {
           queryParams.push(status);
         } else {
