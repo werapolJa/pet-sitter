@@ -18,6 +18,22 @@ import arrowLeft from "@/public/assets/pet-sitter-info-page/arrow-left.svg";
 import arrowRight from "@/public/assets/pet-sitter-info-page/arrow-right.svg";
 import pinAddress from "@/public/assets/pet-sitter-info-page/pin-address.svg";
 
+interface Review {
+  image: string | null; // image can be a string or null
+  rating: number;
+  review: string;
+  user_id: string;
+  full_name: string;
+  rating_id: number;
+  created_at: string; // ISO string format, or Date if you prefer to parse it
+}
+
+interface PetSitterReviewProps {
+  averageRating: number | null; // Can be null if no ratings are available
+  totalReviews: number | null; // Total number of reviews
+  reviews: Review[]; // An array of reviews
+}
+
 export default function PetSitterInfoPage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [image, setImage] = useState<string[]>([]);
@@ -35,6 +51,9 @@ export default function PetSitterInfoPage() {
   const [district, setDistrict] = useState<string>("");
   const [latitude, setLatitude] = useState<number>(0); // Set initial value to 0 (Not null)
   const [longitude, setLongitude] = useState<number>(0); // Set initial value to 0 (Not null)
+  const [averageRating, setAverageRating] = useState<number | null>(null);
+  const [totalReviews, setTotalReviews] = useState<number | null>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,8 +103,11 @@ export default function PetSitterInfoPage() {
           setError("No images available for this petsitter.");
         }
       } catch (error: unknown) {
-        console.error("Error fetching user data:", error);
-        setError("Failed to load user data.");
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          setError("Petsitter profile not found.");
+        } else {
+          setError("Error fetching user data.");
+        }
         setProfileImage(null);
       } finally {
         setIsLoading(false);
@@ -94,6 +116,60 @@ export default function PetSitterInfoPage() {
 
     fetchProfile();
   }, [router.isReady, petsitterid]);
+
+  // Second useEffect: Fetch Reviews for the Pet Sitter
+  useEffect(() => {
+    if (!petsitterid) return;
+
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(
+          `/api/reviews/${petsitterid}?status=Approved`
+        );
+
+        console.log("Reviews data:", response.data.data.reviews); // Log the specific reviews data
+        if (response.status === 200) {
+          const data = response.data.data;
+
+          // Set the average rating if available
+          if (data.average_rating !== null) {
+            setAverageRating(data.average_rating); // Only set if there is a valid rating
+          } else {
+            setAverageRating(null); // If no average rating, set to null
+          }
+
+          if (data.total_reviews !== null) {
+            setTotalReviews(data.total_reviews); // Only set if there is a valid rating
+          } else {
+            setTotalReviews(null); // If no average rating, set to null
+          }
+
+          // Handle case when there are no reviews
+          if (data.reviews && data.reviews.length > 0) {
+            setReviews(data.reviews); // Set reviews if they exist
+          } else {
+            setReviews([]); // Set empty array if no reviews exist
+          }
+        } else if (response.status === 404) {
+          // Handle the 404 case when there are no reviews for the petsitter
+          console.log("No reviews available for this petsitter.");
+          setReviews([]); // Set an empty array if no reviews are found
+          setAverageRating(null); // Optionally, reset average rating if no reviews
+        }
+      } catch (error) {
+        // Check if the error is an AxiosError and if it's a 404
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          console.log("No reviews found for this petsitter (404).");
+          setReviews([]); // Set empty array on 404 error
+          setAverageRating(null); // Optionally, reset average rating on error
+        } else {
+          console.error("Error fetching reviews:", error);
+        }
+      }
+    };
+
+    fetchReviews();
+  }, [petsitterid]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -117,6 +193,9 @@ export default function PetSitterInfoPage() {
         district={district}
         latitude={latitude}
         longitude={longitude}
+        averageRating={averageRating}
+        totalReviews={totalReviews}
+        reviews={reviews}
       />
     </div>
   );
@@ -235,6 +314,9 @@ const PetSitterInformation: React.FC<{
   district: string;
   latitude: number;
   longitude: number;
+  averageRating: number | null;
+  totalReviews: number | null;
+  reviews: Review[]; // Change this to `Review[]` type
 }> = ({
   image,
   tradename,
@@ -251,6 +333,9 @@ const PetSitterInformation: React.FC<{
   district,
   latitude,
   longitude,
+  averageRating,
+  totalReviews,
+  reviews,
 }) => {
   const Map = useMemo(
     () =>
@@ -300,7 +385,11 @@ const PetSitterInformation: React.FC<{
             tradename={tradename}
           />
           <div className="hidden md:block md:relative md:w-[calc(100% + 80px)] md:-mx-10">
-            <PetSitterReview />
+            <PetSitterReview
+              averageRating={averageRating}
+              totalReviews={totalReviews ?? 0}
+              reviews={reviews}
+            />
           </div>
         </div>
       </div>
@@ -316,10 +405,15 @@ const PetSitterInformation: React.FC<{
           petTypeRabbit={petTypeRabbit}
           province={province}
           district={district}
+          averageRating={averageRating}
         />
       </div>
       <div className="md:hidden">
-        <PetSitterReview />
+        <PetSitterReview
+          averageRating={averageRating}
+          totalReviews={totalReviews ?? 0}
+          reviews={reviews}
+        />
       </div>
       <div className="hidden md:block md:mb-10 md:ml-[50px]">
         <div className="sticky top-4">
@@ -334,6 +428,7 @@ const PetSitterInformation: React.FC<{
             petTypeRabbit={petTypeRabbit}
             province={province}
             district={district}
+            averageRating={averageRating}
           />
         </div>
       </div>
@@ -352,6 +447,7 @@ const ProfileCard: React.FC<{
   petTypeRabbit: string;
   province: string;
   district: string;
+  averageRating: number | null;
 }> = ({
   image,
   tradename,
@@ -363,6 +459,7 @@ const ProfileCard: React.FC<{
   petTypeRabbit,
   province,
   district,
+  averageRating,
 }) => {
   const fallbackImage =
     "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
@@ -414,7 +511,9 @@ const ProfileCard: React.FC<{
                 type="radio"
                 name="rating"
                 className={`mask mask-star-2 ${
-                  index < 5 ? "bg-green-500" : "hidden" // add rating here
+                  index < Math.round(averageRating ?? 0)
+                    ? "bg-green-500"
+                    : "hidden"
                 } w-[16px] h-4 md:h-5 md:w-5 p-[6px] mx-[2px] my-[6px] md:mt-[6px] md:mb-3 md:gap-[2px]`}
                 readOnly
                 disabled
@@ -459,85 +558,23 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const PetSitterReview: React.FC = () => {
-  const mockUpReview = {
-    petsitterId: 1,
-    totalReviews: 6,
-    averageRating: 4.1,
-    reviews: [
-      {
-        petOwnerId: 101,
-        profileImage:
-          "https://s3-alpha-sig.figma.com/img/43b1/5482/86c799b1fda22cdd2d9919fd41096aeb?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=idE~gw-MTTtBz1i~0cMDotT27hzVRjgORQ3wODfLBgRf5pKTM~u2gWSlx-B6edN14IsnQcaaf~ccBQ2bDRG1FLnKKSP0yr5pTC6nC9kgNPDUAlOyXulnf18pNj6VBLOFGvIAvTwCb5o-2~XIYxjTdNwhfnGvVBPSuLZmWtc5uLk9wMDBYBesaPoPO9-6dW02WuaS3FVokjZvpKpMKni-Shw9eNsnz71mfzcP8~eSXbnlKHOemS2-RXmO6Gpmyv-hWBhdugtwvXnbNBKUrWanbZpJYWrl9ryIwinZcLdU2GlWZCn38Ts7xlaA1S-Wb8nwHHWOX7qHfIH6oZht2ydOyA__",
-        name: "David M.",
-        reviewDate: "2023-08-16",
-        rating: 4,
-        details:
-          "I recently had the pleasure of entrusting Jane Maison with the care of my two energetic Labrador Retrievers, Max and Bella, while I was away on a business trip. I can confidently say that Jane exceeded all my expectations as a pet sitter.",
-      },
-      {
-        petOwnerId: 102,
-        profileImage:
-          "https://s3-alpha-sig.figma.com/img/b31b/f20a/dfa1574f6c3afd42efaa1f5841395d90?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=ItAoaXyH3gLnNoJXAkikjuxT~b0ajvRtcf020Q~-MzTe11h8LUqA1lnP5lEF4ALrPzVsEgByrqq~wPA7NCTnDAphoALRitE5tZ4AtoyaF5CjBiZS~4OZpF~a~vbmjY4JaYi5IUuK8ChTHHpBsukV~S9R6AuiiIUbt4ja9xoNrqgMFO-Bm0IezzoS~HLeS2qP2CK1dp4-2tU6B2NFEQiFLApXZ1blCXtbe4VqYMtBlLpeHNZAlRmI~BauacKu73Hre2Lfekn3MT03vM6NzT4xihjR7hFq6g9gHfWkwiGV7f2dlkCNmZPauKTDnhlbzMQ~mUJfI9OCXUm0w5loRrkgFA__",
-        name: "Emily B.",
-        reviewDate: "2023-08-18",
-        rating: 5,
-        details:
-          "I cannot express how grateful I am to have found Jane Maison as a pet sitter for my cat, Whiskers. Jane took the time to understand Whiskers' routines, likes, and quirks. During my recent vacation, she provided regular updates, including photos of Whiskers playing, lounging, and even eating his favorite treats. It was evident that Whiskers was not only well-cared for but was also enjoying his time with Jane.",
-      },
-      {
-        petOwnerId: 103,
-        profileImage:
-          "https://s3-alpha-sig.figma.com/img/3f2d/cb19/644ab4c80deba63f323d10a6a1628ba5?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pKRLRUXmZDF9o2VJD~de9y1GpJaYYlktkQCpVr4qlNbeDPWuD4rQdTND7Hgz311v6dKhROk4lyEeGFn251CQrUfJnVpAcHsE3TJpMIBIqrOYrWmF~6bKFrsR5RmDHd6uP7jmQU1oyrP10~3ulVB7Z03PA6dGMbfF0SFgi~xj3zRyAlu9VCEMDjbMINgVENsjya4Rc9wlNLBIh5UMJruf5OzO-n16T7SJmRNdKPhAsSrnnEMrp4p7tyC9rGUsR5FtTyywsC9WhhruOip26tKkwSFfb1~J0fjJ79cggw4EgmgsXILhFmrPbnNPRnNZ28YTlBbLWCZSLGpaUso15nwxjQ__",
-        name: "Sarah K.",
-        reviewDate: "2023-08-20",
-        rating: 3,
-        details:
-          "Jane Maison did a great job looking after my energetic dog, Buddy. While I was away, she made sure Buddy got his exercise and kept up with his feeding schedule. I appreciated the updates she sent, although I would have liked a bit more frequent communication. Overall, I'm satisfied with her service and would consider using her again in the future.",
-      },
-      {
-        petOwnerId: 104,
-        profileImage:
-          "https://s3-alpha-sig.figma.com/img/de64/da3c/945cf7048edb6a29cc0657c051082f75?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=IdlcRpFKVaET9fAAsw5J3EyBL735N4IpoaFWpTFkQRBxrEXyUh63K4GOZ63ck9FF5ys-3FSQv4XRjuUaVYL8azG~ajSVHmvjyQQo0T6HKRGEvGmVBmysQ-mFLeAChNocZcDbTLqDLegbZEC1ydac9BTV4y67QD10VgAVHtDdBaw8Q6vroj8cnO3ixQZTtANEHhICMLeBjQoJtiRT07a05baQ377DU4vQXr~4IpkvOuRQ~bgQHqRYFrxaN2HhuDacuEqYh7DnIF19TpqM0kHd~tMeZSkZZXKHu779XpTU-yhw3u-5jb3v4gz6uZfSD5aElZ-B4ajfxlTy49mCwPyGbQ__",
-        name: "Lora H.",
-        reviewDate: "2023-08-22",
-        rating: 2,
-        details:
-          "Not satisfied. My pet seemed stressed when I returned, and Jane wasn’t responsive.",
-      },
-      {
-        petOwnerId: 105,
-        profileImage:
-          "https://s3-alpha-sig.figma.com/img/8199/e155/d24115af988a09e5528de928a7f7d058?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=VO0IFBw684H5B8p4Mi7LE-mQZo6pMX1~iZCiDQTz8bmj8WlK1IgsfqkOLflWbywTcsivLKWNl3K9UEdCFJ8cBOweNeMFlnk9laBX0F~LSkjaPYeEWcGAKqpToYMXRpz0Mgfjr~2dQatZU8~Ql7rqyIlT978-LKtQFFl7SpAVsM7KOwRQqImzA1r4SsMHdMvASFGHvdari3N1PF1nM7xP9LpJxNVCXSBPGKoE26RLsL1TJIoxQA7-UdwnhTH0w4M0~79RJK71Unm7MZ2OyQRoe-J3UDtvFNtzhgcMp~CpcB8P7qgstGhlFvHSFsAPKp1db6jrFLhptwCn7SbGNu74Lw__",
-        name: "John C.",
-        reviewDate: "2023-08-23",
-        rating: 4,
-        details:
-          "Jane Maison is a lifesaver! She took care of my rambunctious rabbit, Flopsy, while I was away on vacation. Flopsy can be quite picky, but Jane knew just how to keep her happy and entertained. I received adorable photos of Flopsy munching on her favorite greens and exploring new play areas. I'm so grateful to have found Jane, and I highly recommend her pet sitting services!",
-      },
-      {
-        petOwnerId: 101,
-        profileImage:
-          "https://s3-alpha-sig.figma.com/img/43b1/5482/86c799b1fda22cdd2d9919fd41096aeb?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=idE~gw-MTTtBz1i~0cMDotT27hzVRjgORQ3wODfLBgRf5pKTM~u2gWSlx-B6edN14IsnQcaaf~ccBQ2bDRG1FLnKKSP0yr5pTC6nC9kgNPDUAlOyXulnf18pNj6VBLOFGvIAvTwCb5o-2~XIYxjTdNwhfnGvVBPSuLZmWtc5uLk9wMDBYBesaPoPO9-6dW02WuaS3FVokjZvpKpMKni-Shw9eNsnz71mfzcP8~eSXbnlKHOemS2-RXmO6Gpmyv-hWBhdugtwvXnbNBKUrWanbZpJYWrl9ryIwinZcLdU2GlWZCn38Ts7xlaA1S-Wb8nwHHWOX7qHfIH6oZht2ydOyA__",
-        name: "David M.",
-        reviewDate: "2023-08-24",
-        rating: 4,
-        details:
-          "Jane Maison took care of my dog, during my vacation. While my dog seemed fine when I returned, I wish there had been more communication and updates about his well-being.",
-      },
-    ],
-  };
-
+const PetSitterReview: React.FC<PetSitterReviewProps> = ({
+  averageRating,
+  totalReviews,
+  reviews,
+}) => {
+  const fallbackImage =
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
   return (
     <div>
       <div className="md:rounded-tl-[120px]  md:rounded-tr-[16px]  flex bg-gray-100 md:mt-10">
         <div className="md:m-6 flex flex-col md:flex-row w-full h-[374px] md:h-[194px] m-4 bg-white rounded-tl-[99px] md:rounded-bl-[99px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[12px]">
           <div className="flex flex-col items-center justify-center mt-6 ml-6 md:mr-6 md:w-[25%]  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
             <span className="text-white text-4xl font-bold leading-10">
-              {mockUpReview.averageRating.toFixed(1)}
+              {(averageRating ?? 0).toFixed(1)}
             </span>
             <span className="text-white text-sm font-medium leading-6">
-              {mockUpReview.totalReviews} Reviews
+              {totalReviews} Reviews
             </span>
           </div>
           <div className="md:flex-col">
@@ -573,26 +610,26 @@ const PetSitterReview: React.FC = () => {
         </div>
       </div>
       <div className="review-section">
-        {mockUpReview.reviews.map((review, index) => (
+        {reviews.map((review, index) => (
           <div key={index} className="flex flex-col bg-gray-100 px-4">
-            <div className="flex flex-row mb-4 pt-6">
+            <div className="flex flex-row mb-4 md:mb-0 pt-6">
               <img
-                className="w-8 h-8  rounded-full mr-4 object-cover"
-                src={review.profileImage}
-                alt={review.name}
+                className="w-9 h-9 md:h-14 md:w-14 rounded-full mr-4 object-cover"
+                src={review.image || fallbackImage}
+                alt={review?.full_name}
               />
-              <div className="flex flex-col flex-grow md:flex-grow-0">
-                <span className="text-lg font-medium">{review.name}</span>
+              <div className="flex flex-col flex-grow md:flex-grow-0 md:w-[148px]">
+                <span className="text-lg font-medium">{review.full_name}</span>
                 <div className="text-sm font-medium text-gray-400">
-                  {formatDate(review.reviewDate)}
+                  {formatDate(review.created_at)}
                 </div>
               </div>
-              <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-[68px]">
+              <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-8">
                 {[...Array(review.rating)].map((_, i) => (
                   <input
                     key={i}
                     type="radio"
-                    name={`rating-${review.name}`}
+                    name={`rating-${review.full_name}`}
                     className="mask mask-star-2 bg-green-500 w-3 h-3 md:w-5 md:h-5"
                     readOnly
                     disabled
@@ -601,8 +638,8 @@ const PetSitterReview: React.FC = () => {
               </div>
             </div>
             <div className="w-full md:flex md:justify-end border-b border-b-gray-200">
-              <p className="pb-6 md:w-2/3 md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 ">
-                {review.details}
+              <p className="pb-6 md:w-[60%] md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 ">
+                {review.review}
               </p>
             </div>
           </div>
