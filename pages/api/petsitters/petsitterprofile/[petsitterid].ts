@@ -16,11 +16,11 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       let query = `
-        SELECT pet_sitters.*, images.* , addresses.*
-        FROM pet_sitters
-        LEFT JOIN images ON pet_sitters.petsitter_id = images.petsitter_id
-        LEFT JOIN addresses ON pet_sitters.petsitter_id = addresses.petsitter_id
-        WHERE pet_sitters.petsitter_id = $1
+        select pet_sitters.*, images.* , addresses.*
+        from pet_sitters
+        left join images on pet_sitters.petsitter_id = images.petsitter_id
+        left join addresses on pet_sitters.petsitter_id = addresses.petsitter_id
+        where pet_sitters.petsitter_id = $1
       `;
 
       const queryParams: string[] = [petsitterid];
