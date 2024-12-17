@@ -385,7 +385,7 @@ const PetSitterInformation: React.FC<{
             longitude={longitude}
             tradename={tradename}
           />
-          <div className="hidden md:block md:relative md:w-[calc(100% + 80px)] md:-mx-10">
+          <div className="hidden md:block md:relative md:w-[calc(100% + 80px)] md:-mx-[80px]">
             <PetSitterReview
               averageRating={averageRating}
               totalReviews={totalReviews ?? 0}
@@ -603,7 +603,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
     <div>
       <div className="md:rounded-tl-[120px]  md:rounded-tr-[16px]  flex bg-gray-100 md:mt-10">
         <div className="md:m-6 flex flex-col md:flex-row w-full h-[374px] md:h-[194px] m-4 bg-white rounded-tl-[99px] md:rounded-bl-[99px] rounded-tr-[12px] rounded-bl-[12px] rounded-br-[12px]">
-          <div className="flex flex-col items-center justify-center mt-6 ml-6 md:mr-6 md:w-[25%]  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
+          <div className="flex flex-col items-center justify-center mt-6 ml-6 md:mr-6 md:w-[20%]  w-[146px] h-[146px] bg-black rounded-tl-[99px] rounded-tr-[99px] rounded-bl-[99px]">
             <span className="text-white text-4xl font-bold leading-10">
               {(averageRating ?? 0).toFixed(1)}
             </span>
@@ -611,7 +611,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
               {totalReviews} Reviews
             </span>
           </div>
-          <div className="md:flex-col">
+          <div className="md:flex-col md:mt-6 md:mr-2 mt-2">
             <h4 className="text-xl font-bold ml-6 mt-4">Rating & Reviews</h4>
 
             <div className="items-center justify-start mx-6 space-y-2 cursor-pointer">
@@ -666,7 +666,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
                     {formatDate(review.created_at)}
                   </div>
                 </div>
-                <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-8">
+                <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-[65px]">
                   {[...Array(review.rating)].map((_, i) => (
                     <input
                       key={i}
