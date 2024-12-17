@@ -11,6 +11,7 @@ type YourPetRequestBody = {
   color: string;
   weight: number;
   image: string;
+  about: string | null;
 };
 
 export default async function handler(
@@ -68,20 +69,12 @@ export default async function handler(
       color,
       weight,
       image,
+      about,
       user_id,
     } = req.body;
 
     // ตรวจสอบว่ามีข้อมูล
-    if (
-      !pet_name ||
-      !pet_type ||
-      !breed ||
-      !sex ||
-      !age ||
-      !color ||
-      !weight ||
-      !image
-    ) {
+    if (!pet_name || !pet_type || !breed || !sex || !age || !color || !weight) {
       return res
         .status(400)
         .json({ error: "Missing required fields for pet data" });
@@ -96,8 +89,8 @@ export default async function handler(
     try {
       // สร้างตัวแปล เก็บ query เพื่อนำไปใช้
       const petInsertQuery = `
-      INSERT INTO pets (pet_name, pet_type, breed, sex, age, color, weight, image, user_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+      INSERT INTO pets (pet_name, pet_type, breed, sex, age, color, weight, image,about, user_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10);
     `;
 
       const petResult = await client.query(petInsertQuery, [
@@ -109,6 +102,7 @@ export default async function handler(
         color,
         weight,
         image,
+        about,
         user_id,
       ]);
 
@@ -131,40 +125,20 @@ export default async function handler(
   }
 
   if (req.method === "PUT") {
-    console.log(req.body);
-
     // ดึงข้อมูลจาก body
-    const {
-      pet_name,
-      pet_type,
-      breed,
-      sex,
-      age,
-      color,
-      weight,
-      image,
-      user_id,
-    } = req.body;
+    const { pet_name, pet_type, breed, sex, age, color, weight, image, about } =
+      req.body;
 
     // ดึง pet_id จาก query (URL)
-    const { pet_id } = req.query;
+    const { pet_id, userid } = req.query;
 
-    // ตรวจสอบว่า pet_id และ user_id ถูกส่งมาใน request หรือไม่
-    if (!pet_id || !user_id) {
-      return res.status(400).json({ error: "Missing pet_id or user_id" });
+    // ตรวจสอบว่า pet_id ถูกส่งมาใน request หรือไม่
+    if (!pet_id) {
+      return res.status(400).json({ error: "Missing pet_id" });
     }
 
     // ตรวจสอบว่ามีข้อมูลที่จำเป็นทั้งหมดหรือไม่
-    if (
-      !pet_name ||
-      !pet_type ||
-      !breed ||
-      !sex ||
-      !age ||
-      !color ||
-      !weight ||
-      !image
-    ) {
+    if (!pet_name || !pet_type || !breed || !sex || !age || !color || !weight) {
       return res
         .status(400)
         .json({ error: "Missing required fields for pet data" });
@@ -174,26 +148,22 @@ export default async function handler(
 
     try {
       // ตรวจสอบว่า pet_id ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
-      const checkPetExistsQuery = `
-        SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2
+      const checkPetQuery = `
+        select * from pets where pet_id = $1
       `;
-      const { rows: existingPet } = await client.query(checkPetExistsQuery, [
-        pet_id,
-        user_id,
-      ]);
+      const result = await client.query(checkPetQuery, [pet_id]);
+      const petData = result.rows;
 
       // หากไม่พบ pet_id ที่ต้องการอัปเดต
-      if (existingPet.length === 0) {
-        return res
-          .status(404)
-          .json({ error: "Pet not found or doesn't belong to the user" });
+      if (petData.length === 0) {
+        return res.status(404).json({ error: "Pet not found" });
       }
 
       // สร้าง query สำหรับการอัปเดตข้อมูลของสัตว์เลี้ยง
       const petUpdateQuery = `
-        UPDATE pets
-        SET pet_name = $1, pet_type = $2, breed = $3, sex = $4, age = $5, color = $6, weight = $7, image = $8
-        WHERE pet_id = $9 AND user_id = $10
+        update pets
+        set pet_name = $1, pet_type = $2, breed = $3, sex = $4, age = $5, color = $6, weight = $7, image = $8, about = $9
+        where pet_id = $10 and user_id = $11
         RETURNING *;
       `;
 
@@ -207,25 +177,69 @@ export default async function handler(
         color,
         weight,
         image,
+        about,
         pet_id,
-        user_id,
+        userid,
       ]);
 
-      // ถ้าไม่พบแถวที่ถูกอัปเดต
       if (petResult.rowCount === 0) {
         return res.status(400).json({ error: "Failed to update pet data" });
       }
 
-      // ส่งข้อมูลกลับไปหลังจากอัปเดตสำเร็จ
       return res.status(200).json({
         message: "Pet updated successfully!",
-        data: petResult.rows[0], // ส่งข้อมูลสัตว์เลี้ยงที่ถูกอัปเดต
+        // data: petResult.rows[0],
       });
     } catch (error) {
-      console.error("Error updating pet data:", error);
       return res.status(500).json({ error: "Internal server error" });
     } finally {
-      // ปล่อยการเชื่อมต่อกลับไปที่ pool
+      client.release();
+    }
+  }
+
+  if (req.method === "DELETE") {
+    // ดึง pet_id จาก query (URL)
+    const { pet_id, userid } = req.query;
+
+    // ตรวจสอบว่า pet_id และ userid ถูกส่งมาใน request หรือไม่
+    if (!pet_id || !userid) {
+      return res.status(400).json({ error: "Missing pet_id or userid" });
+    }
+
+    const client = await connectionPool.connect();
+
+    try {
+      // ตรวจสอบว่า pet_id ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
+      const checkPetQuery = `
+        SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2
+      `;
+
+      const result = await client.query(checkPetQuery, [pet_id, userid]);
+      const petData = result.rows;
+
+      // หากไม่พบ pet_id ที่ต้องการลบ
+      if (petData.length === 0) {
+        return res.status(404).json({ error: "Pet not found or unauthorized" });
+      }
+
+      // ลบข้อมูลสัตว์เลี้ยงออกจากฐานข้อมูล
+      const deletePetQuery = `
+        DELETE FROM pets WHERE pet_id = $1 AND user_id = $2
+      `;
+      const deleteResult = await client.query(deletePetQuery, [pet_id, userid]);
+
+      // ตรวจสอบว่าการลบสำเร็จหรือไม่
+      if (deleteResult.rowCount === 0) {
+        return res.status(400).json({ error: "Failed to delete pet data" });
+      }
+
+      return res.status(200).json({
+        message: "Pet deleted successfully!",
+      });
+    } catch (error) {
+      console.error("Error deleting pet:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    } finally {
       client.release();
     }
   }

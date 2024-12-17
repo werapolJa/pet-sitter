@@ -8,14 +8,14 @@ import Input from "../Input";
 import PetAgeInput from "@/components/pet-owner/PetAgeInput";
 import InputSelect from "@/components/pet-owner/InputSelect";
 import { useRouter } from "next/router";
-import { useAuth } from "@/context/authentication";
 interface YourPetEditProps {
   setchangePage: (page: string) => void;
 }
 
 function YourPetCreate({ setchangePage }: YourPetEditProps) {
-  const {user} = useAuth()
+
   const router = useRouter();
+  const { userid } = router.query;
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
 
@@ -26,6 +26,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
   const [weight, setWeight] = useState<string>("");
   const [selectType, setSelectType] = useState("");
   const [selectSex, setSelectSex] = useState("");
+  const [aboutState,setAboutState] = useState("");
 
   const [nameError, setNameError] = useState<boolean>(false);
   const [breedError, setBreedError] = useState<boolean>(false);
@@ -44,8 +45,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
     useState<string>("");
   const [messageErrorSelectSex, setMessageErrorSelectSex] =
     useState<string>("");
-    const { userid } = router.query;
-  
+
 
 
   const handleSelectSex = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -63,31 +63,30 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
     setNameError(false);
     setMessageErrorName("");
   };
-
+  const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    // การจัดการกับ textarea
+    setAboutState(e.target.value);
+  };
   const handleBreedChange = (e: ChangeEvent<HTMLInputElement>) => {
     setBreed(e.target.value);
     setBreedError(false);
     setMessageErrorBreed("");
   };
-
   const handleAgeChange = (value: string) => {
     setAge(value);
     setAgeError(false);
     setMessageErrorAge("");
   };
-
   const handleNameColor = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value);
     setColorError(false);
     setMessageErrorColor("");
   };
-
   const handleWeightChange = (value: string) => {
     setWeight(value);
     setWeightError(false);
     setMessageErrorWeight("");
   };
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
@@ -120,101 +119,97 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
         }
       );
       setImage(response.data.urls[0]);
+      console.log(response);
     } catch (err) {
       console.log("Error uploading image:", err);
     } finally {
       setLoading(false);
     }
   };
-
-  // const handleSubmit = async (e: FormEvent) => {
-  //   e.preventDefault();
-  //   let hasError = false;
-  //   if (!name) {
-  //     setNameError(true);
-  //     setMessageErrorName("Name is required.");
-  //     hasError = true;
-  //   } else if (name.length < 6 || name.length > 20) {
-  //     setNameError(true);
-  //     setMessageErrorName("Name must be between 6 and 20 characters.");
-  //     hasError = true;
-  //   } else {
-  //     setNameError(false); // Reset error if name is valid
-  //   }
-
-  //   if (!breed) {
-  //     setBreedError(true);
-  //     setMessageErrorBreed("Breed is required.");
-  //     hasError = true;
-  //   } else if (breed.length < 6 || breed.length > 20) {
-  //     setBreedError(true);
-  //     setMessageErrorBreed("Breed must be between 6 and 20 characters.");
-  //     hasError = true;
-  //   } else {
-  //     setBreedError(false); // Reset error if name is valid
-  //   }
-
-  //   if (!age) {
-  //     setAgeError(true);
-  //     setMessageErrorAge("age is required.");
-  //     hasError = true;
-  //   } else if (age === "0.0") {
-  //     setAgeError(true);
-  //     setMessageErrorAge("Age not 0.0");
-  //     hasError = true;
-  //   } else {
-  //     setAgeError(false); // Reset error if name is valid
-  //   }
-
-  //   if (!color) {
-  //     setColorError(true);
-  //     setMessageErrorColor("color is required.");
-  //     hasError = true;
-  //   } else if (color.length < 6 || color.length > 20) {
-  //     setColorError(true);
-  //     setMessageErrorColor("Color must be between 6 and 20 characters.");
-  //     hasError = true;
-  //   } else {
-  //     setColorError(false); // Reset error if name is valid
-  //   }
-
-  //   if (!weight) {
-  //     setWeightError(true);
-  //     setMessageErrorWeight("Weight is required.");
-  //     hasError = true;
-  //   } else if (weight.length < 6 || weight.length > 20) {
-  //     setWeightError(true);
-  //     setMessageErrorWeight("Weight must be between 6 and 20 characters.");
-  //     hasError = true;
-  //   } else {
-  //     setColorError(false); // Reset error if name is valid
-  //   }
-  //   if (!selectType) {
-  //     setSelectTypeError(true);
-  //     setMessageErrorSelectType("You must select an option!");
-  //   } else {
-  //     setSelectTypeError(false);
-  //     setMessageErrorSelectType("");
-  //   }
-  //   if (!selectsex) {
-  //     setSelectSexError(true);
-  //     setMessageErrorSelectSex("You must select an option!");
-  //   } else {
-  //     setSelectSexError(false);
-  //     setMessageErrorSelectSex("");
-  //   }
-
-  //   if (hasError) return;
-  //   CreatePet();
-  // };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-  
+    let hasError = false;
+    if (!name) {
+      setNameError(true);
+      setMessageErrorName("Name is required.");
+      hasError = true;
+    } else if (name.length < 6 || name.length > 20) {
+      setNameError(true);
+      setMessageErrorName("Name must be between 6 and 20 characters.");
+      hasError = true;
+    } else {
+      setNameError(false); // Reset error if name is valid
+    }
+
+    if (!breed) {
+      setBreedError(true);
+      setMessageErrorBreed("Breed is required.");
+      hasError = true;
+    } else if (breed.length < 6 || breed.length > 20) {
+      setBreedError(true);
+      setMessageErrorBreed("Breed must be between 6 and 20 characters.");
+      hasError = true;
+    } else {
+      setBreedError(false); // Reset error if name is valid
+    }
+
+    if (!age) {
+      setAgeError(true);
+      setMessageErrorAge("age is required.");
+      hasError = true;
+    } else if (age === "0.0") {
+      setAgeError(true);
+      setMessageErrorAge("Age not 0.0");
+      hasError = true;
+    } else {
+      setAgeError(false); // Reset error if name is valid
+    }
+
+    if (!color) {
+      setColorError(true);
+      setMessageErrorColor("color is required.");
+      hasError = true;
+    } else {
+      setColorError(false); // Reset error if name is valid
+    }
+
+    if (!weight) {
+      setWeightError(true);
+      setMessageErrorWeight("Weight is required.");
+      hasError = true;
+    } else if (age === "0.0") {
+      setWeightError(true);
+      setMessageErrorWeight("Weight not 0.0");
+      hasError = true;
+    } else {
+      setWeightError(false); // Reset error if name is valid
+    }
+
+    if (!selectType) {
+      setSelectTypeError(true);
+      setMessageErrorSelectType("You must select an option!");
+    } else {
+      setSelectTypeError(false);
+      setMessageErrorSelectType("");
+    }
+    if (!selectSex) {
+      setSelectSexError(true);
+      setMessageErrorSelectSex("You must select an option!");
+    } else {
+      setSelectSexError(false);
+      setMessageErrorSelectSex("");
+    }
+
+    if (hasError) return;
+    CreatePet();
+  };
+
+  const CreatePet = async () => {
+ 
     try {
       // สร้างข้อมูล pet ที่ต้องการส่ง
       const createPet = {
-        user_id: userid, 
+        user_id: userid,
         pet_name: name,
         pet_type: selectType,
         breed: breed,
@@ -222,21 +217,28 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
         age: age,
         color: color,
         weight: weight,
-        image: "https://images.unsplash.com/photo-1475518112798-86ae358241eb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+        image: image ,
+        about:aboutState,
       };
-  
-      console.log(createPet); 
-  
+
+      console.log(createPet);
+
       // ตรวจสอบว่า `userid` ที่ใช้ใน URL และ body ตรงกันหรือไม่
-      const response = await axios.post(`/api/petowners/pet/${createPet.user_id}`, createPet);
-  
+      const response = await axios.post(
+        `/api/petowners/pet/${createPet.user_id}`,
+        createPet
+      );
+
       console.log(response); // ดูผลลัพธ์การตอบกลับจาก API
     } catch (error) {
       console.log(error); // แสดง error ถ้ามี
     }
+    setchangePage("Home")
   };
-  
 
+  const handleCencel=()=>{
+    setchangePage("Home")
+  }
   const ProfileImage = ({
     image,
     onImageChange,
@@ -409,6 +411,8 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
             className=" w-full pt-2 focus-within:outline-none"
             placeholder="Describe more about your pet..."
             rows={5}
+            value={aboutState}
+            onChange={handleTextAreaChange}
           ></textarea>
         </div>
 
@@ -417,6 +421,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
           <button
             type="button"
             className=" w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-orange-500 bg-[#FFF1EC] mb-6"
+            onClick={handleCencel}
           >
             Cancel
           </button>

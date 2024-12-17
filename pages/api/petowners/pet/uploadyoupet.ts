@@ -72,7 +72,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Retrieve the public URL of the uploaded file from Supabase Storage
-      const { data } = supabase.storage.from("image").getPublicUrl(fileName);
+      const { data } = supabase.storage.from("petimage").getPublicUrl(fileName);
       
       // If the public URL is not available, log an error and throw an exception
       if (!data?.publicUrl) {

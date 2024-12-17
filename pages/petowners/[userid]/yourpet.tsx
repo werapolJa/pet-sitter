@@ -36,7 +36,7 @@ function YourPet() {
     if (user?.sub) {
       petData();
     }
-  }, [user?.sub, petIdEdit]);
+  }, [user?.sub, petIdEdit,changePage]);
   const petData = async () => {
     try {
       const res = await axios.get(`/api/petowners/pet/${user?.sub}`);

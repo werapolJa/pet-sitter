@@ -23,7 +23,7 @@ import withAuth from "@/utils/withAuth";
 import { useAuth } from "@/context/authentication";
 
 const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
-  const {user} = useAuth()
+  const { user } = useAuth();
   const router = useRouter();
   const { userid } = router.query;
   console.log(userid);
@@ -56,8 +56,8 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   >("success");
 
   const getProfile = useCallback(async () => {
-    if(userid !== user?.sub){
-      router.push("/")
+    if (userid !== user?.sub) {
+      router.push("/");
     }
 
     if (!userid) return;
@@ -393,7 +393,7 @@ const ProfilePage = () => {
         setImage(profileImage);
       } catch (err) {
         console.log("Error fetching profile image:", err);
-      } 
+      }
     };
 
     if (userid) {
@@ -412,7 +412,7 @@ const ProfilePage = () => {
       return;
     }
 
-    setLoading(true); 
+    setLoading(true);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -427,11 +427,11 @@ const ProfilePage = () => {
       const response = await axios.post("/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setImage(response.data.urls[0]); 
+      setImage(response.data.urls[0]);
     } catch (err) {
       console.log("Error uploading image:", err);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -443,7 +443,7 @@ const ProfilePage = () => {
         <div className="flex flex-col w-full py-6 px-4 md:hidden">
           <span className="text-xl font-bold text-black">Profile</span>
           {loading ? (
-            <div className="loading loading-dots loading-lg"></div> 
+            <div className="loading loading-dots loading-lg"></div>
           ) : (
             <ProfileImage image={image} onImageChange={handleImageUpload} />
           )}
@@ -453,7 +453,7 @@ const ProfilePage = () => {
         <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:flex md:flex-col">
           <span className="text-2xl font-bold text-black">Profile</span>
           {loading ? (
-            <div className="loading loading-dots loading-lg"></div> 
+            <div className="loading loading-dots loading-lg"></div>
           ) : (
             <ProfileImage image={image} onImageChange={handleImageUpload} />
           )}
@@ -464,6 +464,5 @@ const ProfilePage = () => {
     </div>
   );
 };
-
 
 export default withAuth(ProfilePage);
