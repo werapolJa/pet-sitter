@@ -654,7 +654,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
             <div key={index} className="flex flex-col bg-gray-100 px-4">
               <div className="flex flex-row mb-4 md:mb-0 pt-6">
                 <img
-                  className="w-9 h-9 md:h-14 md:w-14 rounded-full mr-4 object-cover"
+                  className="w-9 h-9 md:h-14 md:w-14 rounded-full mr-4 md:ml-4 object-cover"
                   src={review.image || fallbackImage}
                   alt={review?.full_name}
                 />
@@ -680,7 +680,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
                 </div>
               </div>
               <div className="w-full md:flex md:justify-end border-b border-b-gray-200">
-                <p className="pb-6 md:w-[60%] md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 ">
+                <p className="pb-6 md:w-[60%] md:mr-4 text-justify text-sm font-medium text-gray-500 leading-6 ">
                   {review.review}
                 </p>
               </div>
