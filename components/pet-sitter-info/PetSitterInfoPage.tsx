@@ -416,7 +416,7 @@ const PetSitterInformation: React.FC<{
           reviews={reviews}
         />
       </div>
-      <div className="hidden md:block md:mb-10 md:ml-[50px]">
+      <div className="hidden md:block md:mb-20 md:ml-auto">
         <div className="sticky top-4">
           <ProfileCard
             image={image}
@@ -688,7 +688,7 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
           ))
         )}
       </div>
-      <div className=" flex-col bg-gray-100 p-4 rounded-b-2xl"></div>
+      <div className=" flex-col bg-gray-100 p-4 md:rounded-b-2xl"></div>
       {/* Pagination */}
       <div className="mb-10 md:mt-10 flex justify-center items-center">
         {filteredReviews.length > itemsPerPage && (
