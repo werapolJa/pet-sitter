@@ -70,7 +70,12 @@ const AdminDashboard = () => {
               className="grow border-none focus:outline-none text-gray-400"
               placeholder="Search..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
             />
 
             <svg
