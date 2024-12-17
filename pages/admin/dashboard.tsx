@@ -4,6 +4,7 @@ import withAdminAuth from "@/utils/withAdminAuth";
 import { Sidebar } from "@/components/admin-page/Sidebar";
 import Image from "next/image"; // Import Image component from Next.js
 import imagebgicon from "@/public/assets/imagebg-default-icon.svg";
+import LoadingPage from "@/components/Loading";
 
 const AdminDashboard = () => {
   const [data, setData] = useState<any[]>([]);
@@ -49,10 +50,6 @@ const AdminDashboard = () => {
     setCurrentPage(page);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -93,79 +90,90 @@ const AdminDashboard = () => {
         </div>
 
         {/*Table*/}
-        <div className="overflow-x-auto bg-white rounded-xl">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-black text-white h-12">
-                <th className="text-left pl-4 w-[240px] max-w-[240px]">
-                  Pet Owner
-                </th>
-                <th className="text-left w-[207px] max-w-[207px]">Phone</th>
-                <th className="text-left w-[324px] max-w-[324px]">Email</th>
-                <th className="text-left w-[224px] max-w-[224px]">Pet(s)</th>
-                <th className="text-left w-[120px] max-w-[120px]">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.map((user, index) => (
-                <tr key={index} className="border-y border-y-gray-200 h-[92px]">
-                  <td className="pl-4 w-[240px] max-w-[240px]">
-                    <Link
-                      href={{
-                        pathname: "/admin/petowners/profile",
-                        query: { uid: `${user.uid}` },
-                      }}
-                      className="flex items-center gap-2 h-full cursor-pointer"
-                    >
-                      {user.image ? (
-                        <Image
-                          src={user.image}
-                          alt={user.full_name}
-                          className="w-10 h-10 rounded-full"
-                          width={40}
-                          height={40}
-                        />
-                      ) : (
-                        <Image
-                          src={imagebgicon}
-                          alt="Default profile"
-                          className="w-10 h-10 rounded-full"
-                          width={40}
-                          height={40}
-                        />
-                      )}
-                      <span className="truncate">{user.full_name}</span>
-                    </Link>
-                  </td>
-                  <td className="w-[207px] max-w-[207px] truncate">
-                    {user.phone}
-                  </td>
-                  <td className="w-[324px] max-w-[324px] truncate">
-                    {user.email}
-                  </td>
-                  <td className="w-[224px] max-w-[224px] truncate">
-                    {user.pet}
-                  </td>
-                  <td className="w-[120px] max-w-[120px]">
-                    {user.status === "Banned" ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                        <span className="text-red-500 font-medium">Banned</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                        <span className="text-green-500 font-medium">
-                          Normal
-                        </span>
-                      </div>
-                    )}
-                  </td>
+        {loading ? (
+          <div className="pt-40">
+            <LoadingPage />
+          </div>
+        ) : (
+          <div className="overflow-x-auto bg-white rounded-xl">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-black text-white h-12">
+                  <th className="text-left pl-4 w-[240px] max-w-[240px]">
+                    Pet Owner
+                  </th>
+                  <th className="text-left w-[207px] max-w-[207px]">Phone</th>
+                  <th className="text-left w-[324px] max-w-[324px]">Email</th>
+                  <th className="text-left w-[224px] max-w-[224px]">Pet(s)</th>
+                  <th className="text-left w-[120px] max-w-[120px]">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {currentData.map((user, index) => (
+                  <tr
+                    key={index}
+                    className="border-y border-y-gray-200 h-[92px]"
+                  >
+                    <td className="pl-4 w-[240px] max-w-[240px]">
+                      <Link
+                        href={{
+                          pathname: "/admin/petowners/profile",
+                          query: { uid: `${user.uid}` },
+                        }}
+                        className="flex items-center gap-2 h-full cursor-pointer"
+                      >
+                        {user.image ? (
+                          <Image
+                            src={user.image}
+                            alt={user.full_name}
+                            className="w-10 h-10 rounded-full"
+                            width={40}
+                            height={40}
+                          />
+                        ) : (
+                          <Image
+                            src={imagebgicon}
+                            alt="Default profile"
+                            className="w-10 h-10 rounded-full"
+                            width={40}
+                            height={40}
+                          />
+                        )}
+                        <span className="truncate">{user.full_name}</span>
+                      </Link>
+                    </td>
+                    <td className="w-[207px] max-w-[207px] truncate">
+                      {user.phone}
+                    </td>
+                    <td className="w-[324px] max-w-[324px] truncate">
+                      {user.email}
+                    </td>
+                    <td className="w-[224px] max-w-[224px] truncate">
+                      {user.pet}
+                    </td>
+                    <td className="w-[120px] max-w-[120px]">
+                      {user.status === "Banned" ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                          <span className="text-red-500 font-medium">
+                            Banned
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                          <span className="text-green-500 font-medium">
+                            Normal
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/*Pagination*/}
         <div className="flex justify-center items-center mt-6 pb-2">

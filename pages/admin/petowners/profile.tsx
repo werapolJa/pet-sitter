@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import withAdminAuth from "@/utils/withAdminAuth"; // HOC for admin authentication
 import { Sidebar } from "@/components/admin-page/Sidebar"; // Sidebar component for admin page
 import Link from "next/link";
+import LoadingPage from "@/components/Loading";
 
 // Define interfaces for the data types
 interface Review {
@@ -145,7 +146,11 @@ const AdminPetownerProfile = () => {
   // Function to render the content based on the active tab (profile, pets, or reviews)
   const renderTabContent = () => {
     if (loading) {
-      return <div className="p-10">Loading...</div>;
+      return (
+        <div className="pt-20">
+          <LoadingPage />
+        </div>
+      );
     }
 
     if (error) {
@@ -343,7 +348,9 @@ const AdminPetownerProfile = () => {
                 </div>
               ))
             ) : (
-              <p>No reviews found for this user.</p>
+              <p className="text-base text-gray-500">
+                No reviews found for this user.
+              </p>
             )}
           </div>
         );
@@ -384,7 +391,9 @@ const AdminPetownerProfile = () => {
                 </svg>
               </div>
             </Link>
-            <h1 className="text-2xl font-bold">
+            <h1
+              className={`text-2xl font-bold ${loading ? "text-gray-500" : ""}`}
+            >
               {loading ? "Loading..." : userData?.full_name || "Profile"}
             </h1>
           </div>
