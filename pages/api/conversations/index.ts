@@ -5,6 +5,7 @@ type Conversation = {
   conversation_id: number;
   created_at: string;
   updated_at: string;
+  unread_count: number;
   messages: {
     message_id: number;
     content: string;
@@ -35,7 +36,7 @@ export default async function handler(
     }
 
     try {
-      // Fetch conversations and messages for the user
+      // Fetch conversations and messages for the user with unread count
       const conversationsQuery = `
         SELECT 
           c.conversation_id,
@@ -43,13 +44,14 @@ export default async function handler(
           c.updated_at,
           m.message_id,
           m.content,
-          m.created_at AS message_created_at,
-          m.sender_id
+          m.created_at AS message_created_at, 
+          m.sender_id,
+          m.read_status
         FROM conversations c
-        JOIN conversation_participants cp ON c.conversation_id = cp.conversation_id
-        JOIN messages m ON c.conversation_id = m.conversation_id
+        LEFT JOIN conversation_participants cp ON c.conversation_id = cp.conversation_id
+        LEFT JOIN messages m ON c.conversation_id = m.conversation_id
         WHERE cp.user_id = $1
-        ORDER BY c.updated_at DESC;
+        ORDER BY c.updated_at DESC, m.created_at DESC;
       `;
       const conversationsResult = await connectionPool.query(conversationsQuery, [user_id]);
 
@@ -58,7 +60,7 @@ export default async function handler(
         return res.status(200).json({ data: [] });
       }
 
-      // Group messages by conversation_id
+      // Group messages by conversation_id and calculate unread_count
       const conversations = conversationsResult.rows.reduce((acc: Conversation[], row) => {
         let conversation = acc.find(c => c.conversation_id === row.conversation_id);
         if (!conversation) {
@@ -66,18 +68,25 @@ export default async function handler(
             conversation_id: row.conversation_id,
             created_at: row.created_at,
             updated_at: row.updated_at,
+            unread_count: 0, // Initialize unread count
             messages: [],
             participants: [],
           };
           acc.push(conversation);
         }
 
+        // Push message
         conversation.messages.push({
           message_id: row.message_id,
           content: row.content,
           created_at: row.message_created_at,
           sender_id: row.sender_id,
         });
+
+        // Count unread messages if sender_id != user_id
+        if (row.read_status === false && row.sender_id != user_id) {
+          conversation.unread_count += 1;
+        }
 
         return acc;
       }, [] as Conversation[]);
