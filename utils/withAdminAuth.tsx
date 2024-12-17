@@ -40,11 +40,6 @@ function withAdminAuth<P extends { children?: ReactNode }>(
       }
     }, [router]);
 
-    if (isAuthorized === null) {
-      // Show a loading spinner or blank state while checking authorization
-      return <div>Loading...</div>;
-    }
-
     if (!isAuthorized) {
       // Prevent rendering while redirecting
       return null;
