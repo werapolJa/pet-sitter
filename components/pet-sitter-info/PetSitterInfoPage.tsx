@@ -26,13 +26,13 @@ interface Review {
   user_id: string;
   full_name: string;
   rating_id: number;
-  created_at: string; // ISO string format, or Date if you prefer to parse it
+  created_at: string;
 }
 
 interface PetSitterReviewProps {
-  averageRating: number | null; // Can be null if no ratings are available
-  totalReviews: number | null; // Total number of reviews
-  reviews: Review[]; // An array of reviews
+  averageRating: number | null;
+  totalReviews: number | null;
+  reviews: Review[];
 }
 
 export default function PetSitterInfoPage() {
@@ -128,41 +128,37 @@ export default function PetSitterInfoPage() {
           `/api/reviews/${petsitterid}?status=Approved`
         );
 
-        console.log("Reviews data:", response.data.data.reviews); // Log the specific reviews data
         if (response.status === 200) {
           const data = response.data.data;
 
           // Set the average rating if available
           if (data.average_rating !== null) {
-            setAverageRating(data.average_rating); // Only set if there is a valid rating
+            setAverageRating(data.average_rating);
           } else {
-            setAverageRating(null); // If no average rating, set to null
+            setAverageRating(null);
           }
 
           if (data.total_reviews !== null) {
-            setTotalReviews(data.total_reviews); // Only set if there is a valid rating
+            setTotalReviews(data.total_reviews);
           } else {
-            setTotalReviews(null); // If no average rating, set to null
+            setTotalReviews(null);
           }
 
-          // Handle case when there are no reviews
           if (data.reviews && data.reviews.length > 0) {
-            setReviews(data.reviews); // Set reviews if they exist
+            setReviews(data.reviews);
           } else {
-            setReviews([]); // Set empty array if no reviews exist
+            setReviews([]);
           }
         } else if (response.status === 404) {
-          // Handle the 404 case when there are no reviews for the petsitter
           console.log("No reviews available for this petsitter.");
-          setReviews([]); // Set an empty array if no reviews are found
-          setAverageRating(null); // Optionally, reset average rating if no reviews
+          setReviews([]);
+          setAverageRating(null);
         }
       } catch (error) {
-        // Check if the error is an AxiosError and if it's a 404
         if (axios.isAxiosError(error) && error.response?.status === 404) {
           console.log("No reviews found for this petsitter (404).");
-          setReviews([]); // Set empty array on 404 error
-          setAverageRating(null); // Optionally, reset average rating on error
+          setReviews([]);
+          setAverageRating(null);
         } else {
           console.error("Error fetching reviews:", error);
         }
@@ -229,7 +225,7 @@ const PetSitterCarousel: React.FC<{ images: string[] }> = ({ images }) => {
   }
 
   return (
-    <div className="relative w-full md:py-10">
+    <div className="relative z-0 w-full md:py-10">
       <Swiper
         slidesPerView={1}
         spaceBetween={16}
@@ -462,6 +458,26 @@ const ProfileCard: React.FC<{
   district,
   averageRating,
 }) => {
+  const { push } = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [showDialog, setShowDialog] = useState<"login" | "booking" | null>(
+    null
+  );
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // Replace with cookie or your preferred storage
+    setIsLoggedIn(!!token); // Set login status
+  }, []);
+
+  // Click handler for "Book Now"
+  const handleBookNowClick = () => {
+    if (isLoggedIn) {
+      setShowDialog("booking"); // Open booking dialog
+    } else {
+      setShowDialog("login"); // Open login/register dialog
+    }
+  };
+
   const fallbackImage =
     "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
   const maxStars = 5;
@@ -485,7 +501,7 @@ const ProfileCard: React.FC<{
   return (
     <div>
       {/* Profile Card */}
-      <div className="md:sticky md: top-10 md:mb-12  w-[full] h-[500px] md:h-[562px] bg-white flex flex-col md:w-[416px] md:mr-20 md:rounded-2xl md:ml-auto md:shadow-lg">
+      <div className="md:sticky md: top-10 md:mb-12  w-[full] h-[570px] md:h-[562px] bg-white flex flex-col md:w-[416px] md:mr-20 md:rounded-2xl md:ml-auto md:shadow-lg">
         <div className="flex flex-col items-center justify-center mt-10">
           <img
             src={image || fallbackImage}
@@ -539,10 +555,62 @@ const ProfileCard: React.FC<{
             {renderPetType(petTypeBird ?? null)}
             {renderPetType(petTypeRabbit ?? null)}
           </div>
-          <div className="w-full h-[96px] border-t border-t-gray-200  flex items-center justify-center mt-10">
-            <button className="text-base leading-6 font-bold w-full md:w-[368px] h-[48px] bg-orange-500 text-white rounded-[99px] m-6">
+          <div className="w-full md:w-[416px] flex flex-col items-center justify-center md:flex md:flex-row border-t border-t-gray-200 mt-10 md:gap-4">
+            <button className="text-base leading-6 font-bold w-[328px] md:w-[176px] h-[48px] bg-orange-100 text-orange-500 rounded-[99px] mt-6 md:my-6">
+              Send Message
+            </button>
+            <button
+              className="text-base leading-6 font-bold w-[328px] md:w-[176px] h-[48px] bg-orange-500 text-white rounded-[99px] my-6 md:my-0"
+              onClick={handleBookNowClick}
+            >
               Book Now
             </button>
+
+            {showDialog === "login" && (
+              <div className="fixed z-40 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="md:flex md:items-center md:justify-center bg-white rounded-2xl pt-12 pb-10 w-full md:w-[560px] md:h-[320px] mx-4 flex flex-col items-center relative">
+                  <h2 className="text-lg font-semibold md:text-3xl md:font-semibold pb-2 text-center">
+                    Create an account to continue
+                  </h2>
+                  <button
+                    onClick={() => push("/petowners/register")}
+                    className="rounded-full text-white bg-orange-500 md:py-4 md:text-lg my-7 md:my-8 py-3 text-lg w-52"
+                  >
+                    Create account
+                  </button>
+                  <div className="flex flex-row gap-1 justify-center text-base  text-gray-500 md:text-lg font-medium text-center pt-2">
+                    Already have an account?
+                    <a
+                      onClick={() => push("/petowners/login")}
+                      className="ml-1 underline text-base md:text-lg text-black font-semibold cursor-pointer"
+                    >
+                      Log in
+                    </a>
+                  </div>
+                  <span
+                    className="absolute right-2 top-1 text-black px-4 py-2 rounded text-xl md:text-2xl cursor-pointer"
+                    onClick={() => setShowDialog(null)}
+                  >
+                    x
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {showDialog === "booking" && (
+              <div className="fixed z-40 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg md:h-[438px] md:w-[560px]">
+                  <h2 className="text-lg font-bold mb-4">Book Now</h2>
+                  <p>Proceed with your booking.</p>
+                  <button
+                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+                    onClick={() => setShowDialog(null)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
