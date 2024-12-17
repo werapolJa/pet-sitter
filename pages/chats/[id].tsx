@@ -71,8 +71,11 @@ export default function Chat() {
           id={typeof id === "string" ? id : undefined}
           setChat={setConversations}
         />
-        <div className="flex flex-col flex-1 overflow-auto w-full justify-center items-center">
+        <div className="flex flex-col flex-1 overflow-hidden w-full">
+          {/* Header ด้านบน */}
           <ChatHeader profile={profile} profileImage={profileImage} />
+
+          {/* กล่องแชทตรงกลาง */}
           <ChatBody
             messages={messages}
             user={user}
@@ -126,7 +129,6 @@ interface ChatBodyProps {
 }
 
 export function ChatBody({ messages, profile, user, id }: ChatBodyProps) {
-
   const [newMessage, setNewMessage] = useState<string>("");
 
   const handleSendMessage = async () => {
@@ -141,7 +143,6 @@ export function ChatBody({ messages, profile, user, id }: ChatBodyProps) {
         sender_id,
         content: newMessage,
       });
-      console.log(response.data.data);
 
       if (response.status === 200) {
         setNewMessage("");
@@ -186,51 +187,61 @@ export function ChatBody({ messages, profile, user, id }: ChatBodyProps) {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex flex-col gap-4 h-[90%] px-10 justify-end pb-10">
-        {messages
-          .slice()
-          .reverse()
-          .map((message) => {
-            const isOwnMessage = message.sender_id === user?.sub;
-            const senderImage = isOwnMessage ? null : profile?.image;
+      {/* ส่วนแสดงข้อความ เลื่อนจากล่างขึ้นบน */}
+      <div
+        className={`flex-1 flex flex-col-reverse gap-4 px-10 overflow-y-auto ${
+          messages.length > 8 ? "pb-28" : "pb-10"
+        }`}
+      >
+        {messages.map((message) => {
+          const isOwnMessage = message.sender_id === user?.sub;
+          const senderImage = isOwnMessage ? null : profile?.image;
 
-            return (
-              <div
-                key={message.message_id}
-                className={`chat ${isOwnMessage ? "chat-end" : "chat-start"}`}
-              >
-                {!isOwnMessage && senderImage && (
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <Image
-                        alt="User Avatar"
-                        src={senderImage}
-                        width={40}
-                        height={40}
-                      />
-                    </div>
+          return (
+            <div
+              key={message.message_id}
+              className={`chat ${isOwnMessage ? "chat-end" : "chat-start"}`}
+            >
+              {!isOwnMessage && senderImage && (
+                <div className="chat-image avatar">
+                  <div className="w-10 rounded-full">
+                    <Image
+                      alt="User Avatar"
+                      src={senderImage}
+                      width={40}
+                      height={40}
+                    />
                   </div>
-                )}
-                <div
-                  className={`chat-bubble px-6 py-4 rounded-full shadow-md ${
-                    isOwnMessage
-                      ? "bg-[#E44A0C] text-white"
-                      : " bg-white text-black"
-                  }`}
-                >
-                  {message.content}
                 </div>
+              )}
+              <div
+                className={`chat-bubble px-6 py-4 rounded-full shadow-md ${
+                  isOwnMessage
+                    ? "bg-[#E44A0C] text-white"
+                    : "bg-white text-black"
+                }`}
+              >
+                {message.content}
               </div>
-            );
-          })}
+            </div>
+          );
+        })}
       </div>
-      <div className="w-full h-auto bg-white py-6 px-10 flex gap-6">
+
+      {/* Input ส่งข้อความ */}
+      <div className="w-full h-auto bg-white py-6 px-10 flex gap-6 sticky bottom-0">
         <input
           type="text"
           placeholder="Type here"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           className="input w-full focus-within:outline-none"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
         />
         <button
           onClick={handleSendMessage}
