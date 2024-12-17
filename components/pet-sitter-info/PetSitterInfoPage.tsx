@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import dynamic from "next/dynamic";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { Pagination as MuiPagination } from "@mui/material";
 
 // Import Swiper styles
 import "swiper/css";
@@ -53,7 +54,7 @@ export default function PetSitterInfoPage() {
   const [longitude, setLongitude] = useState<number>(0); // Set initial value to 0 (Not null)
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const [totalReviews, setTotalReviews] = useState<number | null>(null);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -567,9 +568,12 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
   const [selectedRating, setSelectedRating] = useState<number | string>(
     "All Reviews"
   );
+  const [page, setPage] = useState(1); // Track the current page
+  const itemsPerPage = 5; // Number of reviews per page
 
   useEffect(() => {
     filterReviews();
+    setPage(1);
   }, [selectedRating, reviews]);
 
   const filterReviews = () => {
@@ -581,6 +585,18 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
       );
     }
   };
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const currentReviews = filteredReviews.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  // Handle page change
+  const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+  };
+
   const fallbackImage =
     "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
   return (
@@ -629,12 +645,12 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
         </div>
       </div>
       <div className="review-section">
-        {filteredReviews.length === 0 ? (
+        {currentReviews.length === 0 ? (
           <div className="flex justify-center items-center flex-col bg-gray-100 p-4">
             <span className="text-gray-500 text-base">No reviews</span>
           </div>
         ) : (
-          filteredReviews.map((review, index) => (
+          currentReviews.map((review, index) => (
             <div key={index} className="flex flex-col bg-gray-100 px-4">
               <div className="flex flex-row mb-4 md:mb-0 pt-6">
                 <img
@@ -672,7 +688,54 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
           ))
         )}
       </div>
-      <div className="flex justify-center items-center flex-col bg-gray-100 p-4 rounded-b-2xl"></div>
+      <div className=" flex-col bg-gray-100 p-4 rounded-b-2xl"></div>
+      {/* Pagination */}
+      <div className="mb-10 md:mt-10 flex justify-center items-center">
+        {filteredReviews.length > itemsPerPage && (
+          <MuiPagination
+            count={Math.ceil(filteredReviews.length / itemsPerPage)}
+            page={page}
+            onChange={handlePageChange}
+            sx={{
+              ".MuiPaginationItem-icon": {
+                fontSize: "1.9rem", // Adjust the size as needed
+              },
+              ".MuiPaginationItem-root": {
+                width: "40px", // Circle size
+                height: "40px",
+                fontSize: "16px",
+                backgroundColor: "white",
+                color: "#AEB1C3",
+                borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontWeight: 700,
+                margin: "0 6px",
+
+                "&.Mui-selected": {
+                  backgroundColor: "#FFF1EC",
+                  color: "#FF7037",
+                },
+
+                // Hover state
+                "&:hover": {
+                  backgroundColor: "white",
+                  color: "#FF7037",
+                },
+                transition: "background-color 0.5s ease, color 0.5s ease",
+              },
+              ".MuiPaginationItem-previousNext": {
+                backgroundColor: "transparent",
+                "&:hover": {
+                  backgroundColor: "transparent",
+                },
+                transition: "background-color 0.5s ease, color 0.5s ease",
+              },
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };

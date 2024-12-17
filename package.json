@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^3.2.2",
-    "@emotion/react": "^11.13.5",
-    "@emotion/styled": "^11.13.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.1.9",
-    "@mui/material": "^6.1.9",
+    "@mui/material": "^6.2.0",
     "@mui/x-date-pickers": "^7.22.3",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.46.2",
