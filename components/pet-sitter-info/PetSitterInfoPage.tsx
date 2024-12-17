@@ -629,41 +629,50 @@ const PetSitterReview: React.FC<PetSitterReviewProps> = ({
         </div>
       </div>
       <div className="review-section">
-        {filteredReviews.map((review, index) => (
-          <div key={index} className="flex flex-col bg-gray-100 px-4">
-            <div className="flex flex-row mb-4 md:mb-0 pt-6">
-              <img
-                className="w-9 h-9 md:h-14 md:w-14 rounded-full mr-4 object-cover"
-                src={review.image || fallbackImage}
-                alt={review?.full_name}
-              />
-              <div className="flex flex-col flex-grow md:flex-grow-0 md:w-[148px]">
-                <span className="text-lg font-medium">{review.full_name}</span>
-                <div className="text-sm font-medium text-gray-400">
-                  {formatDate(review.created_at)}
+        {filteredReviews.length === 0 ? (
+          <div className="flex justify-center items-center flex-col bg-gray-100 p-4">
+            <span className="text-gray-500 text-base">No reviews</span>
+          </div>
+        ) : (
+          filteredReviews.map((review, index) => (
+            <div key={index} className="flex flex-col bg-gray-100 px-4">
+              <div className="flex flex-row mb-4 md:mb-0 pt-6">
+                <img
+                  className="w-9 h-9 md:h-14 md:w-14 rounded-full mr-4 object-cover"
+                  src={review.image || fallbackImage}
+                  alt={review?.full_name}
+                />
+                <div className="flex flex-col flex-grow md:flex-grow-0 md:w-[148px]">
+                  <span className="text-lg font-medium">
+                    {review.full_name}
+                  </span>
+                  <div className="text-sm font-medium text-gray-400">
+                    {formatDate(review.created_at)}
+                  </div>
+                </div>
+                <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-8">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <input
+                      key={i}
+                      type="radio"
+                      name={`rating-${review.full_name}`}
+                      className="mask mask-star-2 bg-green-500 w-3 h-3 md:w-5 md:h-5"
+                      readOnly
+                      disabled
+                    />
+                  ))}
                 </div>
               </div>
-              <div className="flex rating h-8 text-base p-2 gap-[2px] md:ml-8">
-                {[...Array(review.rating)].map((_, i) => (
-                  <input
-                    key={i}
-                    type="radio"
-                    name={`rating-${review.full_name}`}
-                    className="mask mask-star-2 bg-green-500 w-3 h-3 md:w-5 md:h-5"
-                    readOnly
-                    disabled
-                  />
-                ))}
+              <div className="w-full md:flex md:justify-end border-b border-b-gray-200">
+                <p className="pb-6 md:w-[60%] md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 ">
+                  {review.review}
+                </p>
               </div>
             </div>
-            <div className="w-full md:flex md:justify-end border-b border-b-gray-200">
-              <p className="pb-6 md:w-[60%] md:mr-8 text-justify text-sm font-medium text-gray-500 leading-6 ">
-                {review.review}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
+      <div className="flex justify-center items-center flex-col bg-gray-100 p-4 rounded-b-2xl"></div>
     </div>
   );
 };
