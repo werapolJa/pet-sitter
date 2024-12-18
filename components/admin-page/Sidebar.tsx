@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import logoWhite from "@/public/assets/landing-page/logoWhite.svg";
+import logowhite from "@/public/assets/landing-page/logowhite.svg";
 import Image from "next/image";
 import { useAuth } from "@/context/authentication";
 
@@ -75,7 +75,7 @@ export function Sidebar() {
           {/* Logo */}
           <Link href={`/`}>
             <button className="w-20 md:w-32">
-              <Image src={logoWhite} alt="Logo" />
+              <Image src={logowhite} alt="Logo" />
             </button>
           </Link>
           <p className="font-medium italic text-sm leading-none text-gray-400">
