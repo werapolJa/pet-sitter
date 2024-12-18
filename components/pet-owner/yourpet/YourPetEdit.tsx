@@ -13,19 +13,7 @@ import CustomAlert from "@/components/pet-owner/CustomAlert";
 import DeleteBin from "@/public/assets/delete-bin.svg";
 import DeleteConfirmation from "@/components/pet-owner/yourpet/DeletePopup";
 
-interface PetData {
-  pet_id: number;
-  pet_name: string;
-  pet_type: string;
-  breed: string;
-  sex: string;
-  age: string;
-  color: string;
-  weight: string;
-  about: string | null;
-  image: string;
-  status: string;
-}
+
 interface YourPetEditProps {
   petIdEdit: number;
   setchangePage: (page: string) => void;
@@ -38,8 +26,6 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
   const { user } = useAuth();
   const router = useRouter();
   const { userid } = router.query;
-  const [petdata, setPetData] = useState<PetData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
   // console.log(image);
 
@@ -92,7 +78,7 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
         `/api/petowners/pet/${user?.sub}?pet_id=${petIdEdit}`
       );
       const data = res.data.data[0];
-      setPetData(data);
+      
       setName(data?.pet_name);
       setBreed(data?.breed);
       setAge(data?.age);
@@ -268,7 +254,7 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
       return;
     }
 
-    setLoading(true);
+   
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -292,9 +278,7 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
       console.log(response);
     } catch (err) {
       console.log("Error uploading image:", err);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
   const ProfileImage = ({
     image,

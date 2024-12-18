@@ -19,8 +19,8 @@ export default function DeleteConfirmation({
   petIdEdit,
   message,
 }: DeleteConfirmationProps) {
-  if (!isOpen) return null;
   const { user } = useAuth();
+  if (!isOpen) return null;
 
   // console.log(setchangePage);
 

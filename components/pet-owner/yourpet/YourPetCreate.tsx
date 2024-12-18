@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import BackArrow from "@/public/assets/back-arrow.svg";
 import petProfileDefault from "@/public/assets/pet-img-defult.svg";
@@ -16,7 +16,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
 
   const router = useRouter();
   const { userid } = router.query;
-  const [loading, setLoading] = useState(true);
+
   const [image, setImage] = useState<string | null>(null);
 
   const [name, setName] = useState<string>("");
@@ -98,7 +98,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
       return;
     }
 
-    setLoading(true);
+  
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -122,8 +122,6 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
       console.log(response);
     } catch (err) {
       console.log("Error uploading image:", err);
-    } finally {
-      setLoading(false);
     }
   };
   const handleSubmit = async (e: FormEvent) => {

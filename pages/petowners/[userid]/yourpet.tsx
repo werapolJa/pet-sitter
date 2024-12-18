@@ -27,7 +27,7 @@ interface PetData {
 function YourPet() {
   const { user } = useAuth();
 
-  const [changePage, setchangePage] = useState<String>("Home");
+  const [changePage, setchangePage] = useState<string>("Home");
   const [dataPet, setDataPet] = useState<PetData[]>([]);
   const [petIdEdit, setPetIdEdit] = useState<number>(0);
   const [loading, setLoading] = useState(true);

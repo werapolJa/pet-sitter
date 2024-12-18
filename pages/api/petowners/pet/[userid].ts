@@ -2,17 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import connectionPool from "@/utils/db";
 import { validate as isUUID } from "uuid";
 
-type YourPetRequestBody = {
-  pet_name: string;
-  pet_type: string;
-  breed: string;
-  sex: string;
-  age: number;
-  color: string;
-  weight: number;
-  image: string;
-  about: string | null;
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -190,7 +179,7 @@ export default async function handler(
         message: "Pet updated successfully!",
         // data: petResult.rows[0],
       });
-    } catch (error) {
+    } catch  {
       return res.status(500).json({ error: "Internal server error" });
     } finally {
       client.release();
