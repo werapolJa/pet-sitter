@@ -51,14 +51,7 @@ const AdminDashboard = () => {
             <tbody>
               {[...Array(8)].map((_, index) => (
                 <tr key={index}>
-                  <td className="flex items-center gap-2">
-                    <img
-                      src="https://via.placeholder.com/40"
-                      alt="Owner"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    John Wick
-                  </td>
+                  <td className="flex items-center gap-2">John Wick</td>
                   <td>099 996 6734</td>
                   <td>johnwicklovedogs@dogorg.com</td>
                   <td>2</td>
