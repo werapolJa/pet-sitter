@@ -35,8 +35,10 @@ interface SupabaseJwtPayload {
 interface AuthContextType {
   user: SupabaseJwtPayload | null;
   login: (data: { [key: string]: string }) => Promise<void>;
+  loginAdmin: (data: { [key: string]: string }) => Promise<void>;
   register: (data: { [key: string]: string }) => Promise<void>;
   logout: () => void;
+  logoutAdmin: () => void;
   isAuthenticated: boolean;
 }
 
@@ -87,6 +89,36 @@ function AuthProvider({ children }: AuthProviderProps) {
     router.push("/");
   };
 
+  // Login for Admin
+  const loginAdmin = async (data: { [key: string]: string }) => {
+    try {
+      const result = await axios.post("/api/admin/login", data);
+      const token = result.data.access_token;
+      localStorage.setItem("adminToken", token);
+      // Redirect or set login state here
+      const decoded = jwtDecode(token) as SupabaseJwtPayload;
+      if (decoded.role === "admin") {
+        setState({ ...state, user: decoded });
+        router.push("/admin/dashboard");
+      }
+    } catch (error: any) {
+      // Check if the error is an AxiosError
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          // Handle 401 Unauthorized error
+          alert("Unauthorized: Invalid username or password.");
+        } else {
+          alert(
+            `Error: ${error.response?.status || "Unknown error occurred."}`
+          );
+        }
+      } else {
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
+
   // Register method
   const register = async (data: { [key: string]: string }) => {
     await axios.post("/api/petowners/auth/register", data);
@@ -98,14 +130,28 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("token");
     setState({ ...state, user: null, error: null });
     router.push("/");
-  
+  };
+
+  // Logout for Admin method
+  const logoutAdmin = () => {
+    localStorage.removeItem("adminToken");
+    setState({ ...state, user: null, error: null });
+    router.push("/");
   };
 
   const isAuthenticated = Boolean(state.user);
 
   return (
     <AuthContext.Provider
-      value={{ user: state.user, login, logout, register, isAuthenticated }}
+      value={{
+        user: state.user,
+        login,
+        logout,
+        register,
+        loginAdmin,
+        logoutAdmin,
+        isAuthenticated,
+      }}
     >
       {children}
     </AuthContext.Provider>
