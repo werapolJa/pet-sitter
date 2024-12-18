@@ -8,6 +8,7 @@ import axios from "axios";
 import YourpetPage from "@/components/pet-owner/yourpet/YourPetPage";
 import YourPetEdit from "@/components/pet-owner/yourpet/YourPetEdit";
 import YourPetCreate from "@/components/pet-owner/yourpet/YourPetCreate";
+import LoadingPage from "@/components/Loading";
 
 interface PetData {
   pet_id: number;
@@ -29,6 +30,7 @@ function YourPet() {
   const [changePage, setchangePage] = useState<String>("Home");
   const [dataPet, setDataPet] = useState<PetData[]>([]);
   const [petIdEdit, setPetIdEdit] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
   // console.log(petIdEdit);
   // console.log(dataPet);
 
@@ -36,15 +38,17 @@ function YourPet() {
     if (user?.sub) {
       petData();
     }
-  }, [user?.sub, petIdEdit,changePage]);
+  }, [user?.sub, petIdEdit, changePage]);
   const petData = async () => {
     try {
+      setLoading(false);
       const res = await axios.get(`/api/petowners/pet/${user?.sub}`);
       const data = await res.data.data;
       setDataPet(data);
+      setLoading(true);
     } catch (error) {
+      setLoading(false);
       console.log(error);
-      
     }
   };
 
@@ -55,12 +59,17 @@ function YourPet() {
         <Sidebar />
         {/*  check changeContainer กดปุ่มเพ่ือเรียกคอมโพเน้น create มาแสดง */}
         {changePage === "Home" ? (
-          // container show pet
-          <YourpetPage
-            dataPet={dataPet}
-            setchangePage={setchangePage}
-            setPetIdEdit={setPetIdEdit}
-          />
+          loading ? (
+            // container show pet
+            <YourpetPage
+              dataPet={dataPet}
+              setchangePage={setchangePage}
+              setPetIdEdit={setPetIdEdit}
+            />
+          ) : (
+            // loading
+            <LoadingPage /> 
+          )
         ) : changePage === "Create" ? (
           // container create
           <YourPetCreate setchangePage={setchangePage} />
