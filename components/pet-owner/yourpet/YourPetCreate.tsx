@@ -131,10 +131,6 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
       setNameError(true);
       setMessageErrorName("Name is required.");
       hasError = true;
-    } else if (name.length < 6 || name.length > 20) {
-      setNameError(true);
-      setMessageErrorName("Name must be between 6 and 20 characters.");
-      hasError = true;
     } else {
       setNameError(false); // Reset error if name is valid
     }
@@ -142,10 +138,6 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
     if (!breed) {
       setBreedError(true);
       setMessageErrorBreed("Breed is required.");
-      hasError = true;
-    } else if (breed.length < 6 || breed.length > 20) {
-      setBreedError(true);
-      setMessageErrorBreed("Breed must be between 6 and 20 characters.");
       hasError = true;
     } else {
       setBreedError(false); // Reset error if name is valid

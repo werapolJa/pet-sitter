@@ -27,7 +27,7 @@ interface PetData {
 function YourPet() {
   const { user } = useAuth();
 
-  const [changePage, setchangePage] = useState<string>("Home");
+  const [changePage, setchangePage] = useState<String>("Home");
   const [dataPet, setDataPet] = useState<PetData[]>([]);
   const [petIdEdit, setPetIdEdit] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -49,6 +49,8 @@ function YourPet() {
     } catch (error) {
       setLoading(false);
       console.log(error);
+    } finally {
+      setLoading(false); // จบการโหลดข้อมูล
     }
   };
 
@@ -60,15 +62,22 @@ function YourPet() {
         {/*  check changeContainer กดปุ่มเพ่ือเรียกคอมโพเน้น create มาแสดง */}
         {changePage === "Home" ? (
           loading ? (
-            // container show pet
+            // กรณีข้อมูลกำลังโหลด
+            <LoadingPage />
+          ) : dataPet && dataPet.length > 0 ? (
+            // แสดงข้อมูลสัตว์เลี้ยง ถ้ามีข้อมูล
             <YourpetPage
               dataPet={dataPet}
               setchangePage={setchangePage}
               setPetIdEdit={setPetIdEdit}
             />
           ) : (
-            // loading
-            <LoadingPage /> 
+            // กรณีไม่มีข้อมูล แสดงหน้าที่
+            <YourpetPage
+              dataPet={dataPet}
+              setchangePage={setchangePage}
+              setPetIdEdit={setPetIdEdit}
+            />
           )
         ) : changePage === "Create" ? (
           // container create
