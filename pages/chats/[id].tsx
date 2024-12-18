@@ -64,6 +64,7 @@ export default function Chat() {
   const router = useRouter();
   const { id } = router.query;
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  console.log(messages)
 
   const markAsRead = useCallback(
     async (conversationId: string) => {
@@ -183,6 +184,8 @@ export function ChatBody({
   markAsRead,
 }: ChatBodyProps) {
   const [newMessage, setNewMessage] = useState<string>("");
+  const [editMessageId, setEditMessageId] = useState<string | null>(null);
+  const [editMessageContent, setEditMessageContent] = useState<string>("");
 
   const windowWidth = useWindowWidth();
 
@@ -195,56 +198,51 @@ export function ChatBody({
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const conversation_id = id;
-    const sender_id = user?.sub;
-
     try {
-      const response = await axios.post("/api/conversations/messages", {
-        conversation_id,
-        sender_id,
+      await axios.post("/api/conversations/messages", {
+        conversation_id: id,
+        sender_id: user?.sub,
         content: newMessage,
       });
-
-      if (response.status === 200) {
-        setNewMessage("");
-      } else {
-        console.log("Error sending message:", response.data.message);
-      }
+      setNewMessage("");
     } catch (error) {
-      console.log("Error sending message:", error);
+      console.error("Error sending message:", error);
     }
   };
 
-  if (
-    !messages ||
-    messages.length === 0 ||
-    messages.every((msg) => msg.content === null)
-  ) {
-    return (
-      <>
-        <div className="w-full h-full px-10 py-6">
-          <div className="flex items-center justify-center h-full w-full">
-            <h1>Start a conversation!</h1>
-          </div>
-        </div>
-        <div className="w-full h-auto bg-white py-6 px-10 flex gap-6">
-          <input
-            type="text"
-            placeholder="Type here"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            className="input w-full focus-within:outline-none"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="btn bg-orange-500 shadow-sm w-12 h-12 rounded-full hover:bg-orange-600 p-0"
-          >
-            <Image className="w-5 h-5" src={btnChat} alt="icon button" />
-          </button>
-        </div>
-      </>
-    );
-  }
+  const handleUpdateMessage = async (messageId: string, newContent: string) => {
+    try {
+      await axios.put(`/api/conversations/${messageId}`, { content: newContent });
+    } catch (error) {
+      console.error("Error updating message:", error);
+    }
+  };
+
+  const handleEditClick = (messageId: string, currentContent: string) => {
+    setEditMessageId(messageId);
+    setEditMessageContent(currentContent);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editMessageId || !editMessageContent.trim()) return;
+
+    await handleUpdateMessage(editMessageId, editMessageContent);
+    setEditMessageId(null);
+    setEditMessageContent("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditMessageId(null);
+    setEditMessageContent("");
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      await axios.delete(`/api/conversations/${messageId}`);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -256,20 +254,20 @@ export function ChatBody({
         }`}
       >
         {messages.map((message) => {
+          const isEditing = editMessageId === message.message_id;
           const isOwnMessage = message.sender_id === user?.sub;
-          const senderImage = isOwnMessage ? null : profile?.image;
 
           return (
             <div
               key={message.message_id}
               className={`chat ${isOwnMessage ? "chat-end" : "chat-start"}`}
             >
-              {!isOwnMessage && senderImage && (
+              {!isOwnMessage && profile?.image && (
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
                       alt="User Avatar"
-                      src={senderImage}
+                      src={profile.image}
                       width={40}
                       height={40}
                     />
@@ -278,35 +276,64 @@ export function ChatBody({
               )}
               <div
                 className={`chat-bubble px-6 py-4 rounded-full shadow-md ${
-                  isOwnMessage
-                    ? "bg-[#E44A0C] text-white"
-                    : "bg-white text-black"
+                  isOwnMessage ? "bg-[#E44A0C] text-white" : "bg-white text-black"
                 }`}
               >
-                {message.content}
+                {isEditing ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={editMessageContent}
+                      onChange={(e) => setEditMessageContent(e.target.value)}
+                      className="input text-black w-full focus:outline-none"
+                    />
+                    <button
+                      className="btn rounded-md"
+                      onClick={handleSaveEdit}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="btn rounded-md"
+                      onClick={handleCancelEdit}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  message.content
+                )}
               </div>
-              <div className={`dropdown ${isOwnMessage ? "dropdown-left" : "dropdown-right"}`}>
-                <div tabIndex={0} role="button">
-                  ...    
+              {isOwnMessage && (
+                <div className="dropdown dropdown-left">
+                  <div tabIndex={0} role="button">
+                    ...
+                  </div>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+                  >
+                    <li>
+                      <a
+                        onClick={() => handleEditClick(message.message_id, message.content)}
+                      >
+                        Edit message
+                      </a>
+                    </li>
+                    <li>
+                      <a onClick={() => handleDeleteMessage(message.message_id)}>
+                        Delete message
+                      </a>
+                    </li>
+                  </ul>
                 </div>
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-                >
-                  <li>
-                    <a>Change message</a>
-                  </li>
-                  <li>
-                    <a>Delete message</a>
-                  </li>
-                </ul>
-              </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Input ส่งข้อความ */}
+      {/* Input for new messages */}
       <div className="w-full h-auto bg-white py-6 px-10 flex gap-6 sticky bottom-0">
         <input
           type="text"

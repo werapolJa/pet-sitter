@@ -90,10 +90,35 @@ export function SidebarChat({ id, setChat }: SidebarChatProps) {
       )
       .subscribe();
 
+      const messageDeleteSubscription = supabase
+      .channel("public:messages")
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "messages" },
+        (payload) => {
+          console.log("Delete Message:", payload);
+          fetchConversations();
+        }
+      )
+      .subscribe();
+
+      const messageUpdateSubscription = supabase
+      .channel("public:messages")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "messages" },
+        (payload) => {
+          console.log("Delete Message:", payload);
+          fetchConversations();
+        }
+      )
+      .subscribe();
     // Clean up subscriptions
     return () => {
       supabase.removeChannel(conversationSubscription);
       supabase.removeChannel(messageSubscription);
+      supabase.removeChannel(messageDeleteSubscription);
+      supabase.removeChannel(messageUpdateSubscription);
     };
   }, [user, setChat]);
 
