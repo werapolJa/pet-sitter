@@ -9,6 +9,27 @@ import { useRouter } from "next/router";
 import btnChat from "@/public/assets/chat.svg";
 import axios from "axios";
 
+const useWindowWidth = () => {
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    // This will run only on the client side
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // Initialize the state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowWidth;
+};
+
 interface Participant {
   user_id: string;
   full_name: string;
@@ -163,6 +184,8 @@ export function ChatBody({
 }: ChatBodyProps) {
   const [newMessage, setNewMessage] = useState<string>("");
 
+  const windowWidth = useWindowWidth();
+
   useEffect(() => {
     if (id && newMessage.trim() !== "") {
       markAsRead(id);
@@ -227,8 +250,7 @@ export function ChatBody({
     <div className="flex flex-col h-full w-full">
       <div
         className={`flex-1 flex flex-col-reverse gap-4 px-10 overflow-y-auto ${
-          (window.innerWidth <= 768 && messages.length > 5) ||
-          messages.length > 8
+          ((windowWidth ?? Infinity) <= 768 && messages.length > 5) || messages.length > 8
             ? "pb-28"
             : "pb-10"
         }`}
@@ -262,6 +284,22 @@ export function ChatBody({
                 }`}
               >
                 {message.content}
+              </div>
+              <div className={`dropdown ${isOwnMessage ? "dropdown-left" : "dropdown-right"}`}>
+                <div tabIndex={0} role="button">
+                  ...    
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+                >
+                  <li>
+                    <a>Change message</a>
+                  </li>
+                  <li>
+                    <a>Delete message</a>
+                  </li>
+                </ul>
               </div>
             </div>
           );
