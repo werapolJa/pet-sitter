@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { Pagination as MuiPagination } from "@mui/material";
+import DateAndTimePicker from "@/components/pet-sitter-info/DateTimePicker"; // Corrected import statement
+import dayjs from "dayjs";
 
 // Import Swiper styles
 import "swiper/css";
@@ -57,6 +59,8 @@ export default function PetSitterInfoPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [errorDate, setErrorDate] = useState<string | null>(null);
 
   const router = useRouter();
   const { petsitterid } = router.query;
@@ -193,6 +197,9 @@ export default function PetSitterInfoPage() {
         averageRating={averageRating}
         totalReviews={totalReviews}
         reviews={reviews}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        errorDate={errorDate}
       />
     </div>
   );
@@ -314,6 +321,9 @@ const PetSitterInformation: React.FC<{
   averageRating: number | null;
   totalReviews: number | null;
   reviews: Review[]; // Change this to `Review[]` type
+  selectedDate: string | Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  errorDate: string | null;
 }> = ({
   image,
   tradename,
@@ -333,6 +343,9 @@ const PetSitterInformation: React.FC<{
   averageRating,
   totalReviews,
   reviews,
+  selectedDate,
+  setSelectedDate,
+  errorDate,
 }) => {
   const Map = useMemo(
     () =>
@@ -403,6 +416,9 @@ const PetSitterInformation: React.FC<{
           province={province}
           district={district}
           averageRating={averageRating}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          errorDate={errorDate}
         />
       </div>
       <div className="md:hidden">
@@ -426,6 +442,9 @@ const PetSitterInformation: React.FC<{
             province={province}
             district={district}
             averageRating={averageRating}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            errorDate={errorDate}
           />
         </div>
       </div>
@@ -445,6 +464,9 @@ const ProfileCard: React.FC<{
   province: string;
   district: string;
   averageRating: number | null;
+  selectedDate: string | Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  errorDate: string | null;
 }> = ({
   image,
   tradename,
@@ -457,6 +479,9 @@ const ProfileCard: React.FC<{
   province,
   district,
   averageRating,
+  selectedDate,
+  setSelectedDate,
+  errorDate,
 }) => {
   const { push } = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -498,10 +523,30 @@ const ProfileCard: React.FC<{
     );
   };
 
+  const formattedDate = selectedDate
+    ? dayjs(selectedDate).format("DD MMM, YYYY")
+    : null;
+
+  const handleDateChange = (date: string | null) => {
+    setSelectedDate(date ? new Date(date) : null); // Convert string to Date
+  };
+
+  const handleSubmit = () => {
+    if (selectedDate) {
+      if (selectedDate instanceof Date) {
+        console.log("Selected Date:", selectedDate.toISOString()); // Convert Date to ISO string
+      } else {
+        console.log("Selected Date:", selectedDate); // If it's already a string
+      }
+    } else {
+      console.log("No date selected");
+    }
+  };
+
   return (
     <div>
       {/* Profile Card */}
-      <div className="md:sticky md: top-10 md:mb-12  w-[full] h-[570px] md:h-[562px] bg-white flex flex-col md:w-[416px] md:mr-20 md:rounded-2xl md:ml-auto md:shadow-lg">
+      <div className="md:sticky md: top-10 md:mb-12  w-full h-[570px] md:h-[562px] bg-white flex flex-col md:w-[416px] md:mr-20 md:rounded-2xl md:ml-auto md:shadow-lg">
         <div className="flex flex-col items-center justify-center mt-10">
           <img
             src={image || fallbackImage}
@@ -599,9 +644,15 @@ const ProfileCard: React.FC<{
 
             {showDialog === "booking" && (
               <div className="fixed z-40 inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg md:h-[438px] md:w-[560px]">
-                  <h2 className="text-lg font-bold mb-4">Book Now</h2>
-                  <p>Proceed with your booking.</p>
+                <div className="bg-white p-6 shadow-lg md:h-[438px] md:w-[560px] h-full w-full">
+                  <h2 className="text-lg font-bold mb-4">Booking</h2>
+                  <DateAndTimePicker
+                    label=""
+                    value={formattedDate} // Ensure the value is a string in 'YYYY-MM-DD' format
+                    onChange={handleDateChange} // Pass the function to update the selectedDate
+                    error={!!errorDate} // Boolean value to indicate if there's an error
+                    errorMsg={errorDate || undefined} // Pass the error message
+                  />
                   <button
                     className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
                     onClick={() => setShowDialog(null)}
