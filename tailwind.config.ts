@@ -14,5 +14,10 @@ export default {
       },
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+    require("tailwind-scrollbar")({
+      nocompatible: true, // Ensures it uses its own custom styles without fallback to browser defaults
+    }),
+  ],
 } satisfies Config;
