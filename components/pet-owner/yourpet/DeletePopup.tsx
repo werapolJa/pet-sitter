@@ -20,20 +20,18 @@ export default function DeleteConfirmation({
   message,
 }: DeleteConfirmationProps) {
   const { user } = useAuth();
-  if (!isOpen) return null;
-
-  // console.log(setchangePage);
 
   const onConfirm = async () => {
     try {
-      await axios.delete(
-        `/api/petowners/pet/${user?.sub}?pet_id=${petIdEdit}`
-      );
-    } catch (error) {
-      console.log(error);
+      await axios.delete(`/api/petowners/pet/${user?.sub}?pet_id=${petIdEdit}`);
+      // หลังจากลบข้อมูลเสร็จ ให้โหลดข้อมูลใหม่
+      setchangePage("Home"); // ส่งกลับไปยังหน้า Home
+    } catch {
+      // console.log(error);
     }
-    setchangePage("Home");
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000066] ">

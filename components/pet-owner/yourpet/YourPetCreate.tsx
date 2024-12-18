@@ -119,7 +119,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
         }
       );
       setImage(response.data.urls[0]);
-      console.log(response);
+      // console.log(response);
     } catch (err) {
       console.log("Error uploading image:", err);
     }
@@ -211,15 +211,15 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
         about:aboutState,
       };
 
-      console.log(createPet);
+      // console.log(createPet);
 
       // ตรวจสอบว่า `userid` ที่ใช้ใน URL และ body ตรงกันหรือไม่
-      const response = await axios.post(
+      await axios.post(
         `/api/petowners/pet/${createPet.user_id}`,
         createPet
       );
 
-      console.log(response); // ดูผลลัพธ์การตอบกลับจาก API
+
     } catch (error) {
       console.log(error); // แสดง error ถ้ามี
     }

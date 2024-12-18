@@ -27,7 +27,7 @@ interface PetData {
 function YourPet() {
   const { user } = useAuth();
 
-  const [changePage, setchangePage] = useState<String>("Home");
+  const [changePage, setchangePage] = useState<string>("Home");
   const [dataPet, setDataPet] = useState<PetData[]>([]);
   const [petIdEdit, setPetIdEdit] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -44,6 +44,10 @@ function YourPet() {
       setLoading(false);
       const res = await axios.get(`/api/petowners/pet/${user?.sub}`);
       const data = await res.data.data;
+      if(res.status===404){
+        setDataPet([]);
+      }
+  
       setDataPet(data);
       setLoading(true);
     } catch (error) {

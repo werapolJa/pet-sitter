@@ -13,16 +13,12 @@ import CustomAlert from "@/components/pet-owner/CustomAlert";
 import DeleteBin from "@/public/assets/delete-bin.svg";
 import DeleteConfirmation from "@/components/pet-owner/yourpet/DeletePopup";
 
-
 interface YourPetEditProps {
   petIdEdit: number;
   setchangePage: (page: string) => void;
 }
 
-
 function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
-
-
   const { user } = useAuth();
   const router = useRouter();
   const { userid } = router.query;
@@ -70,7 +66,7 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
     if (user?.sub) {
       getPetId();
     }
-  }, []);
+  }, [setchangePage]);
 
   const getPetId = async () => {
     try {
@@ -78,7 +74,7 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
         `/api/petowners/pet/${user?.sub}?pet_id=${petIdEdit}`
       );
       const data = res.data.data[0];
-      
+
       setName(data?.pet_name);
       setBreed(data?.breed);
       setAge(data?.age);
@@ -216,7 +212,7 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
         about: aboutState,
       };
 
-      console.log(updatePet);
+      // console.log(updatePet);
 
       // ตรวจสอบว่า `userid` ที่ใช้ใน URL และ body ตรงกันหรือไม่
       await axios.put(
@@ -246,8 +242,6 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
       return;
     }
 
-   
-
     const reader = new FileReader();
     reader.onload = () => {
       setImage(reader.result as string);
@@ -267,10 +261,10 @@ function YourPetEdit({ petIdEdit, setchangePage }: YourPetEditProps) {
         }
       );
       setImage(response.data.urls[0]);
-      console.log(response);
+      // console.log(response);
     } catch (err) {
       console.log("Error uploading image:", err);
-    } 
+    }
   };
   const ProfileImage = ({
     image,

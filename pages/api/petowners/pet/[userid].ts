@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import connectionPool from "@/utils/db";
 import { validate as isUUID } from "uuid";
 
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -34,13 +33,13 @@ export default async function handler(
       }
       const result = await connectionPool.query(query, params);
 
+      // แก้ว่าถ้าไม่มีข้อมูลตรงกับที่ต้องการจะส่ง [เปล่า] กลับไปแก้บัคที่ลบข้อมูลแล้วพอเป็นข้อมูลอันสุดท้ายจะไม่รีหน้า
       if (result.rows.length === 0) {
-        return res.status(404).json({ error: "user doesn't have a pet" });
+        return res.status(200).json({ data: [] });
       }
 
       return res.status(200).json({ data: result.rows });
-    } catch (error) {
-      console.error("Error fetching user data:", error);
+    } catch {
       return res.status(500).json({ error: "internal server error" });
     }
   }
@@ -78,8 +77,8 @@ export default async function handler(
     try {
       // สร้างตัวแปล เก็บ query เพื่อนำไปใช้
       const petInsertQuery = `
-      INSERT INTO pets (pet_name, pet_type, breed, sex, age, color, weight, image,about, user_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10);
+      insert into pets (pet_name, pet_type, breed, sex, age, color, weight, image,about, user_id)
+      values ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10);
     `;
 
       const petResult = await client.query(petInsertQuery, [
@@ -108,7 +107,8 @@ export default async function handler(
       console.error("Error inserting pet data:", error);
       return res.status(500).json({ error: "Internal server error" });
     } finally {
-      // ปล่อยการเชื่อมต่อกลับไปที่ pool
+      // ถ้าไม่ใช้
+      // การเชื่อมต่ออาจถูกล็อกไว้และไม่สามารถนำไปใช้ซ้ำได้ ส่งผลให้ connection pool อาจเต็มและทำให้ระบบไม่สามารถสร้างการเชื่อมต่อใหม่ได้
       client.release();
     }
   }
@@ -179,7 +179,7 @@ export default async function handler(
         message: "Pet updated successfully!",
         // data: petResult.rows[0],
       });
-    } catch{
+    } catch {
       return res.status(500).json({ error: "Internal server error" });
     } finally {
       client.release();
