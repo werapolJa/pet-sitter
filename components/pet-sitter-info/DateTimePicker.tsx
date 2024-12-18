@@ -290,7 +290,7 @@ const DateAndTimePicker: React.FC<DatePickerProps> = ({
                   .map((timeSlot, index) => (
                     <div
                       key={index}
-                      className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                      className="px-4 py-3 cursor-pointer hover:bg-gray-100"
                       onClick={() => handleEndTimeSelect(timeSlot)}
                     >
                       {timeSlot.display}
