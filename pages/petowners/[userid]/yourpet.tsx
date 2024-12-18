@@ -44,11 +44,17 @@ function YourPet() {
       setLoading(false);
       const res = await axios.get(`/api/petowners/pet/${user?.sub}`);
       const data = await res.data.data;
+      if(res.status===404){
+        setDataPet([]);
+      }
+  
       setDataPet(data);
       setLoading(true);
     } catch (error) {
       setLoading(false);
       console.log(error);
+    } finally {
+      setLoading(false); // จบการโหลดข้อมูล
     }
   };
 
@@ -60,15 +66,22 @@ function YourPet() {
         {/*  check changeContainer กดปุ่มเพ่ือเรียกคอมโพเน้น create มาแสดง */}
         {changePage === "Home" ? (
           loading ? (
-            // container show pet
+            // กรณีข้อมูลกำลังโหลด
+            <LoadingPage />
+          ) : dataPet && dataPet.length > 0 ? (
+            // แสดงข้อมูลสัตว์เลี้ยง ถ้ามีข้อมูล
             <YourpetPage
               dataPet={dataPet}
               setchangePage={setchangePage}
               setPetIdEdit={setPetIdEdit}
             />
           ) : (
-            // loading
-            <LoadingPage /> 
+            // กรณีไม่มีข้อมูล แสดงหน้าที่
+            <YourpetPage
+              dataPet={dataPet}
+              setchangePage={setchangePage}
+              setPetIdEdit={setPetIdEdit}
+            />
           )
         ) : changePage === "Create" ? (
           // container create

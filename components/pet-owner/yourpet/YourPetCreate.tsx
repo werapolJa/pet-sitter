@@ -119,7 +119,7 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
         }
       );
       setImage(response.data.urls[0]);
-      console.log(response);
+      // console.log(response);
     } catch (err) {
       console.log("Error uploading image:", err);
     }
@@ -131,10 +131,6 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
       setNameError(true);
       setMessageErrorName("Name is required.");
       hasError = true;
-    } else if (name.length < 6 || name.length > 20) {
-      setNameError(true);
-      setMessageErrorName("Name must be between 6 and 20 characters.");
-      hasError = true;
     } else {
       setNameError(false); // Reset error if name is valid
     }
@@ -142,10 +138,6 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
     if (!breed) {
       setBreedError(true);
       setMessageErrorBreed("Breed is required.");
-      hasError = true;
-    } else if (breed.length < 6 || breed.length > 20) {
-      setBreedError(true);
-      setMessageErrorBreed("Breed must be between 6 and 20 characters.");
       hasError = true;
     } else {
       setBreedError(false); // Reset error if name is valid
@@ -219,15 +211,15 @@ function YourPetCreate({ setchangePage }: YourPetEditProps) {
         about:aboutState,
       };
 
-      console.log(createPet);
+      // console.log(createPet);
 
       // ตรวจสอบว่า `userid` ที่ใช้ใน URL และ body ตรงกันหรือไม่
-      const response = await axios.post(
+      await axios.post(
         `/api/petowners/pet/${createPet.user_id}`,
         createPet
       );
 
-      console.log(response); // ดูผลลัพธ์การตอบกลับจาก API
+
     } catch (error) {
       console.log(error); // แสดง error ถ้ามี
     }
