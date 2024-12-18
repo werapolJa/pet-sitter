@@ -20,6 +20,7 @@ import { FreeMode, Pagination, Navigation } from "swiper/modules";
 import arrowLeft from "@/public/assets/pet-sitter-info-page/arrow-left.svg";
 import arrowRight from "@/public/assets/pet-sitter-info-page/arrow-right.svg";
 import pinAddress from "@/public/assets/pet-sitter-info-page/pin-address.svg";
+import closeIcon from "@/public/assets/pet-sitter-info-page/close.svg";
 
 interface Review {
   image: string | null; // image can be a string or null
@@ -632,33 +633,47 @@ const ProfileCard: React.FC<{
                       Log in
                     </a>
                   </div>
-                  <span
-                    className="absolute right-2 top-1 text-black px-4 py-2 rounded text-xl md:text-2xl cursor-pointer"
+                  <Image
+                    src={closeIcon} // Use a correct relative path
+                    alt="close button"
+                    className="absolute right-5 top-5 cursor-pointer h-5 w-5 md:h-6 md:w-6"
                     onClick={() => setShowDialog(null)}
-                  >
-                    x
-                  </span>
+                  />
                 </div>
               </div>
             )}
 
             {showDialog === "booking" && (
               <div className="fixed z-40 inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 shadow-lg md:h-[438px] md:w-[560px] h-full w-full">
-                  <h2 className="text-lg font-bold mb-4">Booking</h2>
-                  <DateAndTimePicker
-                    label=""
-                    value={formattedDate} // Ensure the value is a string in 'YYYY-MM-DD' format
-                    onChange={handleDateChange} // Pass the function to update the selectedDate
-                    error={!!errorDate} // Boolean value to indicate if there's an error
-                    errorMsg={errorDate || undefined} // Pass the error message
-                  />
-                  <button
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+                <div className="bg-white shadow-lg md:h-[438px] md:w-[560px] md:rounded-2xl h-full w-full relative">
+                  <div className="border-b-2 border-b-gray-200 md:h-[60px]">
+                    <h2 className="ml-4 my-4 md:mt-6 md:ml-10 text-xl md:text-2xl font-bold mb-4 ">
+                      Booking
+                    </h2>
+                  </div>
+                  <div className="md:mt-10 md:mx-10">
+                    <span className="ml-4 mr-2 mt-6 md:ml-3 md:mr-0 md:mb-6 flex text-base md:text-lg text-start text-gray-600">
+                      Select date and time you want to schedule the service.
+                    </span>
+                    <DateAndTimePicker
+                      label=""
+                      value={formattedDate} // Ensure the value is a string in 'YYYY-MM-DD' format
+                      onChange={handleDateChange} // Pass the function to update the selectedDate
+                      error={!!errorDate} // Boolean value to indicate if there's an error
+                      errorMsg={errorDate || undefined} // Pass the error message
+                    />
+                  </div>
+                  <Image
+                    src={closeIcon} // Use a correct relative path
+                    alt="close button"
+                    className="absolute right-5 top-5 cursor-pointer h-6 w-6"
                     onClick={() => setShowDialog(null)}
-                  >
-                    Close
-                  </button>
+                  />
+                  <div className="flex w-full absolute bottom-0">
+                    <button className="text-base md:w-[480px] font-bold text-white absolute rounded-full bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-[343px] h-12 bg-orange-500">
+                      Continue
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

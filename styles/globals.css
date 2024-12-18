@@ -6,3 +6,34 @@
 * {
   font-family: "Satoshi", sans-serif;
 }
+
+@layer utilities {
+  /* Custom scrollbar */
+  .scrollbardateandtime {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #dcdfed transparent; /* For Firefox */
+    height: 220px;
+  }
+
+  /* For Webkit browsers (Chrome, Safari, Edge) */
+  .scrollbardateandtime::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbardateandtime::-webkit-scrollbar-thumb {
+    background: #dcdfed; /* Thumb color */
+    border-radius: 5px;
+  }
+
+  .scrollbardateandtime::-webkit-scrollbar-track {
+    background: transparent; /* Track background */
+  }
+
+  /* Remove the arrows */
+  .scrollbardateandtime::-webkit-scrollbar-button {
+    display: none !important;
+  }
+}
