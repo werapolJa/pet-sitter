@@ -1,7 +1,7 @@
 import Header from "@/components/home-page/Header";
 import { SidebarChat } from "@/components/pet-owner/SidebarChat";
 import { useAuth } from "@/context/authentication";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import profiledefault from "@/public/assets/profile-default-icon.svg";
 import Image from "next/image";
 import { StaticImageData } from "next/image";
@@ -44,6 +44,28 @@ export default function Chat() {
   const { id } = router.query;
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
+  const markAsRead = useCallback(
+    async (conversationId: string) => {
+      try {
+        await axios.put("/api/conversations/read", {
+          user_id: user?.sub,
+          conversation_id: conversationId,
+        });
+        setConversations((prevConversations) =>
+          prevConversations.map((conversation) => {
+            if (conversation.conversation_id === conversationId) {
+              return { ...conversation, unread_count: 0 };
+            }
+            return conversation;
+          })
+        );
+      } catch (error) {
+        console.error("Error marking as read:", error);
+      }
+    },
+    [user?.sub]
+  );
+
   useEffect(() => {
     if (!id) return;
 
@@ -67,10 +89,12 @@ export default function Chat() {
     <div className="flex flex-col h-screen bg-[#FAFAFB]">
       <Header />
       <main className="flex flex-1 overflow-hidden">
-        <SidebarChat
-          id={typeof id === "string" ? id : undefined}
-          setChat={setConversations}
-        />
+        <div className="hidden md:flex">
+          <SidebarChat
+            id={typeof id === "string" ? id : undefined}
+            setChat={setConversations}
+          />
+        </div>
         <div className="flex flex-col flex-1 overflow-hidden w-full">
           {/* Header ด้านบน */}
           <ChatHeader profile={profile} profileImage={profileImage} />
@@ -81,6 +105,7 @@ export default function Chat() {
             user={user}
             profile={profile}
             id={typeof id === "string" ? id : undefined}
+            markAsRead={markAsRead}
           />
         </div>
       </main>
@@ -96,8 +121,8 @@ interface SidebarChatProps {
 export function ChatHeader({ profile, profileImage }: SidebarChatProps) {
   const router = useRouter();
   return (
-    <div className="w-full bg-gray-100 px-10 py-2 flex justify-between">
-      <div className="flex gap-3 p-3">
+    <div className="w-full bg-gray-100 px-5 md:px-10 py-2 flex justify-between">
+      <div className="flex gap-3">
         <div className="rounded-full">
           <Image
             src={profileImage}
@@ -126,10 +151,23 @@ interface ChatBodyProps {
   profile: UserProfile | null;
   user: { sub: string } | null;
   id?: string;
+  markAsRead: (conversationId: string) => void;
 }
 
-export function ChatBody({ messages, profile, user, id }: ChatBodyProps) {
+export function ChatBody({
+  messages,
+  profile,
+  user,
+  id,
+  markAsRead,
+}: ChatBodyProps) {
   const [newMessage, setNewMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (id && newMessage.trim() !== "") {
+      markAsRead(id);
+    }
+  }, [newMessage, id, markAsRead]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -187,10 +225,12 @@ export function ChatBody({ messages, profile, user, id }: ChatBodyProps) {
 
   return (
     <div className="flex flex-col h-full w-full">
-      {/* ส่วนแสดงข้อความ เลื่อนจากล่างขึ้นบน */}
       <div
         className={`flex-1 flex flex-col-reverse gap-4 px-10 overflow-y-auto ${
-          messages.length > 8 ? "pb-28" : "pb-10"
+          (window.innerWidth <= 768 && messages.length > 5) ||
+          messages.length > 8
+            ? "pb-28"
+            : "pb-10"
         }`}
       >
         {messages.map((message) => {

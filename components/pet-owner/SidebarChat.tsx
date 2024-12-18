@@ -116,8 +116,8 @@ export function SidebarChat({ id, setChat }: SidebarChatProps) {
   };
 
   return (
-    <aside className="bg-black w-[368px] h-full flex flex-col">
-      <h3 className="text-white font-bold text-2xl p-10">Messages</h3>
+    <aside className="bg-black w-full md:w-[368px] h-full flex flex-col">
+      <h3 className="text-white font-bold text-2xl p-5 md:p-10">Messages</h3>
       {loading ? (
         <div className="flex justify-center items-center flex-1">
           <span className="loading loading-dots loading-lg text-white"></span>

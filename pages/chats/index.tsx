@@ -7,7 +7,7 @@ export default function Chat() {
       <Header />
       <main className="flex flex-1 overflow-hidden">
         <SidebarChat />
-        <div className="flex-1 overflow-auto w-full justify-center items-center flex">
+        <div className="md:flex-1 overflow-auto w-full justify-center items-center md:flex hidden">
           <h1>Start a conversation!</h1>
         </div>
       </main>
