@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useAuth } from "@/context/authentication";
 import { useEffect, useState } from "react";
-import { useBookingContext } from '@/context/BookingContext';
+import { useBookingContext } from "@/context/BookingContext";
 
 interface Pet {
   pet_name: string;
@@ -46,7 +46,7 @@ export default function BookingPage() {
       updateBookingData({ selectedPets: [...selectedPets, pet] });
     } else {
       updateBookingData({
-        selectedPets: selectedPets.filter((p) => p.pet_name !== pet.pet_name)
+        selectedPets: selectedPets.filter((p) => p.pet_name !== pet.pet_name),
       });
     }
   };
@@ -56,7 +56,6 @@ export default function BookingPage() {
   }, [bookingData.selectedPets]);
 
   const [pets, setPets] = useState<Pet[]>([]);
-
 
   return (
     <div className="w-screen md:h-screen h-auto bg-[#FAFAFB]">
@@ -98,11 +97,21 @@ export default function BookingPage() {
                   <Card
                     key={index}
                     pet={pet}
-                    isSelected={bookingData.selectedPets.some((p) => p.image === pet.image)}
+                    isSelected={bookingData.selectedPets.some(
+                      (p) => p.image === pet.image
+                    )}
                     onSelect={handlePetSelect}
                   />
                 ))}
-                <CardAdd />
+                {user ? (
+                  <CardAdd user={{ sub: user.sub }} />
+                ) : (
+                  <div className="card w-full md:w-60 h-60 bg-gray-200 justify-center items-center gap-3">
+                    <p className="font-bold text-gray-500">
+                      Sign in to add a pet
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="hidden md:flex md:justify-between ">
@@ -135,8 +144,10 @@ export default function BookingPage() {
                 Pet Sitter:
               </span>
               <p className="text-gray-600 font-medium">
-                <span className="mr-3">{bookingData.bookingDetail.petSitter ?? '-'}</span>
-                <span>{bookingData.bookingDetail.petSitterName ?? '-'}</span>
+                <span className="mr-3">
+                  {bookingData.bookingDetail.petSitter ?? "-"}
+                </span>
+                <span>{bookingData.bookingDetail.petSitterName ?? "-"}</span>
               </p>
             </div>
             <div className="px-6">
@@ -144,27 +155,33 @@ export default function BookingPage() {
                 Date & Time:
               </span>
               <p className="text-gray-600 font-medium">
-                {bookingData.bookingDetail.dateTime ?? '-'}
+                {bookingData.bookingDetail.dateTime ?? "-"}
               </p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">
                 Duration:
               </span>
-              <p className="text-gray-600 font-medium">{bookingData.bookingDetail.duration ?? '-'}</p>
+              <p className="text-gray-600 font-medium">
+                {bookingData.bookingDetail.duration ?? "-"}
+              </p>
             </div>
             <div className="px-6">
               <span className="text-gray-400 font-medium text-sm">Pet:</span>
               <p className="text-gray-600 font-medium mb-3 md:mb-0">
                 {bookingData.selectedPets.length > 0
-                  ? bookingData.selectedPets.map((pet) => pet.pet_name).join(", ")
+                  ? bookingData.selectedPets
+                      .map((pet) => pet.pet_name)
+                      .join(", ")
                   : "-"}
               </p>
             </div>
           </div>
           <div className="h-1/6 bg-black flex justify-between items-center text-white px-6">
             <p className="font-medium py-4">Total</p>
-            <p className="text-[18px] font-medium">{bookingData.bookingDetail.total ?? '-'}</p>
+            <p className="text-[18px] font-medium">
+              {bookingData.bookingDetail.total ?? "-"}
+            </p>
           </div>
         </div>
         <div className="flex md:hidden justify-between mb-10 px-5">
@@ -245,12 +262,16 @@ export function Card({ pet, isSelected, onSelect }: CardProps) {
   );
 }
 
-export function CardAdd() {
+interface CardAddProps {
+  user: { sub: string };
+}
+
+export function CardAdd({ user }: CardAddProps) {
   const router = useRouter();
   return (
     <div
       className="card w-full md:w-60 h-60 bg-[#FFF1EC] justify-center items-center gap-3 cursor-pointer"
-      onClick={() => router.push("/booking")}
+      onClick={() => router.push(`/petowners/${user.sub}/yourpet`)}
     >
       <Image src={addPetImg} alt="Add Icon" loading="lazy" />
       <p className="font-bold text-orange-500">Create New Pet</p>
@@ -258,3 +279,4 @@ export function CardAdd() {
   );
 }
 
+// In the BookingPage component
