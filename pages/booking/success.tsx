@@ -3,20 +3,23 @@ import bgImg from "@/public/assets/bgsuccess.svg";
 import bgImg2 from "@/public/assets/bgsuccess2..svg";
 import Image from "next/image";
 import { useBookingContext } from "@/context/BookingContext";
+import bgimg from "@/public/assets/bgsuccessmobile.svg";
+import { useRouter } from "next/router";
 
 export default function BookingPage() {
   const { bookingData } = useBookingContext();
   const { bookingDetail } = bookingData;
+  const router = useRouter();
   return (
     <div className="w-screen md:h-screen h-auto bg-[#FAFAFB]">
       <Header />
-      <main className="mt-28 flex justify-center items-center">
-        <div className="w-[632px] rounded-2xl shadow-xl overflow-hidden">
+      <main className="mt-0 md:mt-28 flex justify-center items-center">
+        <div className="w-[632px] md:rounded-2xl shadow-sm md:shadow-xl overflow-hidden">
           <div className="w-full h-1/3 bg-black flex flex-col items-center justify-center gap-2 p-6">
-            <h2 className="text-white font-bold text-4xl">
+            <h2 className="text-white font-bold text-xl md:text-4xl">
               Thank You For Booking
             </h2>
-            <p className="text-gray-300 font-medium">
+            <p className="text-gray-300 text-xs md:text-[16px] font-medium">
               We will send your booking information to Pet Sitter.
             </p>
           </div>
@@ -31,16 +34,19 @@ export default function BookingPage() {
             </div>
             <div>
               <p className="text-gray-400 font-medium">Pet Sitter:</p>
-              <p className="font-medium">{bookingDetail.petSitter ?? '-'} By {bookingDetail.petSitterName ?? '-'}</p>
+              <p className="font-medium">
+                {bookingDetail.petSitter ?? "-"} By{" "}
+                {bookingDetail.petSitterName ?? "-"}
+              </p>
             </div>
             <div className="flex">
               <div className="w-1/2">
                 <p className="text-gray-400 font-medium">Date & Time:</p>
-                <p className="font-medium">{bookingDetail.dateTime ?? '-'}</p>
+                <p className="font-medium">{bookingDetail.dateTime ?? "-"}</p>
               </div>
               <div>
                 <p className="text-gray-400 font-medium">Duration:</p>
-                <p className="font-medium">{bookingDetail.duration ?? '-'}</p>
+                <p className="font-medium">{bookingDetail.duration ?? "-"}</p>
               </div>
             </div>
             <div>
@@ -56,7 +62,9 @@ export default function BookingPage() {
             <div className="divider my-0 "></div>
             <div className="flex justify-between">
               <p className="font-medium">Total</p>
-              <p className="font-medium text-[18px]">{bookingDetail.total ?? '-'}</p>
+              <p className="font-medium text-[18px]">
+                {bookingDetail.total ?? "-"}
+              </p>
             </div>
           </div>
         </div>
@@ -73,6 +81,25 @@ export default function BookingPage() {
         className="absolute right-0 bottom-0 hidden md:block "
         loading="lazy"
       />
+      <Image
+        src={bgimg}
+        alt="ิbackground"
+        className="block md:hidden "
+        loading="lazy"
+      />
+      <div className="flex md:hidden justify-between mb-10 px-5">
+        <button className="btn px-6 py-3 rounded-full font-bold bg-[#FFF1EC] hover:bg-[#FFF1EC] active:bg-[#FFF1EC] border-none text-orange-500">
+          Booking Detail
+        </button>
+        <button
+          className={`btn px-6 py-3 font-bold rounded-full 
+           text-white bg-orange-500 hover:bg-orange-500
+          }`}
+          onClick={() => router.push("/")}
+        >
+          Back To Home
+        </button>
+      </div>
     </div>
   );
 }
