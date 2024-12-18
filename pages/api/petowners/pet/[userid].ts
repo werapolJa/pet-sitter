@@ -179,13 +179,20 @@ export default async function handler(
         message: "Pet updated successfully!",
         // data: petResult.rows[0],
       });
-    } catch  {
+    } catch{
       return res.status(500).json({ error: "Internal server error" });
     } finally {
       client.release();
     }
   }
 
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.status(200).end();
+    return;
+  }
   if (req.method === "DELETE") {
     // ดึง pet_id จาก query (URL)
     const { pet_id, userid } = req.query;

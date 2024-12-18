@@ -27,7 +27,7 @@ export default function DeleteConfirmation({
   const onConfirm = async () => {
     try {
       await axios.delete(
-        `http://localhost:3000/api/petowners/pet/${user?.sub}?pet_id=${petIdEdit}`
+        `/api/petowners/pet/${user?.sub}?pet_id=${petIdEdit}`
       );
     } catch (error) {
       console.log(error);
