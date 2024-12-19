@@ -90,6 +90,18 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       )
       .subscribe();
 
+    const conversationCreateSubscription = supabase
+      .channel("public:conversations")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "conversations" },
+        (payload) => {
+          console.log("Conversation Updated:", payload);
+          fetchConversations();
+        }
+      )
+      .subscribe();
+
     const messageSubscription = supabase
       .channel("public:messages")
       .on(
@@ -131,6 +143,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       supabase.removeChannel(messageSubscription);
       supabase.removeChannel(messageDeleteSubscription);
       supabase.removeChannel(messageUpdateSubscription);
+      supabase.removeChannel(conversationCreateSubscription);
     };
   }, [user]);
 

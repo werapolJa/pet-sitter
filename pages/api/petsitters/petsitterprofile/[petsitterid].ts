@@ -16,7 +16,7 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       let query = `
-        select pet_sitters.*, images.* , addresses.*
+        select pet_sitters.*, images.* , addresses.*, pet_sitters.user_id
         from pet_sitters
         left join images on pet_sitters.petsitter_id = images.petsitter_id
         left join addresses on pet_sitters.petsitter_id = addresses.petsitter_id

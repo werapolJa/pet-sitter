@@ -8,6 +8,7 @@ import { Pagination as MuiPagination } from "@mui/material";
 import DateAndTimePicker from "@/components/pet-sitter-info/DateTimePicker"; // Corrected import statement
 import dayjs, { Dayjs } from "dayjs";
 import { useBookingContext } from "@/context/BookingContext";
+import { useAuth } from "@/context/authentication";
 
 // Import Swiper styles
 import "swiper/css";
@@ -79,8 +80,23 @@ export default function PetSitterInfoPage() {
   const [errorDateTime, setErrorDateTime] = useState<boolean>(false);
   const [messageErrorDateTime, setMessageErrorDateTime] = useState<string>("");
 
+  const [userId, setUserId] = useState<string>("");
+  const { user } = useAuth();
+
   const router = useRouter();
   const { petsitterid } = router.query;
+
+  async function createChatroom() {
+    try {
+      const response = await axios.post("/api/conversations/create", {
+        participants: [userId, user?.sub],
+      });
+      const newConversationId = response.data.conversationId;
+      router.push(`/chats/${newConversationId}`);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  }
 
   useEffect(() => {
     if (!router.isReady || !petsitterid) {
@@ -115,6 +131,8 @@ export default function PetSitterInfoPage() {
           setDistrict(data.district);
           setLatitude(data.latitude);
           setLongitude(data.longitude);
+
+          setUserId(data.user_id);
 
           const validImages = data.images.filter(
             (image: string) => image.trim() !== ""
@@ -220,6 +238,7 @@ export default function PetSitterInfoPage() {
     <div className="w-full bg-custom-gray min-h-screen font-sans tracking-wide">
       <PetSitterCarousel images={image} />
       <PetSitterInformation
+        createChatroom={createChatroom}
         image={profileImage}
         tradename={tradename}
         name={name}
@@ -383,6 +402,7 @@ const PetSitterInformation: React.FC<{
   setErrorDateTime: (value: boolean) => void;
   messageErrorDateTime: string;
   setMessageErrorDateTime: React.Dispatch<React.SetStateAction<string>>;
+  createChatroom: () => Promise<void>;
 }> = ({
   image,
   tradename,
@@ -414,6 +434,7 @@ const PetSitterInformation: React.FC<{
   setErrorDateTime,
   messageErrorDateTime,
   setMessageErrorDateTime,
+  createChatroom,
 }) => {
   const Map = useMemo(
     () =>
@@ -496,6 +517,7 @@ const PetSitterInformation: React.FC<{
           setErrorDateTime={setErrorDateTime}
           messageErrorDateTime={messageErrorDateTime}
           setMessageErrorDateTime={setMessageErrorDateTime}
+          createChatroom={createChatroom}
         />
       </div>
       <div className="md:hidden">
@@ -531,6 +553,7 @@ const PetSitterInformation: React.FC<{
             setErrorDateTime={setErrorDateTime}
             messageErrorDateTime={messageErrorDateTime}
             setMessageErrorDateTime={setMessageErrorDateTime}
+            createChatroom={createChatroom}
           />
         </div>
       </div>
@@ -562,6 +585,7 @@ const ProfileCard: React.FC<{
   setErrorDateTime: (value: boolean) => void;
   messageErrorDateTime: string;
   setMessageErrorDateTime: React.Dispatch<React.SetStateAction<string>>;
+  createChatroom: () => Promise<void>;
 }> = ({
   image,
   tradename,
@@ -585,6 +609,7 @@ const ProfileCard: React.FC<{
   setErrorDateTime,
   messageErrorDateTime,
   setMessageErrorDateTime,
+  createChatroom,
 }) => {
   const { push } = useRouter();
   const { bookingData, updateBookingData } = useBookingContext();
@@ -740,7 +765,10 @@ const ProfileCard: React.FC<{
             {renderPetType(petTypeRabbit ?? null)}
           </div>
           <div className="w-full md:w-[416px] flex flex-col items-center justify-center md:flex md:flex-row border-t border-t-gray-200 mt-10 md:gap-4">
-            <button className="text-base leading-6 font-bold w-[328px] md:w-[176px] h-[48px] bg-orange-100 text-orange-500 rounded-[99px] mt-6 md:my-6">
+            <button
+              className="text-base leading-6 font-bold w-[328px] md:w-[176px] h-[48px] bg-orange-100 text-orange-500 rounded-[99px] mt-6 md:my-6"
+              onClick={() => createChatroom()}
+            >
               Send Message
             </button>
             <button
