@@ -30,7 +30,7 @@ const DateAndTimePicker: React.FC<DatePickerProps> = ({
   errorMsg,
 }) => {
   const [open, setOpen] = useState(false);
-  const parsedDate = value ? dayjs(value) : null;
+  const parsedDate = value ? dayjs(value, "DD MMM, YYYY") : null;
   const [selectedStartTime, setSelectedStartTime] = useState<string | null>(
     null
   );
@@ -45,7 +45,7 @@ const DateAndTimePicker: React.FC<DatePickerProps> = ({
   const handleDateChange = (newValue: Dayjs | null) => {
     if (newValue) {
       onChange(
-        newValue.format("YYYY-MM-DD"),
+        newValue.format("DD MMM, YYYY"),
         selectedStartTime,
         selectedEndTime
       );
