@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import axios from "axios";
 import { createClient, RealtimeChannel } from "@supabase/supabase-js";
 import { useAuth } from "@/context/authentication";
 
@@ -39,7 +39,9 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -47,10 +49,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchConversations = async () => {
     if (user) {
       try {
-        const response = await axios.get(`/api/conversations?user_id=${user.sub}`);
+        const response = await axios.get(
+          `/api/conversations?user_id=${user.sub}`
+        );
         setConversations(response.data.data);
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        console.log("Error fetching conversations:", error);
       } finally {
         setLoading(false);
       }
@@ -63,15 +67,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user_id: user?.sub,
         conversation_id: conversationId,
       });
-      setConversations(prevConversations =>
-        prevConversations.map(conversation =>
+      setConversations((prevConversations) =>
+        prevConversations.map((conversation) =>
           conversation.conversation_id === conversationId
             ? { ...conversation, unread_count: 0 }
             : conversation
         )
       );
     } catch (error) {
-      console.error("Error marking as read:", error);
+      console.log("Error marking as read:", error);
     }
   };
 
@@ -80,7 +84,11 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     fetchConversations();
 
-    const subscribeToEvents = (channelName: string, tableName: string, callback: () => void) => {
+    const subscribeToEvents = (
+      channelName: string,
+      tableName: string,
+      callback: () => void
+    ) => {
       const subscription: RealtimeChannel = supabase
         .channel(channelName)
         .on(
@@ -115,7 +123,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   return (
-    <ChatContext.Provider value={{ conversations, setConversations, loading, markAsRead, fetchConversations }}>
+    <ChatContext.Provider
+      value={{
+        conversations,
+        setConversations,
+        loading,
+        markAsRead,
+        fetchConversations,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
