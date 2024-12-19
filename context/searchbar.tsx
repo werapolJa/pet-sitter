@@ -5,7 +5,7 @@ interface SearchContextType {
   rating: number | null;
   experience: string;
   handlePetType: (pet: string, isChecked: boolean) => void;
-  handleRatingChange: (newRating: number) => void;
+  handleRatingChange: (newRating: number| null) => void;
   handleExperienceChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   homeResetPetType: () => void;
   textUrl: string;
@@ -50,9 +50,10 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const handleRatingChange = (newRating: number) => {
-    setRating(newRating);
-  };
+const handleRatingChange = (newRating: number | null) => {
+  setRating(newRating); // ตอนนี้จะทำงานได้เพราะ `rating` สามารถเป็น `number | null`
+};
+
 
   const handleExperienceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setExperience(e.target.value);
@@ -84,7 +85,7 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({
         textUrl,
         clearForm,
         SearchData,
-        searchInput
+        searchInput,
       }}
     >
       {children}
