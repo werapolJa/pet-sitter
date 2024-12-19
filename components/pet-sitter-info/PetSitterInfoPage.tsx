@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { Pagination as MuiPagination } from "@mui/material";
 import DateAndTimePicker from "@/components/pet-sitter-info/DateTimePicker"; // Corrected import statement
 import dayjs, { Dayjs } from "dayjs";
+import { useBookingContext } from "@/context/BookingContext";
 
 // Import Swiper styles
 import "swiper/css";
@@ -38,6 +39,12 @@ interface PetSitterReviewProps {
   reviews: Review[];
 }
 
+interface SubmittedData {
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
 export default function PetSitterInfoPage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [image, setImage] = useState<string[]>([]);
@@ -66,6 +73,9 @@ export default function PetSitterInfoPage() {
     null
   ); // Defaults to 12:00 AM
   const [selectedEndTime, setSelectedEndTime] = useState<Dayjs | null>(null); // Defaults to 12:00 AM
+  const [submittedData, setSubmittedData] = useState<SubmittedData | null>(
+    null
+  );
 
   const router = useRouter();
   const { petsitterid } = router.query;
@@ -209,6 +219,8 @@ export default function PetSitterInfoPage() {
         setSelectedEndTime={setSelectedEndTime}
         selectedStartTime={selectedStartTime}
         selectedEndTime={selectedEndTime}
+        submittedData={submittedData}
+        setSubmittedData={setSubmittedData}
       />
     </div>
   );
@@ -337,6 +349,8 @@ const PetSitterInformation: React.FC<{
   setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   selectedStartTime: Dayjs | null;
   selectedEndTime: Dayjs | null;
+  submittedData: SubmittedData | null; // Updated type
+  setSubmittedData: React.Dispatch<React.SetStateAction<SubmittedData | null>>; // Correct type for state setter
 }> = ({
   image,
   tradename,
@@ -363,6 +377,8 @@ const PetSitterInformation: React.FC<{
   setSelectedEndTime,
   selectedStartTime,
   selectedEndTime,
+  submittedData,
+  setSubmittedData,
 }) => {
   const Map = useMemo(
     () =>
@@ -440,6 +456,8 @@ const PetSitterInformation: React.FC<{
           setSelectedEndTime={setSelectedEndTime}
           selectedStartTime={selectedStartTime}
           selectedEndTime={selectedEndTime}
+          submittedData={submittedData}
+          setSubmittedData={setSubmittedData}
         />
       </div>
       <div className="md:hidden">
@@ -470,6 +488,8 @@ const PetSitterInformation: React.FC<{
             setSelectedEndTime={setSelectedEndTime}
             selectedStartTime={selectedStartTime}
             selectedEndTime={selectedEndTime}
+            submittedData={submittedData}
+            setSubmittedData={setSubmittedData}
           />
         </div>
       </div>
@@ -496,6 +516,8 @@ const ProfileCard: React.FC<{
   setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   selectedStartTime: Dayjs | null;
   selectedEndTime: Dayjs | null;
+  submittedData: SubmittedData | null; // Updated type
+  setSubmittedData: React.Dispatch<React.SetStateAction<SubmittedData | null>>; // Correct type for state setter
 }> = ({
   image,
   tradename,
@@ -515,8 +537,11 @@ const ProfileCard: React.FC<{
   setSelectedEndTime,
   selectedStartTime,
   selectedEndTime,
+  submittedData,
+  setSubmittedData,
 }) => {
   const { push } = useRouter();
+  const { bookingData, updateBookingData } = useBookingContext();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [showDialog, setShowDialog] = useState<"login" | "booking" | null>(
     null
@@ -565,33 +590,49 @@ const ProfileCard: React.FC<{
     newStartTime: string | null,
     newEndTime: string | null
   ) => {
-    setSelectedDate(date ? new Date(date) : null); // Convert string to Date
-
-    // Convert string times to Dayjs objects (or null if the string is null)
+    setSelectedDate(date ? new Date(date) : null);
     setSelectedStartTime(newStartTime ? dayjs(newStartTime, "HH:mm") : null);
     setSelectedEndTime(newEndTime ? dayjs(newEndTime, "HH:mm") : null);
   };
 
   const handleSubmit = () => {
     if (selectedDate && selectedStartTime && selectedEndTime) {
-      // Store the data in the state
-      setSubmittedData({
-        date: dayjs(selectedDate).format("DD MMM, YYYY"),
-        startTime: selectedStartTime.format("HH:mm"),
-        endTime: selectedEndTime.format("HH:mm"),
+      const formattedDate = dayjs(selectedDate).format("DD MMM, YYYY");
+      const formattedStartTime = selectedStartTime.format("hh:mm A");
+      const formattedEndTime = selectedEndTime.format("hh:mm A");
+
+      const durationMinutes = selectedEndTime.diff(
+        selectedStartTime,
+        "minutes"
+      );
+      const durationHours = Math.floor(durationMinutes / 60);
+      const remainingMinutes = durationMinutes % 60;
+
+      const durationFormatted = `${durationHours} hour${
+        durationHours !== 1 ? "s" : ""
+      } ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`;
+
+      updateBookingData({
+        bookingDetail: {
+          ...bookingData.bookingDetail,
+          petSitter: tradename,
+          petSitterName: name,
+          dateTime: `${formattedDate} ${formattedStartTime} - ${formattedEndTime}`,
+          duration: durationFormatted,
+        },
       });
+
+      setSubmittedData({
+        date: formattedDate,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
+      });
+
+      push("/booking");
     } else {
       console.log("Please select date and times");
     }
   };
-
-  const [submittedData, setSubmittedData] = useState({
-    date: "",
-    startTime: "",
-    endTime: "",
-  });
-
-  console.log(submittedData);
 
   return (
     <div>
