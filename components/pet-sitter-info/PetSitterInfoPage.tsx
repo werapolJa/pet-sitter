@@ -552,7 +552,6 @@ const ProfileCard: React.FC<{
   averageRating: number | null;
   selectedDate: string | Date | null;
   setSelectedDate: (date: Date | null) => void;
-
   setSelectedStartTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   selectedStartTime: Dayjs | null;
@@ -577,12 +576,10 @@ const ProfileCard: React.FC<{
   averageRating,
   selectedDate,
   setSelectedDate,
-
   setSelectedStartTime,
   setSelectedEndTime,
   selectedStartTime,
   selectedEndTime,
-  submittedData,
   setSubmittedData,
   errorDateTime,
   setErrorDateTime,
