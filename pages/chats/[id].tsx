@@ -8,7 +8,7 @@ import { StaticImageData } from "next/image";
 import { useRouter } from "next/router";
 import btnChat from "@/public/assets/chat.svg";
 import axios from "axios";
-import { useChat } from '@/context/ChatContext';
+import { useChat } from "@/context/ChatContext";
 
 const useWindowWidth = () => {
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
@@ -31,7 +31,6 @@ const useWindowWidth = () => {
   return windowWidth;
 };
 
-
 interface Message {
   message_id: string;
   content: string;
@@ -52,8 +51,6 @@ export default function Chat() {
   const router = useRouter();
   const { id } = router.query;
   const { conversations } = useChat();
-  console.log(messages)
-
 
   useEffect(() => {
     if (!id) return;
@@ -79,9 +76,7 @@ export default function Chat() {
       <Header />
       <main className="flex flex-1 overflow-hidden">
         <div className="hidden md:flex">
-          <SidebarChat
-            id={typeof id === "string" ? id : undefined}
-          />
+          <SidebarChat id={typeof id === "string" ? id : undefined} />
         </div>
         <div className="flex flex-col flex-1 overflow-hidden w-full">
           {/* Header ด้านบน */}
@@ -140,12 +135,7 @@ interface ChatBodyProps {
   id?: string;
 }
 
-export function ChatBody({
-  messages,
-  profile,
-  user,
-  id,
-}: ChatBodyProps) {
+export function ChatBody({ messages, profile, user, id }: ChatBodyProps) {
   const { markAsRead } = useChat();
   const [newMessage, setNewMessage] = useState<string>("");
   const [editMessageId, setEditMessageId] = useState<string | null>(null);
@@ -176,7 +166,9 @@ export function ChatBody({
 
   const handleUpdateMessage = async (messageId: string, newContent: string) => {
     try {
-      await axios.put(`/api/conversations/${messageId}`, { content: newContent });
+      await axios.put(`/api/conversations/${messageId}`, {
+        content: newContent,
+      });
     } catch (error) {
       console.error("Error updating message:", error);
     }
@@ -208,11 +200,49 @@ export function ChatBody({
     }
   };
 
+  if (
+    !messages ||
+    messages.length === 0 ||
+    messages.every((msg) => msg.content === null)
+  ) {
+    return (
+      <>
+        <div className="w-full h-full px-10 py-6">
+          <div className="flex items-center justify-center h-full w-full">
+            <h1>Start a conversation!</h1>
+          </div>
+        </div>
+        <div className="w-full h-auto bg-white py-6 px-10 flex gap-6 sticky bottom-0">
+          <input
+            type="text"
+            placeholder="Type here"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            className="input w-full focus-within:outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+          />
+          <button
+            onClick={handleSendMessage}
+            className="btn bg-orange-500 shadow-sm w-12 h-12 rounded-full hover:bg-orange-600 p-0"
+          >
+            <Image className="w-5 h-5" src={btnChat} alt="icon button" />
+          </button>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full w-full">
       <div
         className={`flex-1 flex flex-col-reverse gap-4 px-10 overflow-y-auto ${
-          ((windowWidth ?? Infinity) <= 768 && messages.length > 5) || messages.length > 8
+          ((windowWidth ?? Infinity) <= 768 && messages.length > 5) ||
+          messages.length > 8
             ? "pb-28"
             : "pb-10"
         }`}
@@ -240,7 +270,9 @@ export function ChatBody({
               )}
               <div
                 className={`chat-bubble px-6 py-4 rounded-full shadow-md ${
-                  isOwnMessage ? "bg-[#E44A0C] text-white" : "bg-white text-black"
+                  isOwnMessage
+                    ? "bg-[#E44A0C] text-white"
+                    : "bg-white text-black"
                 }`}
               >
                 {isEditing ? (
@@ -251,10 +283,7 @@ export function ChatBody({
                       onChange={(e) => setEditMessageContent(e.target.value)}
                       className="input text-black w-full focus:outline-none"
                     />
-                    <button
-                      className="btn rounded-md"
-                      onClick={handleSaveEdit}
-                    >
+                    <button className="btn rounded-md" onClick={handleSaveEdit}>
                       Save
                     </button>
                     <button
@@ -279,13 +308,17 @@ export function ChatBody({
                   >
                     <li>
                       <a
-                        onClick={() => handleEditClick(message.message_id, message.content)}
+                        onClick={() =>
+                          handleEditClick(message.message_id, message.content)
+                        }
                       >
                         Edit message
                       </a>
                     </li>
                     <li>
-                      <a onClick={() => handleDeleteMessage(message.message_id)}>
+                      <a
+                        onClick={() => handleDeleteMessage(message.message_id)}
+                      >
                         Delete message
                       </a>
                     </li>
@@ -322,4 +355,3 @@ export function ChatBody({
     </div>
   );
 }
-

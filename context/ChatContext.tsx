@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
-import { createClient } from "@supabase/supabase-js";
+import { createClient, RealtimeChannel } from "@supabase/supabase-js";
 import { useAuth } from "@/context/authentication";
 
 const supabase = createClient(
@@ -50,7 +50,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const response = await axios.get(`/api/conversations?user_id=${user.sub}`);
         setConversations(response.data.data);
       } catch (error) {
-        console.log("Error fetching conversations:", error);
+        console.error("Error fetching conversations:", error);
       } finally {
         setLoading(false);
       }
@@ -76,74 +76,41 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    if (!user) return;
+
     fetchConversations();
 
-    const conversationSubscription = supabase
-      .channel("public:conversations")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "conversations" },
-        (payload) => {
-          console.log("Conversation Updated:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
+    const subscribeToEvents = (channelName: string, tableName: string, callback: () => void) => {
+      const subscription: RealtimeChannel = supabase
+        .channel(channelName)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: tableName },
+          (payload) => {
+            console.log(`Event on ${tableName}:`, payload);
+            callback();
+          }
+        )
+        .subscribe();
 
-    const conversationCreateSubscription = supabase
-      .channel("public:conversations")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "conversations" },
-        (payload) => {
-          console.log("Conversation Updated:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
+      return subscription;
+    };
 
-    const messageSubscription = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("New Message:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
+    const conversationsSubscription = subscribeToEvents(
+      "public:conversations",
+      "conversations",
+      fetchConversations
+    );
 
-    const messageDeleteSubscription = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("Delete Message:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
-
-    const messageUpdateSubscription = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("Update Message:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
+    const messagesSubscription = subscribeToEvents(
+      "public:messages",
+      "messages",
+      fetchConversations
+    );
 
     return () => {
-      supabase.removeChannel(conversationSubscription);
-      supabase.removeChannel(messageSubscription);
-      supabase.removeChannel(messageDeleteSubscription);
-      supabase.removeChannel(messageUpdateSubscription);
-      supabase.removeChannel(conversationCreateSubscription);
+      supabase.removeChannel(conversationsSubscription);
+      supabase.removeChannel(messagesSubscription);
     };
   }, [user]);
 
@@ -156,9 +123,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useChat = () => {
   const context = useContext(ChatContext);
-  if (context === undefined) {
-    throw new Error('useChat must be used within a ChatProvider');
+  if (!context) {
+    throw new Error("useChat must be used within a ChatProvider");
   }
   return context;
 };
-
