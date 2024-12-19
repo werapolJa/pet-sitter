@@ -72,7 +72,7 @@ const AdminDashboard: React.FC = () => {
       <div className="flex-1 px-10 pt-12">
         {/* Search and Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Pet Owner</h1>
+          <h1 className="text-2xl font-bold text-black">Pet Owner</h1>
           <div className="input input-bordered flex items-center h-12 w-60 gap-2 max-w-[240px] focus-within:outline-none">
             <input
               type="text"
@@ -144,16 +144,18 @@ const AdminDashboard: React.FC = () => {
                           width={40}
                           height={40}
                         />
-                        <span className="truncate">{user.full_name}</span>
+                        <span className="truncate text-black">
+                          {user.full_name}
+                        </span>
                       </Link>
                     </td>
-                    <td className="w-[207px] max-w-[207px] truncate">
+                    <td className="w-[207px] max-w-[207px] truncate text-black">
                       {user.phone}
                     </td>
-                    <td className="w-[324px] max-w-[324px] truncate">
+                    <td className="w-[324px] max-w-[324px] truncate text-black">
                       {user.email}
                     </td>
-                    <td className="w-[224px] max-w-[224px] truncate">
+                    <td className="w-[224px] max-w-[224px] truncate text-black">
                       {user.pet}
                     </td>
                     <td className="w-[120px] max-w-[120px]">
