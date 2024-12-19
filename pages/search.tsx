@@ -24,6 +24,8 @@ interface Sitter {
   average_rating: string | null;
   image_1: string;
   trade_name: string;
+  province: string;
+  district: string;
 }
 
 export default function SearchPage() {
@@ -69,7 +71,7 @@ export default function SearchPage() {
 
       setDataPetSitters(data);
       setLoanding(false);
-      // console.log(data[0]?.average_rating);
+      // console.log(data[0]);
     } catch (error) {
       setLoanding(true);
       console.log(error);
@@ -257,32 +259,32 @@ export default function SearchPage() {
                   {dataPetSitters.map((sitter, index) => (
                     <div className="flex p-5 md:p-0 w-full" key={index}>
                       <div className=" shadow-2xl inline-block w-full lg:flex rounded-2xl">
-                        <div className="p-5">
+                        <div className="p-4">
                           <Image
                             src={sitter.image_1 || imagebgicon}
                             alt={sitter.full_name}
                             width={500}
                             height={300}
-                            className=" object-cover rounded-xl w-full h-52 mx-auto md:w-[500px] "
+                            className=" object-cover rounded-xl w-full h-[184px]  mx-auto md:w-[500px] "
                           />
                         </div>
 
                         <div className=" lg:w-full mx-auto p-4 ">
-                          <div className="flex justify-between w-full md:flex-col lg:flex-row">
-                            <div className="flex items-center gap-5">
+                          <div className="flex justify-between w-full lg:flex-row">
+                            <div className="flex items-center gap-5 ">
                               <div className="avatar">
                                 {sitter.image ? (
-                                  <div className="w-12">
+                                  <div className="w-16">
                                     <Image
                                       src={sitter.image}
                                       alt={sitter.full_name}
-                                      width={100}
-                                      height={80}
-                                      className="object-cover rounded-full"
+                                      width={64}
+                                      height={64}
+                                      className="object-cover rounded-full "
                                     />
                                   </div>
                                 ) : (
-                                  <div className="w-12 bg-gray-200 rounded-full ">
+                                  <div className="w-16 bg-gray-200 rounded-full ">
                                     <Image
                                       src={profiledefault}
                                       alt="search-icon"
@@ -294,10 +296,11 @@ export default function SearchPage() {
                                 )}
                               </div>
                               <div className="">
-                                <h2 className="card-title w-auto text-2xl">
+                                <h2 className="card-title w-auto text-2xl font-bold line-clamp-1">
                                   {sitter.trade_name}
                                 </h2>
-                                <p className="text-lg">By {sitter.full_name}</p>
+                              
+                                <p className="text-lg font-medium ">By {sitter.full_name}</p>
                               </div>
                             </div>
 
@@ -331,10 +334,10 @@ export default function SearchPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-start justify-start text-sm gap-2 py-4">
+                          <div className="flex items-start justify-start text-sm gap-2 my-5 sm:my-8">
                             <Image src={mark} alt="" width={20} height={20} />
                             <h1 className="text-gray-400 w-full">
-                              {sitter.place}
+                              {sitter.district} , {sitter.province}
                             </h1>
                           </div>
 
