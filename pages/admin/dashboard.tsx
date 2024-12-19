@@ -73,7 +73,7 @@ const AdminDashboard: React.FC = () => {
         {/* Search and Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-black">Pet Owner</h1>
-          <div className="input input-bordered flex items-center h-12 w-60 gap-2 max-w-[240px] focus-within:outline-none">
+          <div className="input bg-white input-bordered flex items-center h-12 w-60 gap-2 max-w-[240px] focus-within:outline-none">
             <input
               type="text"
               className="grow border-none focus:outline-none text-gray-400"

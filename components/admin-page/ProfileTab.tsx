@@ -35,27 +35,33 @@ export const ProfileTab: React.FC = () => {
         <div className="ml-8 space-y-6 h-[488px] bg-gray-50 w-full rounded-lg p-8">
           <div>
             <p className="text-gray-400 font-bold text-xl">Pet Owner Name</p>
-            <p className="text-base font-normal">{userData.full_name}</p>
+            <p className="text-black text-base font-normal">
+              {userData.full_name}
+            </p>
           </div>
           <div>
             <p className="text-gray-400 font-bold text-xl">Email</p>
-            <p className="text-base font-normal">{userData.email}</p>
+            <p className="text-black text-base font-normal">{userData.email}</p>
           </div>
           <div>
             <p className="text-gray-400 font-bold text-xl">Phone</p>
-            <p className="text-base font-normal">{userData.phone}</p>
+            <p className="text-black text-base font-normal">{userData.phone}</p>
           </div>
           <div>
             <p className="text-gray-400 font-bold text-xl">Status</p>
-            <p className="text-base font-normal">{userData.status}</p>
+            <p className="text-black text-base font-normal">
+              {userData.status}
+            </p>
           </div>
           <div>
             <p className="text-gray-400 font-bold text-xl">ID Number</p>
-            <p className="text-base font-normal">{userData.id_number}</p>
+            <p className="text-black text-base font-normal">
+              {userData.id_number}
+            </p>
           </div>
           <div>
             <p className="text-gray-400 font-bold text-xl">Date of Birth</p>
-            <p className="text-base font-normal">
+            <p className="text-black text-base font-normal">
               {formatDate(userData.birthdate)}
             </p>
           </div>

@@ -25,7 +25,7 @@ export const ReviewsTab: React.FC = () => {
                 />
               </div>
               <div>
-                <p className="w-36 text-lg font-medium">
+                <p className="w-36 text-lg font-medium text-black">
                   {review.petsitter_name}
                 </p>
                 <p className="text-sm text-gray-500">

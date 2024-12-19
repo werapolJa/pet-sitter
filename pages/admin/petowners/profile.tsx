@@ -13,7 +13,7 @@ const AdminPetownerProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "pets" | "reviews">(
     "profile"
   );
-  const { loading, error } = useUserData();
+  const { loading, error, userData } = useUserData();
 
   const renderTabContent = () => {
     if (loading) {
@@ -63,9 +63,13 @@ const AdminPetownerProfile: React.FC = () => {
               </div>
             </Link>
             <h1
-              className={`text-2xl font-bold ${loading ? "text-gray-500" : ""}`}
+              className={`text-2xl font-bold text-black ${
+                loading ? "text-gray-500" : ""
+              }`}
             >
-              {loading ? "Loading..." : "Pet Owner Profile"}
+              {loading
+                ? "Loading..."
+                : userData?.full_name || "No User Name Available"}
             </h1>
           </div>
           <div className="w-full h-[700px]">
