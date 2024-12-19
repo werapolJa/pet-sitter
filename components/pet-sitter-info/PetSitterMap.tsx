@@ -30,7 +30,7 @@ const PetSitterMap: React.FC<PetSitterMapProps> = ({
   tradename,
 }) => {
   const fallbackImage =
-    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png"; // Path to your fallback image
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-gray.png"; // Path to your fallback image
 
   // If latitude or longitude is null, show the fallback image
   if (latitude === null || longitude === null) {

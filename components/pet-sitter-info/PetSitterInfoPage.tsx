@@ -22,6 +22,7 @@ import arrowLeft from "@/public/assets/pet-sitter-info-page/arrow-left.svg";
 import arrowRight from "@/public/assets/pet-sitter-info-page/arrow-right.svg";
 import pinAddress from "@/public/assets/pet-sitter-info-page/pin-address.svg";
 import closeIcon from "@/public/assets/pet-sitter-info-page/close.svg";
+import pawIcon from "@/public/assets/pet-sitter-info-page/paw.svg";
 
 interface Review {
   image: string | null; // image can be a string or null
@@ -68,7 +69,6 @@ export default function PetSitterInfoPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [errorDate, setErrorDate] = useState<string | null>(null);
   const [selectedStartTime, setSelectedStartTime] = useState<Dayjs | null>(
     null
   ); // Defaults to 12:00 AM
@@ -76,6 +76,8 @@ export default function PetSitterInfoPage() {
   const [submittedData, setSubmittedData] = useState<SubmittedData | null>(
     null
   );
+  const [errorDateTime, setErrorDateTime] = useState<boolean>(false);
+  const [messageErrorDateTime, setMessageErrorDateTime] = useState<string>("");
 
   const router = useRouter();
   const { petsitterid } = router.query;
@@ -187,7 +189,31 @@ export default function PetSitterInfoPage() {
     fetchReviews();
   }, [petsitterid]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-screen">
+        <div className="flex flex-row gap-5">
+          <Image
+            src={pawIcon}
+            alt="Paw"
+            className="md:w-[80px] md:h-[80px] w-[60px] h-[60px] rotate-2 animate-bounce duration-200"
+          />
+          <Image
+            src={pawIcon}
+            alt="Paw"
+            className="md:w-[80px] md:h-[80px] w-[60px] h-[60px] rotate-6 animate-bounce duration-400"
+          />
+          <Image
+            src={pawIcon}
+            alt="Paw"
+            className="md:w-[80px] md:h-[80px] w-[60px] h-[60px] rotate-6 animate-bounce duration-500"
+          />
+        </div>
+        <span className="mt-2 md:text-2xl text-xl text-gray-500">
+          Loading pet sitter details ...
+        </span>
+      </div>
+    );
   if (error) return <div>{error}</div>;
 
   return (
@@ -214,13 +240,16 @@ export default function PetSitterInfoPage() {
         reviews={reviews}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        errorDate={errorDate}
         setSelectedStartTime={setSelectedStartTime}
         setSelectedEndTime={setSelectedEndTime}
         selectedStartTime={selectedStartTime}
         selectedEndTime={selectedEndTime}
         submittedData={submittedData}
         setSubmittedData={setSubmittedData}
+        errorDateTime={errorDateTime}
+        setErrorDateTime={setErrorDateTime}
+        messageErrorDateTime={messageErrorDateTime}
+        setMessageErrorDateTime={setMessageErrorDateTime}
       />
     </div>
   );
@@ -228,7 +257,7 @@ export default function PetSitterInfoPage() {
 
 const PetSitterCarousel: React.FC<{ images: string[] }> = ({ images }) => {
   const fallbackImage =
-    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-gray.png";
 
   let adjustedImages: string[];
 
@@ -344,13 +373,16 @@ const PetSitterInformation: React.FC<{
   reviews: Review[]; // Change this to `Review[]` type
   selectedDate: string | Date | null;
   setSelectedDate: (date: Date | null) => void;
-  errorDate: string | null;
   setSelectedStartTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   selectedStartTime: Dayjs | null;
   selectedEndTime: Dayjs | null;
   submittedData: SubmittedData | null; // Updated type
   setSubmittedData: React.Dispatch<React.SetStateAction<SubmittedData | null>>; // Correct type for state setter
+  errorDateTime: boolean;
+  setErrorDateTime: (value: boolean) => void;
+  messageErrorDateTime: string;
+  setMessageErrorDateTime: React.Dispatch<React.SetStateAction<string>>;
 }> = ({
   image,
   tradename,
@@ -372,13 +404,16 @@ const PetSitterInformation: React.FC<{
   reviews,
   selectedDate,
   setSelectedDate,
-  errorDate,
   setSelectedStartTime,
   setSelectedEndTime,
   selectedStartTime,
   selectedEndTime,
   submittedData,
   setSubmittedData,
+  errorDateTime,
+  setErrorDateTime,
+  messageErrorDateTime,
+  setMessageErrorDateTime,
 }) => {
   const Map = useMemo(
     () =>
@@ -451,13 +486,16 @@ const PetSitterInformation: React.FC<{
           averageRating={averageRating}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
-          errorDate={errorDate}
           setSelectedStartTime={setSelectedStartTime}
           setSelectedEndTime={setSelectedEndTime}
           selectedStartTime={selectedStartTime}
           selectedEndTime={selectedEndTime}
           submittedData={submittedData}
           setSubmittedData={setSubmittedData}
+          errorDateTime={errorDateTime}
+          setErrorDateTime={setErrorDateTime}
+          messageErrorDateTime={messageErrorDateTime}
+          setMessageErrorDateTime={setMessageErrorDateTime}
         />
       </div>
       <div className="md:hidden">
@@ -483,13 +521,16 @@ const PetSitterInformation: React.FC<{
             averageRating={averageRating}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            errorDate={errorDate}
             setSelectedStartTime={setSelectedStartTime}
             setSelectedEndTime={setSelectedEndTime}
             selectedStartTime={selectedStartTime}
             selectedEndTime={selectedEndTime}
             submittedData={submittedData}
             setSubmittedData={setSubmittedData}
+            errorDateTime={errorDateTime}
+            setErrorDateTime={setErrorDateTime}
+            messageErrorDateTime={messageErrorDateTime}
+            setMessageErrorDateTime={setMessageErrorDateTime}
           />
         </div>
       </div>
@@ -511,13 +552,17 @@ const ProfileCard: React.FC<{
   averageRating: number | null;
   selectedDate: string | Date | null;
   setSelectedDate: (date: Date | null) => void;
-  errorDate: string | null;
+
   setSelectedStartTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
   selectedStartTime: Dayjs | null;
   selectedEndTime: Dayjs | null;
   submittedData: SubmittedData | null; // Updated type
   setSubmittedData: React.Dispatch<React.SetStateAction<SubmittedData | null>>; // Correct type for state setter
+  errorDateTime: boolean;
+  setErrorDateTime: (value: boolean) => void;
+  messageErrorDateTime: string;
+  setMessageErrorDateTime: React.Dispatch<React.SetStateAction<string>>;
 }> = ({
   image,
   tradename,
@@ -532,13 +577,17 @@ const ProfileCard: React.FC<{
   averageRating,
   selectedDate,
   setSelectedDate,
-  errorDate,
+
   setSelectedStartTime,
   setSelectedEndTime,
   selectedStartTime,
   selectedEndTime,
   submittedData,
   setSubmittedData,
+  errorDateTime,
+  setErrorDateTime,
+  messageErrorDateTime,
+  setMessageErrorDateTime,
 }) => {
   const { push } = useRouter();
   const { bookingData, updateBookingData } = useBookingContext();
@@ -562,7 +611,7 @@ const ProfileCard: React.FC<{
   };
 
   const fallbackImage =
-    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-yellow.png";
+    "https://boeraqxraijbxhlrtdnn.supabase.co/storage/v1/object/public/image/pet-sitter-default-gray.png";
   const maxStars = 5;
   const petTypeStyles: { [key: string]: string } = {
     Dog: "flex h-8 items-center justify-center text-base leading-6 font-medium text-green-500 bg-green-100 border border-green-500 rounded-[99px] py-1 px-4",
@@ -596,42 +645,44 @@ const ProfileCard: React.FC<{
   };
 
   const handleSubmit = () => {
-    if (selectedDate && selectedStartTime && selectedEndTime) {
-      const formattedDate = dayjs(selectedDate).format("DD MMM, YYYY");
-      const formattedStartTime = selectedStartTime.format("hh:mm A");
-      const formattedEndTime = selectedEndTime.format("hh:mm A");
+    setErrorDateTime(false);
+    setMessageErrorDateTime("");
 
-      const durationMinutes = selectedEndTime.diff(
-        selectedStartTime,
-        "minutes"
-      );
-      const durationHours = Math.floor(durationMinutes / 60);
-      const remainingMinutes = durationMinutes % 60;
-
-      const durationFormatted = `${durationHours} hour${
-        durationHours !== 1 ? "s" : ""
-      } ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`;
-
-      updateBookingData({
-        bookingDetail: {
-          ...bookingData.bookingDetail,
-          petSitter: tradename,
-          petSitterName: name,
-          dateTime: `${formattedDate} ${formattedStartTime} - ${formattedEndTime}`,
-          duration: durationFormatted,
-        },
-      });
-
-      setSubmittedData({
-        date: formattedDate,
-        startTime: formattedStartTime,
-        endTime: formattedEndTime,
-      });
-
-      push("/booking");
-    } else {
-      console.log("Please select date and times");
+    // Validate date and time
+    if (!selectedDate || !selectedStartTime || !selectedEndTime) {
+      setErrorDateTime(true); // Set error state to true
+      setMessageErrorDateTime("Please select date and times"); // Set the error message
+      return; // Early exit if validation fails
     }
+
+    const formattedDate = dayjs(selectedDate).format("DD MMM, YYYY");
+    const formattedStartTime = selectedStartTime.format("hh:mm A");
+    const formattedEndTime = selectedEndTime.format("hh:mm A");
+
+    const durationMinutes = selectedEndTime.diff(selectedStartTime, "minutes");
+    const durationHours = Math.floor(durationMinutes / 60);
+    const remainingMinutes = durationMinutes % 60;
+
+    const durationFormatted = `${durationHours} hour${
+      durationHours !== 1 ? "s" : ""
+    } ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`;
+
+    updateBookingData({
+      bookingDetail: {
+        ...bookingData.bookingDetail,
+        petSitter: tradename,
+        petSitterName: name,
+        dateTime: `${formattedDate} ${formattedStartTime} - ${formattedEndTime}`,
+        duration: durationFormatted,
+      },
+    });
+
+    setSubmittedData({
+      date: formattedDate,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
+    });
+    push("/booking");
   };
 
   return (
@@ -749,8 +800,8 @@ const ProfileCard: React.FC<{
                       label=""
                       value={formattedDate} // Ensure the value is a string in 'YYYY-MM-DD' format
                       onChange={handleDateChange} // Pass the function to update the selectedDate
-                      error={!!errorDate} // Boolean value to indicate if there's an error
-                      errorMsg={errorDate || undefined} // Pass the error message
+                      error={!!errorDateTime} // Boolean value to indicate if there's an error
+                      errorMsg={messageErrorDateTime || undefined} // Pass the error message
                     />
                   </div>
                   <Image

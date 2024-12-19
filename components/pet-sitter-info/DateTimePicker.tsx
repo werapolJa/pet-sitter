@@ -300,11 +300,12 @@ const DateAndTimePicker: React.FC<DatePickerProps> = ({
             )}
           </div>
         </div>
-
-        {error && errorMsg && (
-          <div className="text-red-500 text-sm mt-1">{errorMsg}</div>
-        )}
       </div>
+      {error && errorMsg && (
+        <div className="text-red-500 text-base mt-4 text-center">
+          {errorMsg}
+        </div>
+      )}
     </div>
   );
 };
