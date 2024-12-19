@@ -1,13 +1,14 @@
 import Header from "@/components/home-page/Header";
 import { SidebarChat } from "@/components/pet-owner/SidebarChat";
 import { useAuth } from "@/context/authentication";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import profiledefault from "@/public/assets/profile-default-icon.svg";
 import Image from "next/image";
 import { StaticImageData } from "next/image";
 import { useRouter } from "next/router";
 import btnChat from "@/public/assets/chat.svg";
 import axios from "axios";
+import { useChat } from '@/context/ChatContext';
 
 const useWindowWidth = () => {
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
@@ -30,25 +31,12 @@ const useWindowWidth = () => {
   return windowWidth;
 };
 
-interface Participant {
-  user_id: string;
-  full_name: string;
-  image: string | null;
-}
 
 interface Message {
   message_id: string;
   content: string;
   created_at: string;
   sender_id: string;
-}
-
-interface Conversation {
-  conversation_id: string;
-  updated_at: string;
-  participants: Participant[];
-  messages: Message[];
-  unread_count: number;
 }
 
 interface UserProfile {
@@ -63,30 +51,9 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const router = useRouter();
   const { id } = router.query;
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const { conversations } = useChat();
   console.log(messages)
 
-  const markAsRead = useCallback(
-    async (conversationId: string) => {
-      try {
-        await axios.put("/api/conversations/read", {
-          user_id: user?.sub,
-          conversation_id: conversationId,
-        });
-        setConversations((prevConversations) =>
-          prevConversations.map((conversation) => {
-            if (conversation.conversation_id === conversationId) {
-              return { ...conversation, unread_count: 0 };
-            }
-            return conversation;
-          })
-        );
-      } catch (error) {
-        console.error("Error marking as read:", error);
-      }
-    },
-    [user?.sub]
-  );
 
   useEffect(() => {
     if (!id) return;
@@ -114,7 +81,6 @@ export default function Chat() {
         <div className="hidden md:flex">
           <SidebarChat
             id={typeof id === "string" ? id : undefined}
-            setChat={setConversations}
           />
         </div>
         <div className="flex flex-col flex-1 overflow-hidden w-full">
@@ -127,7 +93,6 @@ export default function Chat() {
             user={user}
             profile={profile}
             id={typeof id === "string" ? id : undefined}
-            markAsRead={markAsRead}
           />
         </div>
       </main>
@@ -173,7 +138,6 @@ interface ChatBodyProps {
   profile: UserProfile | null;
   user: { sub: string } | null;
   id?: string;
-  markAsRead: (conversationId: string) => void;
 }
 
 export function ChatBody({
@@ -181,8 +145,8 @@ export function ChatBody({
   profile,
   user,
   id,
-  markAsRead,
 }: ChatBodyProps) {
+  const { markAsRead } = useChat();
   const [newMessage, setNewMessage] = useState<string>("");
   const [editMessageId, setEditMessageId] = useState<string | null>(null);
   const [editMessageContent, setEditMessageContent] = useState<string>("");
@@ -358,3 +322,4 @@ export function ChatBody({
     </div>
   );
 }
+

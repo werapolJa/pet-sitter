@@ -1,144 +1,17 @@
-import { useEffect, useState } from "react";
+import { useChat } from '@/context/ChatContext';
 import Image from "next/image";
-import axios from "axios";
 import profiledefault from "@/public/assets/profile-default-icon.svg";
 import { useAuth } from "@/context/authentication";
 import { useRouter } from "next/router";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-interface Participant {
-  user_id: string;
-  full_name: string;
-  image: string | null;
-}
-
-interface Message {
-  message_id: string;
-  content: string;
-  created_at: string;
-  sender_id: string;
-}
-
-interface Conversation {
-  conversation_id: string;
-  updated_at: string;
-  participants: Participant[];
-  messages: Message[];
-  unread_count: number;
-}
 
 interface SidebarChatProps {
   id?: string;
-  setChat?: React.Dispatch<React.SetStateAction<Conversation[]>>;
 }
 
-export function SidebarChat({ id, setChat }: SidebarChatProps) {
+export function SidebarChat({ id }: SidebarChatProps) {
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { conversations, loading, markAsRead } = useChat();
   const router = useRouter();
-
-  // Fetch conversations
-  useEffect(() => {
-    const fetchConversations = async () => {
-      if (user) {
-        try {
-          const response = await axios.get(
-            `/api/conversations?user_id=${user.sub}`
-          );
-          setConversations(response.data.data);
-          if (setChat) {
-            setChat(response.data.data);
-          }
-        } catch (error) {
-          console.log("Error fetching conversations:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchConversations();
-
-    // Subscribe to Supabase Realtime for conversations and messages
-    const conversationSubscription = supabase
-      .channel("public:conversations")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "conversations" },
-        (payload) => {
-          console.log("Conversation Updated:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
-
-    const messageSubscription = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("New Message:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
-
-      const messageDeleteSubscription = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("Delete Message:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
-
-      const messageUpdateSubscription = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "messages" },
-        (payload) => {
-          console.log("Delete Message:", payload);
-          fetchConversations();
-        }
-      )
-      .subscribe();
-    // Clean up subscriptions
-    return () => {
-      supabase.removeChannel(conversationSubscription);
-      supabase.removeChannel(messageSubscription);
-      supabase.removeChannel(messageDeleteSubscription);
-      supabase.removeChannel(messageUpdateSubscription);
-    };
-  }, [user, setChat]);
-
-  const markAsRead = async (conversationId: string) => {
-    try {
-      await axios.put("/api/conversations/read", {
-        user_id: user?.sub,
-        conversation_id: conversationId,
-      });
-      const updatedConversations = conversations.map((conversation) => {
-        if (conversation.conversation_id === conversationId) {
-          return { ...conversation, unread_count: 0 };
-        }
-        return conversation;
-      });
-      setConversations(updatedConversations);
-    } catch (error) {
-      console.error("Error marking as read:", error);
-    }
-  };
 
   return (
     <aside className="bg-black w-full md:w-[368px] h-full flex flex-col">
@@ -199,3 +72,4 @@ export function SidebarChat({ id, setChat }: SidebarChatProps) {
     </aside>
   );
 }
+
