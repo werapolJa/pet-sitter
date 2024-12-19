@@ -10,15 +10,14 @@ type PetSitter = {
   intro: string | null;
   trade_name: string;
   service: string | null;
-  place: string | null;
   rating: string | null;
   status: string;
   create_at: string;
   update_at: string;
-  pet_type1: string | null;
-  pet_type2: string | null;
-  pet_type3: string | null;
-  pet_type4: string | null;
+  pet_type_dog: string | null;
+  pet_type_cat: string | null;
+  pet_type_bird: string | null;
+  pet_type_rabbit: string | null;
   image_1: string | null;
 };
 
@@ -34,10 +33,37 @@ export default async function handler(
     const { pet_type, experience, rating, trade_name } = req.query;
 
     let query = `
-      select pet_sitters.*, images.image_1
+      select 
+      pet_sitters.petsitter_id, 
+      pet_sitters.full_name, 
+      pet_sitters.experience,
+      pet_sitters.phone,
+      pet_sitters.image,
+      pet_sitters.intro,
+      pet_sitters.trade_name,
+      pet_sitters.service,
+      pet_sitters.status,
+      pet_sitters.pet_type_dog,
+      pet_sitters.pet_type_cat,
+      pet_sitters.pet_type_bird,
+      pet_sitters.pet_type_rabbit,
+      pet_sitters.create_at,
+      pet_sitters.update_at,
+      images.image_1, 
+      ROUND(AVG(ratings.rating)) AS average_rating,
+      addresses.province,
+      addresses.district,
+      addresses.sub_district,
+      addresses.longitude,
+      addresses.latitude,
+
+      ratings.status
       from pet_sitters
       left join images on pet_sitters.petsitter_id = images.petsitter_id
-      where 1=1
+      left join ratings ON pet_sitters.petsitter_id = ratings.petsitter_id
+      left join addresses ON pet_sitters.petsitter_id = addresses.petsitter_id
+      where ratings.status = 'Approved'
+      
     `;
     const queryParams: string[] = [];
 
@@ -62,11 +88,6 @@ export default async function handler(
       queryParams.push(`%${experience}%`);
     }
 
-    if (rating) {
-      query += ` and pet_sitters.rating::text = $${queryParams.length + 1}`;
-      queryParams.push(rating as string);
-    }
-
     if (trade_name) {
       query += ` and pet_sitters.trade_name::text ilike $${
         queryParams.length + 1
@@ -78,7 +99,29 @@ export default async function handler(
       query = query.replace("where 1=1", "");
     }
 
+    //จะต่อ string ที่เป็น GROUP BY ไว่หลังจากที่ where และ and เรียบร้อยแล้ว
+    query += `
+    GROUP BY 
+      pet_sitters.petsitter_id, 
+      pet_sitters.full_name, 
+      images.image_1, 
+      addresses.province,
+      addresses.district,
+      addresses.sub_district,
+      addresses.longitude,
+      addresses.latitude,
+      ratings.status
+  `;
+
+    if (rating) {
+      query += ` HAVING ROUND(AVG(COALESCE(ratings.rating, 0))) = $${
+        queryParams.length + 1
+      }`;
+      queryParams.push(rating as string);
+    }
+
     const result = await connectionPool.query<PetSitter>(query, queryParams);
+    // console.log(result);
 
     return res.status(200).json({ data: result.rows });
   } catch (error) {
