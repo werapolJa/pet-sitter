@@ -6,7 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { Pagination as MuiPagination } from "@mui/material";
 import DateAndTimePicker from "@/components/pet-sitter-info/DateTimePicker"; // Corrected import statement
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 // Import Swiper styles
 import "swiper/css";
@@ -62,6 +62,10 @@ export default function PetSitterInfoPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [errorDate, setErrorDate] = useState<string | null>(null);
+  const [selectedStartTime, setSelectedStartTime] = useState<Dayjs | null>(
+    null
+  ); // Defaults to 12:00 AM
+  const [selectedEndTime, setSelectedEndTime] = useState<Dayjs | null>(null); // Defaults to 12:00 AM
 
   const router = useRouter();
   const { petsitterid } = router.query;
@@ -201,6 +205,10 @@ export default function PetSitterInfoPage() {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         errorDate={errorDate}
+        setSelectedStartTime={setSelectedStartTime}
+        setSelectedEndTime={setSelectedEndTime}
+        selectedStartTime={selectedStartTime}
+        selectedEndTime={selectedEndTime}
       />
     </div>
   );
@@ -325,6 +333,10 @@ const PetSitterInformation: React.FC<{
   selectedDate: string | Date | null;
   setSelectedDate: (date: Date | null) => void;
   errorDate: string | null;
+  setSelectedStartTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
+  setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
+  selectedStartTime: Dayjs | null;
+  selectedEndTime: Dayjs | null;
 }> = ({
   image,
   tradename,
@@ -347,6 +359,10 @@ const PetSitterInformation: React.FC<{
   selectedDate,
   setSelectedDate,
   errorDate,
+  setSelectedStartTime,
+  setSelectedEndTime,
+  selectedStartTime,
+  selectedEndTime,
 }) => {
   const Map = useMemo(
     () =>
@@ -420,6 +436,10 @@ const PetSitterInformation: React.FC<{
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           errorDate={errorDate}
+          setSelectedStartTime={setSelectedStartTime}
+          setSelectedEndTime={setSelectedEndTime}
+          selectedStartTime={selectedStartTime}
+          selectedEndTime={selectedEndTime}
         />
       </div>
       <div className="md:hidden">
@@ -446,6 +466,10 @@ const PetSitterInformation: React.FC<{
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             errorDate={errorDate}
+            setSelectedStartTime={setSelectedStartTime}
+            setSelectedEndTime={setSelectedEndTime}
+            selectedStartTime={selectedStartTime}
+            selectedEndTime={selectedEndTime}
           />
         </div>
       </div>
@@ -468,6 +492,10 @@ const ProfileCard: React.FC<{
   selectedDate: string | Date | null;
   setSelectedDate: (date: Date | null) => void;
   errorDate: string | null;
+  setSelectedStartTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
+  setSelectedEndTime: React.Dispatch<React.SetStateAction<Dayjs | null>>; // Correctly typed as a dispatch function
+  selectedStartTime: Dayjs | null;
+  selectedEndTime: Dayjs | null;
 }> = ({
   image,
   tradename,
@@ -483,6 +511,10 @@ const ProfileCard: React.FC<{
   selectedDate,
   setSelectedDate,
   errorDate,
+  setSelectedStartTime,
+  setSelectedEndTime,
+  selectedStartTime,
+  selectedEndTime,
 }) => {
   const { push } = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -528,21 +560,38 @@ const ProfileCard: React.FC<{
     ? dayjs(selectedDate).format("DD MMM, YYYY")
     : null;
 
-  const handleDateChange = (date: string | null) => {
+  const handleDateChange = (
+    date: string | null,
+    newStartTime: string | null,
+    newEndTime: string | null
+  ) => {
     setSelectedDate(date ? new Date(date) : null); // Convert string to Date
+
+    // Convert string times to Dayjs objects (or null if the string is null)
+    setSelectedStartTime(newStartTime ? dayjs(newStartTime, "HH:mm") : null);
+    setSelectedEndTime(newEndTime ? dayjs(newEndTime, "HH:mm") : null);
   };
 
   const handleSubmit = () => {
-    if (selectedDate) {
-      if (selectedDate instanceof Date) {
-        console.log("Selected Date:", selectedDate.toISOString()); // Convert Date to ISO string
-      } else {
-        console.log("Selected Date:", selectedDate); // If it's already a string
-      }
+    if (selectedDate && selectedStartTime && selectedEndTime) {
+      // Store the data in the state
+      setSubmittedData({
+        date: dayjs(selectedDate).format("DD MMM, YYYY"),
+        startTime: selectedStartTime.format("HH:mm"),
+        endTime: selectedEndTime.format("HH:mm"),
+      });
     } else {
-      console.log("No date selected");
+      console.log("Please select date and times");
     }
   };
+
+  const [submittedData, setSubmittedData] = useState({
+    date: "",
+    startTime: "",
+    endTime: "",
+  });
+
+  console.log(submittedData);
 
   return (
     <div>
@@ -670,7 +719,10 @@ const ProfileCard: React.FC<{
                     onClick={() => setShowDialog(null)}
                   />
                   <div className="flex w-full absolute bottom-0">
-                    <button className="text-base md:w-[480px] font-bold text-white absolute rounded-full bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-[343px] h-12 bg-orange-500">
+                    <button
+                      onClick={handleSubmit}
+                      className="text-base md:w-[480px] font-bold text-white absolute rounded-full bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-[343px] h-12 bg-orange-500"
+                    >
                       Continue
                     </button>
                   </div>
