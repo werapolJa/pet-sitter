@@ -28,8 +28,14 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
 
   const handleDateChange = (newValue: Dayjs | null) => {
     if (newValue) {
-      setInternalError(false);
-      onChange(newValue.format("YYYY-MM-DD"));
+      const today = dayjs();
+      if (newValue.isAfter(today)) {
+        setInternalError(true);
+        onChange(null);
+      } else {
+        setInternalError(false);
+        onChange(newValue.format("YYYY-MM-DD"));
+      }
     } else {
       setInternalError(false);
       onChange(null);
@@ -42,7 +48,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
         <div className="label">
           <span className="label-text text-base font-medium">{label}</span>
           {(error || internalError) && (
-            <p className="textleft text-red-500 text-sm mt-2">
+            <p className=" text-red-500 text-sm mt-2">
               {errorMsg || "Birthdate cannot be in the future."}
             </p>
           )}
@@ -61,6 +67,8 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
             value={parsedDate}
             onChange={handleDateChange}
             format="D MMM YYYY"
+            maxDate={dayjs()}
+            shouldDisableDate={(date) => date.isAfter(dayjs())}
             slots={{
               openPickerButton: (props) => (
                 <button

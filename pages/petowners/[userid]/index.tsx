@@ -11,7 +11,6 @@ import Image from "next/image";
 import profileDefaultIcon from "@/public/assets/profile-default-icon.svg";
 import plusIcon from "@/public/assets/plus-icon.svg";
 import Header from "@/components/home-page/Header";
-import Footer from "@/components/home-page/Footer";
 import Sidebar from "@/components/pet-owner/Sidebar";
 import Input from "@/components/pet-owner/Input";
 import DatePickerComponent from "@/components/pet-owner/DatePickerComponent";
@@ -26,8 +25,6 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   const { user } = useAuth();
   const router = useRouter();
   const { userid } = router.query;
-  console.log(userid);
-  console.log("1");
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -73,7 +70,6 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
       setIdNumber(data.id_number);
       setBirthDate(data.birthdate);
       setLoading(false);
-      console.log("Fetched user data:", data);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to load user data");
@@ -246,56 +242,56 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
   };
 
   if (loading) {
-    return <SkeletonLoader />; // Or use a spinner
+    return <SkeletonLoader />;
   }
 
   if (error) {
-    return <div>{error}</div>; // Display the error message if something goes wrong
+    return <div>{error}</div>;
   }
 
   return (
-    <div className="mt-6">
+    <div className="md:mt-14 mt-3">
       <form onSubmit={handleSubmit}>
-        <div className="mb-6">
+        <div className="mb-3 md:mb-8">
           <Input
             label="Your Name*"
             type="text"
             value={name}
             onChange={handleNameChange}
-            placeholder="Your Name"
+            placeholder="Your name"
             error={nameError}
             errorMsg={messageErrorName}
           />
         </div>
 
-        <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+        <div className="flex flex-col md:flex-row md:space-x-10">
+          <div className="w-full md:w-1/2 mb-3 md:mb-8">
             <Input
               label="Email*"
               type="email"
               value={email}
               onChange={handleEmailChange}
-              placeholder="Email"
+              placeholder="Your Email"
               error={emailError}
               errorMsg={messageErrorEmail}
             />
           </div>
 
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-1/2 mb-3 md:mb-8">
             <PhoneInput
               label="Phone*"
               type="tel"
               value={phone}
               onChange={handlePhoneChange}
-              placeholder="Phone"
+              placeholder="Your phone"
               error={phoneError}
               errorMsg={messageErrorPhone}
             />
           </div>
         </div>
 
-        <div className="mb-6 flex flex-col md:flex-row md:space-x-10">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+        <div className="flex flex-col md:flex-row md:space-x-10">
+          <div className="mb-3 w-full md:w-1/2 md:mb-8">
             <IdCardInput
               label="ID Number"
               type="text"
@@ -307,7 +303,7 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
             />
           </div>
 
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-1/2 mb-3 md:mb-8">
             <DatePickerComponent
               label="Date of Birth"
               value={birthDate}
@@ -317,10 +313,10 @@ const EditProfileForm = ({ inputimage }: { inputimage: string | null }) => {
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end ">
           <button
             type="submit"
-            className="mt-8 w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
+            className="mt-4 md:my-10 w-[159px] h-[48px] flex items-center justify-center rounded-3xl text-base font-bold text-white bg-orange-500"
           >
             Update Profile
           </button>
@@ -450,8 +446,10 @@ const ProfilePage = () => {
           <EditProfileForm inputimage={image} />
         </div>
 
-        <div className="w-full h-[888px] ml-10 my-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 p-10 bg-white rounded-2xl hidden md:flex md:flex-col">
-          <span className="text-2xl font-bold text-black">Profile</span>
+        <div className="w-full h-full ml-10 mt-10 md:ml-8 md:mr-20 md:mt-10 md:mb-20 pt-10 px-10 bg-white rounded-2xl hidden md:flex md:flex-col">
+          <span className="md:mb-10 text-2xl font-bold text-black">
+            Profile
+          </span>
           {loading ? (
             <div className="loading loading-dots loading-lg"></div>
           ) : (
@@ -460,7 +458,6 @@ const ProfilePage = () => {
           <EditProfileForm inputimage={image} />
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

@@ -9,17 +9,19 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchContext } from "@/context/searchbar";
+import { useChat } from '@/context/ChatContext';
 export default function Header() {
   const { isAuthenticated, logout, user } = useAuth();
   const [profile, setProfile] = useState<{ image?: string }>({});
   const [isOpen, setIsOpen] = useState(false);
   const { homeResetPetType } = useSearchContext();
+  const { conversations } = useChat();
+  const totalUnreadCount = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
- 
   useEffect(() => {
     if (user) {
       getDataProfile();
@@ -37,7 +39,7 @@ export default function Header() {
 
   return (
     <nav
-      className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-screen ${
+      className={`flex items-center justify-between py-3 px-5 bg-white text-black border-b md:px-12 w-full ${
         isOpen ? " fixed z-50" : ""
       }`}
     >
@@ -52,12 +54,18 @@ export default function Header() {
       {isAuthenticated ? (
         <>
           <div className="flex justify-between w-32 md:hidden">
-            <button>
+            <button >
+            {totalUnreadCount > 0 && (
+                <span className="badge bg-orange-500 absolute top-0 right-0 p-1 h-2"></span>
+              )}
               <Image src={iconbell} alt="iconbell" />
             </button>
-            <button>
+            <Link href={"/chats"} className="indicator">
+            {totalUnreadCount > 0 && (
+                <span className="badge bg-orange-500 absolute top-0 right-0 p-1 h-2"></span>
+              )}
               <Image src={iconmessage} alt="iconmessage" />
-            </button>
+            </Link>
             <div className="relative">
               {/* Hamburger Icon */}
               <button onClick={toggleDropdown} className="p-2">
@@ -142,12 +150,18 @@ export default function Header() {
       {isAuthenticated ? (
         <div className="md:flex justify-between w-auto gap-x-9 hidden">
           <div className="md:flex md:justify-center md:items-center gap-x-3">
-            <button className="w-12 h-12 rounded-full bg-gray-100 md:flex md:justify-center md:items-center">
+            <button className="indicator w-12 h-12 rounded-full bg-gray-100 md:flex md:justify-center md:items-center">
+            {totalUnreadCount > 0 && (
+                <span className="badge bg-orange-500 absolute top-0 right-0 p-1 h-2"></span>
+              )}
               <Image src={iconbell} alt="iconbell" />
             </button>
-            <button className="w-12 h-12 rounded-full bg-gray-100 md:flex md:justify-center md:items-center">
+            <Link href={"/chats"} className="indicator w-12 h-12 rounded-full bg-gray-100 md:flex md:justify-center md:items-center">
+              {totalUnreadCount > 0 && (
+                <span className="badge bg-orange-500 absolute top-0 right-0 p-1 h-2"></span>
+              )}
               <Image src={iconmessage} alt="iconmessage" />
-            </button>
+            </Link>
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className=" rounded-full">
                 {profile.image ? (
@@ -221,3 +235,4 @@ export default function Header() {
     </nav>
   );
 }
+
